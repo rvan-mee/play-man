@@ -11,8 +11,12 @@ Made with ❤️ by @rvan-mee and @K1ngmar
 # clone the respository
 $ git clone --recurse-submodules git@github.com:rvan-mee/play-man.git
 
+# create build folder
+$ mkdir build
+$ cd build
+
 # generate build files
-$ cmake .
+$ cmake ..
 
 # build the project
 $ make
