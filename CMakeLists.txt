@@ -32,7 +32,7 @@ set(INCLUDE_DIR ${CMAKE_SOURCE_DIR}/includes)
 include_directories(${INCLUDE_DIR})
 
 set(LIBRARY_NAME play-man.lib)
-set(PC_EXECUTABLE_NAME play-man-pc)
+set(EXECUTABLE_NAME play-man)
 
 # Collect all source files
 file(GLOB_RECURSE LIB_SOURCES "${LIB_DIR}/*.cpp")
@@ -48,10 +48,10 @@ add_library(${LIBRARY_NAME} STATIC ${LIB_SOURCES})
 target_include_directories(${LIBRARY_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/includes)
 
 # Create the executable target
-add_executable(${PC_EXECUTABLE_NAME} src/pc-main.cpp)
+add_executable(${EXECUTABLE_NAME} src/pc-main.cpp)
 
 # Link the executable to the library
-target_link_libraries(${PC_EXECUTABLE_NAME} PRIVATE ${LIBRARY_NAME})
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE ${LIBRARY_NAME})
 
 #
 # Unit testing
@@ -65,6 +65,6 @@ add_subdirectory(unit_tests)
 #
 
 install(
-	TARGETS ${PC_EXECUTABLE_NAME}
+	TARGETS ${EXECUTABLE_NAME}
     RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin
 )
