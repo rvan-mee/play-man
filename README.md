@@ -6,7 +6,7 @@ Made with ❤️ by [@rvan-mee](https://github.com/rvan-mee) and [@K1ngmar](http
 - Cmake version >= 3.22.1
 - A compiler with >= c++17 support
 
-## 🔨 How to install
+## 🔨 How to install (for pc)
 ```bash
 # clone the respository
 $ git clone --recurse-submodules git@github.com:rvan-mee/play-man.git
@@ -19,10 +19,11 @@ $ cd build
 $ cmake ..
 
 # build the project
-$ make
+$ make install
 
 # play some awesome emulated games
-$ ./play-man
+$ cd ../bin
+$ ./play-man-pc
 ```
 
 ## Tools used
