@@ -22,11 +22,10 @@ jobs:
         cd build
         cmake ..
         make install
-    - name: run_unit_test
+    - name: gameboy_unit_tests
       run: |
-        cp unit_tests/run_all_tests.sh bin/unit_tests
-        cd bin/unit_tests
-        sh run_all_tests.sh
+        cd bin/unit_tests/gameboy
+        ./gameboy_unit_tests
 
   macos:
 
@@ -42,11 +41,10 @@ jobs:
         cd build
         cmake ..
         make install
-    - name: run_unit_test
+    - name: gameboy_unit_tests
       run: |
-        cp unit_tests/run_all_tests.sh bin/unit_tests
-        cd bin/unit_tests
-        sh run_all_tests.sh
+        cd bin/unit_tests/gameboy
+        ./gameboy_unit_tests
 
   windows:
 
@@ -62,8 +60,7 @@ jobs:
         cd build
         cmake ..
         make install
-    - name: run_unit_test
+    - name: gameboy_unit_tests
       run: |
-        cp unit_tests/run_all_tests.sh bin/unit_tests
-        cd bin/unit_tests
-        sh run_all_tests.sh
+        cd bin/unit_tests/gameboy
+        ./gameboy_unit_tests
