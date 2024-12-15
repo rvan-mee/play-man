@@ -35,6 +35,9 @@
 
 # CMake
 build/
+build-linux/
+build-macos/
+build-windows/
 CMakeCache.txt
 *CMakeFiles/
 *cmake_install.cmake
