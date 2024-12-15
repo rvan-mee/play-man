@@ -66,4 +66,4 @@ jobs:
     - name: gameboy_unit_tests
       run: |
         cd bin/unit_tests/gameboy
-        ./gameboy_unit_tests~
+        ./gameboy_unit_tests
