@@ -1,0 +1,69 @@
+name: Unit tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  linux:
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        make install
+    - name: run_unit_test
+      run: |
+        cp unit_tests/run_all_tests.sh bin/unit_tests
+        cd bin/unit_tests
+        sh run_all_tests.sh
+
+  macos:
+
+    runs-on: macos-latest
+    timeout-minutes: 5
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        make install
+    - name: run_unit_test
+      run: |
+        cp unit_tests/run_all_tests.sh bin/unit_tests
+        cd bin/unit_tests
+        sh run_all_tests.sh
+
+  windows:
+
+  runs-on: windows-latest
+  timeout-minutes: 5
+
+  steps:
+  - uses: actions/checkout@v3
+
+  - name: Build
+    run: |
+      mkdir build
+      cd build
+      cmake ..
+      make install
+  - name: run_unit_test
+    run: |
+      cp unit_tests/run_all_tests.sh bin/unit_tests
+      cd bin/unit_tests
+      sh run_all_tests.sh
