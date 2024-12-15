@@ -27,4 +27,3 @@ install(
 	TARGETS ${GAMEBOY_UNIT_TEST_EXECUTABLE}
     RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin/unit_tests/gameboy/
 )
-

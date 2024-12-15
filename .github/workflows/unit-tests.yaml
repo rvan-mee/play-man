@@ -20,7 +20,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake ..
+        cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=install ..
         make install
     - name: gameboy_unit_tests
       run: |
@@ -39,7 +39,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake ..
+        cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=install ..
         make install
     - name: gameboy_unit_tests
       run: |
@@ -54,13 +54,16 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Install MinGW
+      run: choco install mingw
+
     - name: Build
       run: |
         mkdir build
         cd build
-        cmake ..
-        make install
+        cmake -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX=install ..
+        make install  
     - name: gameboy_unit_tests
       run: |
         cd bin/unit_tests/gameboy
-        ./gameboy_unit_tests
+        ./gameboy_unit_tests~
