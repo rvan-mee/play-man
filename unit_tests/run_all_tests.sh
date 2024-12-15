@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TESTBIN="tests/bin"
+TESTBIN="."
 COLOR_YELLOW="\033[38;5;11m"
 COLOR_RESET="\033[0m"
 
