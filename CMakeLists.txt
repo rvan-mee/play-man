@@ -48,7 +48,7 @@ add_library(${LIBRARY_NAME} STATIC ${LIB_SOURCES})
 target_include_directories(${LIBRARY_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/includes)
 
 # Create the executable target
-add_executable(${EXECUTABLE_NAME} src/pc-main.cpp)
+add_executable(${EXECUTABLE_NAME} src/main.cpp)
 
 # Link the executable to the library
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE ${LIBRARY_NAME})

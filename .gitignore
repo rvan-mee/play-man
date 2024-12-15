@@ -43,3 +43,6 @@ CMakeCache.txt
 *cmake_install.cmake
 *Makefile
 *bin
+
+# Misc
+.vscode
