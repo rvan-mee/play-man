@@ -1,0 +1,69 @@
+name: Unit tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  linux:
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build
+      run: |
+        mkdir build
+        cd build
+        cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=install ..
+        make install
+    - name: gameboy_unit_tests
+      run: |
+        cd bin/unit_tests/gameboy
+        ./gameboy_unit_tests
+
+  macos:
+
+    runs-on: macos-latest
+    timeout-minutes: 5
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build
+      run: |
+        mkdir build
+        cd build
+        cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=install ..
+        make install
+    - name: gameboy_unit_tests
+      run: |
+        cd bin/unit_tests/gameboy
+        ./gameboy_unit_tests
+
+  windows:
+
+    runs-on: windows-latest
+    timeout-minutes: 5
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install MinGW
+      run: choco install mingw
+
+    - name: Build
+      run: |
+        mkdir build
+        cd build
+        cmake -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX=install ..
+        make install  
+    - name: gameboy_unit_tests
+      run: |
+        cd bin/unit_tests/gameboy
+        ./gameboy_unit_tests
