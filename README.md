@@ -1,3 +1,5 @@
+
+![play man logo](images/playman.png)
 # 🕹️ Play Man
 An awesome retro console emulator written in c++.  
 Made with ❤️ by [@rvan-mee](https://github.com/rvan-mee) and [@K1ngmar](https://github.com/K1ngmar)
