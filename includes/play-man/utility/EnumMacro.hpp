@@ -14,7 +14,7 @@ enum class EnumName \
 	ENUM(CREATE_ENUM_ENTRY, EnumName) \
 }; \
 \
-const char* EnumToString(EnumName value) \
+std::string_view EnumToString(EnumName value) \
 { \
 	switch (value) \
 	{ \
