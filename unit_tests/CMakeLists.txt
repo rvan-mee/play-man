@@ -10,20 +10,30 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Catch2)
 
 # Creates a test executable
-set(GAMEBOY_UNIT_TEST_EXECUTABLE gameboy_unit_tests)
 
+set(GAMEBOY_UNIT_TEST_EXECUTABLE gameboy-unit-tests)
 add_executable(${GAMEBOY_UNIT_TEST_EXECUTABLE} gameboy/Test.cpp)
-
 target_link_libraries(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE ${LIBRARY_NAME})
 target_link_libraries(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::Catch2WithMain)
+
+set(UTILITY_UNIT_TEST_EXECUTABLE utility-unit-tests)
+add_executable(${UTILITY_UNIT_TEST_EXECUTABLE} Utility/SignalTests.cpp)
+target_link_libraries(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE ${LIBRARY_NAME})
+target_link_libraries(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::Catch2WithMain)
 
 # Enable Catch2's CMake testing integration
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 include(CTest)
 include(Catch)
 catch_discover_tests(${GAMEBOY_UNIT_TEST_EXECUTABLE})
+catch_discover_tests(${UTILITY_UNIT_TEST_EXECUTABLE})
 
 install(
 	TARGETS ${GAMEBOY_UNIT_TEST_EXECUTABLE}
     RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin/unit_tests/gameboy/
+)
+
+install(
+	TARGETS ${UTILITY_UNIT_TEST_EXECUTABLE}
+    RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin/unit_tests/Utility/
 )
