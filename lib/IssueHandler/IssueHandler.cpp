@@ -59,6 +59,13 @@ void IssueHandler::SubscribeToIssueResolved(
 	issueResolvedCallbacks[errorToSubscribeResolveOn].Connect(issueResolvedCallback);
 }
 
+void IssueHandler::UnsubscribeIssueResolved(
+	ErrorCode errorToUnsubscribeResolveOn,
+	const std::function<void()>& issueResolvedCallbackToRemove)
+{
+	issueResolvedCallbacks.at(errorToUnsubscribeResolveOn).Disconnect(issueResolvedCallbackToRemove);
+}
+
 bool IssueHandler::IsIssueActive(ErrorCode errorCode)
 {
 	return activeErrors.contains(errorCode);

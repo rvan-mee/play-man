@@ -61,3 +61,61 @@ TEST_CASE("Issue resolved signal")
 
 	REQUIRE(wasCallbackCalled);
 }
+
+TEST_CASE("Unsubscribe issue resolved signal")
+{
+	IssueHandler issueHandler("test");
+
+	bool wasCallbackCalled = false;
+
+	const auto callback = [&]()
+	{
+		wasCallbackCalled = true;
+	};
+
+	issueHandler.SubscribeToIssueResolved(
+		ErrorCode::AnErrorCodeForTestingPurposes,
+		callback
+	);
+
+	issueHandler.SetIssue(
+		ErrorCode::AnErrorCodeForTestingPurposes,
+		"test error",
+		"setting an issue for testing purposes",
+		IssueType::Error,
+		IssueResolvable::AutomaticResolvable
+	);
+
+	issueHandler.UnsubscribeIssueResolved(
+		ErrorCode::AnErrorCodeForTestingPurposes,
+		callback
+	);
+
+	issueHandler.ResolveIssue(ErrorCode::AnErrorCodeForTestingPurposes);
+
+	REQUIRE(!wasCallbackCalled);
+}
+
+TEST_CASE("Issue set signal")
+{
+	IssueHandler issueHandler("test");
+
+	bool wasSignalEmitted = false;
+
+	issueHandler.issueSet.Connect([&](ErrorCode ec)
+	{
+		wasSignalEmitted = ec == ErrorCode::AnErrorCodeForTestingPurposes;
+	});
+
+	issueHandler.SetIssue(
+		ErrorCode::AnErrorCodeForTestingPurposes,
+		"test error",
+		"setting an issue for testing purposes",
+		IssueType::Error,
+		IssueResolvable::AutomaticResolvable
+	);
+
+	issueHandler.ResolveIssue(ErrorCode::AnErrorCodeForTestingPurposes);
+
+	REQUIRE(wasSignalEmitted);
+}

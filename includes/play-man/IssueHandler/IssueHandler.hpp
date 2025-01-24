@@ -78,6 +78,17 @@ public:
 	/**
 	 * @brief 
 	 * 
+	 * @param errorToUnsubscribeResolveOn 
+	 * @param issueResolvedCallback 
+	 */
+	void UnsubscribeIssueResolved(
+		ErrorCode errorToUnsubscribeResolveOn,
+		const std::function<void()>& issueResolvedCallbackToRemove
+	);
+
+	/**
+	 * @brief 
+	 * 
 	 * @param errorCode 
 	 * @return true 
 	 * @return false 
