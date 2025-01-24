@@ -4,12 +4,34 @@
 
 #include <string>
 
-/**\
+/**
+ * @brief
+ */
+enum class IssueType
+{
+	Warning,
+	Error,
+	Debug
+};
+
+/**
+ * @brief
+ */
+enum class IssueResolvable
+{
+	ManuallyResolvable, // Click on Ok or whatever to resolve.
+	AutomaticResolvable, // Can be automatically resolved in the code.
+	ResetResolvable // Program needs to be restarted.
+};
+
+/**
  * @brief
  */
 struct Issue
 {
 	const ErrorCode errorCode; /* */
+	const IssueType issueType; /* */
+	const IssueResolvable issueResolvable; /* */
 	const std::string moduleName; /* */
 	const std::string errorMessage; /* */
 	const std::string detailedErrorMessage; /* */

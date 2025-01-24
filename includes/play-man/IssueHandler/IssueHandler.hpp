@@ -2,49 +2,30 @@
 
 #include "ErrorCodes.hpp"
 #include "Issue.hpp"
+#include <play-man/Signal/Signal.hpp>
 
 #include <string>
 #include <optional>
 #include <map>
 #include <memory>
 #include <functional>
-#include <set>
-
-/**
- * @brief
- */
-enum class IssueType
-{
-	Warning,
-	Error,
-	Debug
-};
-
-/**
- * @brief
- */
-enum class IssueResolvable
-{
-	ManuallyResolvable, // Click on Ok or whatever to resolve.
-	AutomaticResolvable, // Can be automatically resolved in the code.
-	ResetResolvable // Program needs to be restarted.
-};
-
 
 /**
  * @brief
  */
 class IssueHandler
 {
-	using IssueResolvedCallbackType = std::weak_ptr<std::function<void()> >;
+	using IssueResolvedCallbackType = Signal<void()>;
 
 	const std::string moduleName; /*! */
 	const bool allowDebug; /*!< -. */
 	const std::optional<std::string> logFilePath; /*! */
-	std::multimap<ErrorCode, IssueResolvedCallbackType> issueResolvedCallbacks; /*!  */
-	std::set<Issue> activeErrors; /*!< -. */
+	std::map<ErrorCode, IssueResolvedCallbackType> issueResolvedCallbacks; /*!  */
+	std::map<ErrorCode, Issue> activeErrors; /*!<  */
 
 public:
+
+	Signal<void(ErrorCode)> issueSet; /*!< Signal emitted when an issue is set. */
 
 	/**
 	 * @brief
@@ -71,6 +52,8 @@ public:
 		ErrorCode errorCode,
 		const std::string& errorMessageToDisplay,
 		const std::string& detailedErrorMessage,
+		IssueType issueType,
+		IssueResolvable issueResolvable,
 		bool showAsPopup = false
 	);
 
@@ -89,7 +72,7 @@ public:
 	 */
 	void SubscribeToIssueResolved(
 		ErrorCode errorToSubscribeResolveOn,
-		std::weak_ptr<IssueResolvedCallbackType> issueResolvedCallback
+		const std::function<void()>& issueResolvedCallback
 	);
 
 	/**

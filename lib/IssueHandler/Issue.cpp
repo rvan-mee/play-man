@@ -1,4 +1,4 @@
-#include "Issue.hpp"
+#include <play-man/IssueHandler/Issue.hpp>
 
 bool operator == (const Issue& lhs, const Issue& rhs)
 {

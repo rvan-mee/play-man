@@ -17,7 +17,7 @@ target_link_libraries(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE ${LIBRARY_NAME})
 target_link_libraries(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::Catch2WithMain)
 
 set(UTILITY_UNIT_TEST_EXECUTABLE utility-unit-tests)
-add_executable(${UTILITY_UNIT_TEST_EXECUTABLE} Utility/SignalTests.cpp)
+add_executable(${UTILITY_UNIT_TEST_EXECUTABLE} Utility/SignalTests.cpp Utility/IssueHandlerTests.cpp)
 target_link_libraries(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE ${LIBRARY_NAME})
 target_link_libraries(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::Catch2WithMain)
 
