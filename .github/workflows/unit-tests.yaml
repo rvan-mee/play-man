@@ -26,6 +26,11 @@ jobs:
       run: |
         cd bin/unit_tests/gameboy
         ./gameboy_unit_tests
+    - name: utility_unit_tests
+      run: |
+        cd bin/unit_tests/utility
+        ./utility_unit_tests
+
 
   macos:
 
@@ -45,6 +50,10 @@ jobs:
       run: |
         cd bin/unit_tests/gameboy
         ./gameboy_unit_tests
+    - name: utility_unit_tests
+      run: |
+        cd bin/unit_tests/utility
+        ./utility_unit_tests
 
   windows:
 
@@ -67,3 +76,7 @@ jobs:
       run: |
         cd bin/unit_tests/gameboy
         ./gameboy_unit_tests
+    - name: utility_unit_tests
+      run: |
+        cd bin/unit_tests/utility
+        ./utility_unit_tests
