@@ -1,5 +1,30 @@
+// ****************************************************************************** //
+//   _______   __                              __       __                        //
+//  /       \ /  |                            /  \     /  |                       //
+//  $$$$$$$  |$$ |  ______   __    __         $$  \   /$$ |  ______   _______     //
+//  $$ |__$$ |$$ | /      \ /  |  /  | ______ $$$  \ /$$$ | /      \ /       \    //
+//  $$    $$/ $$ | $$$$$$  |$$ |  $$ |/      |$$$$  /$$$$ | $$$$$$  |$$$$$$$  |   //
+//  $$$$$$$/  $$ | /    $$ |$$ |  $$ |$$$$$$/ $$ $$ $$/$$ | /    $$ |$$ |  $$ |   //
+//  $$ |      $$ |/$$$$$$$ |$$ \__$$ |        $$ |$$$/ $$ |/$$$$$$$ |$$ |  $$ |   //
+//  $$ |      $$ |$$    $$ |$$    $$ |        $$ | $/  $$ |$$    $$ |$$ |  $$ |   //
+//  $$/       $$/  $$$$$$$/  $$$$$$$ |        $$/      $$/  $$$$$$$/ $$/   $$/    //
+//                          /  \__$$ |                                            //
+//                          $$    $$/                                             //
+//                           $$$$$$/                                              //
+//                                                                                //
+//                            By: K1ngmar and rvan-mee                            //
+// ****************************************************************************** //
+
 #pragma once
 
+#define NINTENDO_LOGO_SIZE 48
+
+// Parts of the title are used for the manufacturer code and cgb flag on later cartridges, reducing the actual title size.
+#define ROM_TITLE_SIZE 16
+
+#define MANUFACTURER_CODE_SIZE 4
+
+// TODO: use pascalCase 
 /**
  * @brief These are the new licensing codes inside the header of a ROM.
  * They are encoded as 2-byte values, representing ascii characters.
@@ -149,153 +174,159 @@ enum class DestinationCode {
     Overseas    = 0x01, // This cartridge was meant to be sold overseas
 };
 
-// TODO: doublecheck the names and values, remove some numbers at the end of names
+/**
+ * @brief These are the old licensing codes inside the header of a ROM.
+ * They are encoded as a single byte values.
+ * 
+ * @note There is a special value (0x33) which, if found,
+ * means to refer to the new Licensing code to get the correct licensing company.
+ */
 enum class OldLicensingCodes {
-    None                    = 0x00,
-    Nintendo                = 0x01,
-    Capcom                  = 0x08,
-    HOT_B                   = 0x09,
-    Jaleco                  = 0x0A,
-    Coconuts_Japan          = 0x0B,
-    Elite_Systems           = 0x0C,
-    EA_Electronic_Arts      = 0x13,
-    Hudson_Soft             = 0x18,
-    ITC_Entertainment       = 0x19,
-    Yanoman                 = 0x1A,
-    Japan_Clary             = 0x1D,
-    Virgin_Games_Ltd3       = 0x1F,
-    PCM_Complete            = 0x24,
-    San_X                   = 0x25,
-    Kemco                   = 0x28,
-    SETA_Corporation        = 0x29,
-    Infogrames5             = 0x30,
-    Nintendo_2              = 0x31,
-    Bandai                  = 0x32,
-    New_Licensee_Code      = 0x33,
-    Konami                  = 0x34,
-    HectorSoft              = 0x35,
-    Capcom_2                = 0x38,
-    Banpresto               = 0x39,
-    Entertainment_Interactive = 0x3C,
-    Gremlin                 = 0x3E,
-    Ubi_Soft1               = 0x41,
-    Atlus                   = 0x42,
-    Malibu_Interactive      = 0x44,
-    Angel                   = 0x46,
-    Spectrum_HoloByte       = 0x47,
-    Irem                    = 0x49,
-    Virgin_Games_Ltd4       = 0x4A,
-    Malibu_Interactive_2    = 0x4D,
-    US_Gold                 = 0x4F,
-    Absolute                = 0x50,
-    Acclaim_Entertainment   = 0x51,
-    Activision              = 0x52,
-    Sammy_USA_Corporation   = 0x53,
-    GameTek                 = 0x54,
-    Park_Place13            = 0x55,
-    LJN                     = 0x56,
-    Matchbox                = 0x57,
-    Milton_Bradley_Company  = 0x59,
-    Mindscape               = 0x5A,
-    Romstar                 = 0x5B,
-    Naxat_Soft14            = 0x5C,
-    Tradewest               = 0x5D,
-    Titus_Interactive       = 0x60,
-    Virgin_Games_Ltd5       = 0x61,
-    Ocean_Software          = 0x67,
-    EA_Electronic_Arts_2    = 0x69,
-    Elite_Systems_2         = 0x6E,
-    Electro_Brain           = 0x6F,
-    Infogrames5_2           = 0x70,
-    Interplay_Entertainment = 0x71,
-    Broderbund              = 0x72,
-    Sculptured_Software6    = 0x73,
-    Sales_Curve_Limited7    = 0x75,
-    THQ                     = 0x78,
-    Accolade                = 0x79,
-    Triffix_Entertainment   = 0x7A,
-    MicroProse              = 0x7C,
-    Kemco_2                 = 0x7F,
-    Misawa_Entertainment    = 0x80,
-    LOZC_G                  = 0x83,
-    Tokuma_Shoten           = 0x86,
-    Bullet_Proof_Software2  = 0x8B,
-    Vic_Tokai_Corp16        = 0x8C,
-    Ape_Inc17               = 0x8E,
-    I_Max18                 = 0x8F,
-    Chunsoft_Co8           = 0x91,
-    Video_System            = 0x92,
-    Tsubaraya_Productions   = 0x93,
-    Varie                   = 0x95,
-    Yonezawa_S_Pal          = 0x96,
-    Kemco_3                 = 0x97,
-    Arc                     = 0x99,
-    Nihon_Bussan            = 0x9A,
-    Tecmo                   = 0x9B,
-    Imagineer               = 0x9C,
-    Banpresto_2             = 0x9D,
-    Nova                    = 0x9F,
-    Hori_Electric           = 0xA1,
-    Bandai_2                = 0xA2,
-    Konami_2                = 0xA4,
-    Kawada                  = 0xA6,
-    Takara                  = 0xA7,
-    Technos_Japan           = 0xA9,
-    Broderbund_2            = 0xAA,
-    Toei_Animation          = 0xAC,
-    Toho                    = 0xAD,
-    Namco                   = 0xAF,
-    Acclaim_Entertainment_2 = 0xB0,
-    ASCII_Corp_or_Nexsoft   = 0xB1,
-    Bandai_3                = 0xB2,
-    Square_Enix             = 0xB4,
-    HAL_Laboratory          = 0xB6,
-    SNK                     = 0xB7,
-    Pony_Canyon             = 0xB9,
-    Culture_Brain           = 0xBA,
-    Sunsoft                 = 0xBB,
-    Sony_Imagesoft          = 0xBD,
-    Sammy_Corp              = 0xBF,
-    Taito_2                 = 0xC0,
-    Kemco_4                 = 0xC2,
-    Square                  = 0xC3,
-    Tokuma_Shoten_2         = 0xC4,
-    Data_East               = 0xC5,
-    Tonkin_House            = 0xC6,
-    Koei                    = 0xC8,
-    UFL                     = 0xC9,
-    Ultra_Games             = 0xCA,
-    VAP_Inc                 = 0xCB,
-    Use_Corp                = 0xCC,
-    Meldac                  = 0xCD,
-    Pony_Canyon_2           = 0xCE,
-    Angel_2                 = 0xCF,
-    Taito_3                 = 0xD0,
-    SOFEL                   = 0xD1,
-    Quest                   = 0xD2,
-    Sigma_Enterprises       = 0xD3,
-    ASK_Kodansha_Co         = 0xD4,
-    Naxat_Soft15            = 0xD6,
-    Copya_System            = 0xD7,
-    Banpresto_3             = 0xD9,
-    Tomy                    = 0xDA,
-    LJN_2                   = 0xDB,
-    Nippon_Computer_Systems = 0xDD,
-    Human_Ent               = 0xDE,
-    Altron                  = 0xDF,
-    Jaleco_2                = 0xE0,
-    Towa_Chiki              = 0xE1,
-    Yutaka                  = 0xE2,
-    Varie_2                 = 0xE3,
-    Epoch                   = 0xE5,
-    Athena                  = 0xE7,
-    Asmik_Ace_Entertainment = 0xE8,
-    Natsume                 = 0xE9,
-    King_Records            = 0xEA,
-    Atlus_2                 = 0xEB,
-    Epic_Sony_Records       = 0xEC,
-    IGS                     = 0xEE,
-    A_Wave                  = 0xF0,
-    Extreme_Entertainment   = 0xF3,
-    LJN_3                   = 0xFF,
-}; 
+    None                        = 0x00,
+    Nintendo                    = 0x01,
+    Capcom                      = 0x08,
+    HotB                        = 0x09,
+    Jaleco                      = 0x0A,
+    Coconuts                    = 0x0B,
+    EliteSystems                = 0x0C,
+    ElectronicArts              = 0x13,
+    Hudsonsoft                  = 0x18,
+    ITCEntertainment            = 0x19,
+    Yanoman                     = 0x1A,
+    Clary                       = 0x1D,
+    Virgin                      = 0x1F,
+    PCMComplete                 = 0x24,
+    SanX                        = 0x25,
+    KotobukiSystems             = 0x28,
+    Seta                        = 0x29,
+    Infogrames                  = 0x30,
+    Nintendo_2                  = 0x31,  // Prevents collision with "Nintendo"
+    Bandai                      = 0x32,
+    NewLicenseeCode             = 0x33,
+    Konami                      = 0x34,
+    Hector                      = 0x35,
+    Capcom_2                    = 0x38,  // Prevents collision with "Capcom"
+    Banpresto                   = 0x39,
+    EntertainmentInteractive    = 0x3C,
+    Gremlin                     = 0x3E,
+    UbiSoft                     = 0x41,
+    Atlus                       = 0x42,
+    Malibu                      = 0x44,
+    Angel                       = 0x46,
+    SpectrumHoloby              = 0x47,
+    Irem                        = 0x49,
+    Virgin_2                    = 0x4A,  // Prevents collision with "Virgin"
+    Malibu_2                    = 0x4D,  // Prevents collision with "Malibu"
+    USGold                      = 0x4F,
+    Absolute                    = 0x50,
+    Acclaim                     = 0x51,
+    Activision                  = 0x52,
+    AmericanSammy               = 0x53,
+    Gametek                     = 0x54,
+    ParkPlace                   = 0x55,
+    LJN                         = 0x56,
+    Matchbox                    = 0x57,
+    MiltonBradley               = 0x59,
+    Mindscape                   = 0x5A,
+    Romstar                     = 0x5B,
+    NaxatSoft                   = 0x5C,
+    Tradewest                   = 0x5D,
+    Titus                       = 0x60,
+    Virgin_3                    = 0x61,  // Prevents collision with "Virgin"
+    Ocean                       = 0x67,
+    ElectronicArts_2            = 0x69,  // Prevents collision with "ElectronicArts"
+    EliteSystems_2              = 0x6E,  // Prevents collision with "EliteSystems"
+    ElectroBrain                = 0x6F,
+    Infogrames_2                = 0x70,  // Prevents collision with "Infogrames"
+    Interplay                   = 0x71,
+    Broderbund                  = 0x72,
+    SculpturedSoft              = 0x73,
+    TheSalesCurve               = 0x75,
+    THQ                         = 0x78,
+    Accolade                    = 0x79,
+    TriffixEntertainment        = 0x7A,
+    Microprose                  = 0x7C,
+    Kemco                       = 0x7F,
+    MisawaEntertainment         = 0x80,
+    LOZC                        = 0x83,
+    TokumaShoten                = 0x86,
+    BulletProofSoftware         = 0x8B,
+    VicTokai                    = 0x8C,
+    Ape                         = 0x8E,
+    Imax                        = 0x8F,
+    ChunSoft                    = 0x91,
+    VideoSystem                 = 0x92,
+    Tsuburava                   = 0x93,
+    Varie                       = 0x95,
+    Yonezawa                    = 0x96,
+    Kaneko                      = 0x97,
+    Arc                         = 0x99,
+    NihonBussan                 = 0x9A,
+    Tecmo                       = 0x9B,
+    Imagineer                   = 0x9C,
+    Banpresto_2                 = 0x9D,  // Prevents collision with "Banpresto"
+    Nova                        = 0x9F,
+    HoriElectric                = 0xA1,
+    Bandai_2                    = 0xA2,  // Prevents collision with "Bandai"
+    Konami_2                    = 0xA4,  // Prevents collision with "Konami"
+    Kawada                      = 0xA6,
+    Takara                      = 0xA7,
+    TechnosJapan                = 0xA9,
+    Broderbund_2                = 0xAA,  // Prevents collision with "Broderbund"
+    ToeiAnimation               = 0xAC,
+    Toho                        = 0xAD,
+    Namco                       = 0xAF,
+    Acclaim_2                   = 0xB0,  // Prevents collision with "Acclaim"
+    ASCIIOrNexoft               = 0xB1,
+    Bandai_3                    = 0xB2,  // Prevents collision with "Bandai"
+    Enix                        = 0xB4,
+    Hal                         = 0xB6,
+    SNK                         = 0xB7,
+    PonyCanyon                  = 0xB9,
+    CultureBrain                = 0xBA,
+    Sunsoft                     = 0xBB,
+    SonyImagesoft               = 0xBD,
+    Sammy                       = 0xBF,
+    Taito_2                     = 0xC0,  // Prevents collision with "Taito"
+    Kemco_2                     = 0xC2,  // Prevents collision with "Kemco"
+    Squaresoft                  = 0xC3,
+    TokumaShoten_2              = 0xC4,  // Prevents collision with "TokumaShoten"
+    DataEast                    = 0xC5,
+    TonkinHouse                 = 0xC6,
+    Koei                        = 0xC8,
+    UFL                         = 0xC9,
+    Ultra                       = 0xCA,
+    Vap                         = 0xCB,
+    USE                         = 0xCC,
+    Meldac                      = 0xCD,
+    PonyCanyon_2                = 0xCE,  // Prevents collision with "PonyCanyon"
+    Angel_2                     = 0xCF,  // Prevents collision with "Angel"
+    Taito_3                     = 0xD0,  // Prevents collision with "Taito"
+    Sofel                       = 0xD1,
+    Quest                       = 0xD2,
+    SigmaEnterprises            = 0xD3,
+    AskKodansha                 = 0xD4,
+    NaxatSoft_2                 = 0xD6,  // Prevents collision with "NaxatSoft"
+    CopyaSystems                = 0xD7,
+    Banpresto_3                 = 0xD9,  // Prevents collision with "Banpresto"
+    Tomy                        = 0xDA,
+    LJN_2                       = 0xDB,  // Prevents collision with "LJN"
+    NCS                         = 0xDD,
+    Human                       = 0xDE,
+    Altron                      = 0xDF,
+    Jaleco_2                    = 0xE0,  // Prevents collision with "Jaleco"
+    Towachiki                   = 0xE1,
+    Uutaka                      = 0xE2,
+    Varie_2                     = 0xE3,  // Prevents collision with "Varie"
+    Epoch                       = 0xE5,
+    Athena                      = 0xE7,
+    Asmik                       = 0xE8,
+    Natsume                     = 0xE9,
+    KingRecords                 = 0xEA,
+    Atlus_2                     = 0xEB,  // Prevents collision with "Atlus"
+    EpicRecords                 = 0xEC,
+    IGS                         = 0xEE,
+    AWave                       = 0xF0,
+    ExtremeEntertainment        = 0xF3,
+    LJN_3                       = 0xFF   // Prevents collision with "LJN"
+};
