@@ -35,6 +35,16 @@
 #define __ENUM_CREATION(...) __GET_CORRECT_MACRO(__VA_ARGS__, __CREATE_DEFINED_ENUM, __CREATE_DEFAULT_ENUM, 0)(__VA_ARGS__)
 #define __ENUM_TO_STRING_CASE(...) __GET_CORRECT_MACRO(__VA_ARGS__, __DEFINED_ENUM_TO_STRING_CASE, __DEFAULT_ENUM_TO_STRING_CASE, 0)(__VA_ARGS__)
 
+/**
+ * @brief Defines an enum with optionally specified values, and some utility functions like to string for the enum,
+ *        For more information as to how this works you should look up the term `x-macro`.
+ * 
+ * @param ENUM_DEFINITION   This is the sequence of enum entries (which itself is a macro).
+ *                          The ENUM_DEFINITION itself needs to be defined as `ENUM_DEFINITION(X, enum_class_name)`.
+ *                          Each entry needs to be defined like so `X(enum_name, enum_entry_name, value)` where the value is optional.
+ * 
+ * @param enum_class_name
+ */
 #define CREATE_ENUM_WITH_UTILS(ENUM_DEFINITION, enum_class_name)\
 \
 enum class enum_class_name {\
