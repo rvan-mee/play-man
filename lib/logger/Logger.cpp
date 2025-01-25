@@ -1,52 +1,59 @@
 
 #include "play-man/logger/Logger.hpp"
+#include "play-man/utility/MetaUtility.hpp"
 
 #include <iostream>
 #include <chrono>
 #include <iomanip>
 
-# define COLOR_RESET	 "\033[0m"
-# define COLOR_ERROR	 "\033[38;5;160m"
-# define COLOR_WARNING	 "\033[38;5;208m"
-# define COLOR_INFO		 "\033[38;5;13m"
-# define COLOR_DEBUG	 "\033[38;5;21m"
-
-Logger& Logger::GetInstance()
+namespace Logger
 {
-	static Logger logger;
-	return logger;
-}
 
-constexpr std::string_view Logger::LogTypeToString(LogType logType) const
-{
-	switch (logType)
+	LogInterface& LogInterface::GetInstance()
 	{
-		case LogType::Error:
-			return COLOR_ERROR "[ERROR]: " COLOR_RESET;
-		case LogType::Warning:
-			return COLOR_WARNING "[WARNING]: " COLOR_RESET;
-		case LogType::Info:
-			return COLOR_INFO "[INFO]: " COLOR_RESET;
-		case LogType::Debug:
-			return COLOR_DEBUG "[Debug]: " COLOR_RESET;
-		default:
-			throw std::runtime_error("Tried to get string for unknown logtype: " + std::to_string(static_cast<int>(logType)));
+		static LogInterface logger;
+		return logger;
 	}
-}
 
-void Logger::Log(const std::string& logMessage, const LogType logType)
-{
-	const auto logTimeStamp = std::chrono::system_clock::now();
-    const auto logTime_t = std::chrono::system_clock::to_time_t(logTimeStamp);
-    const auto localTime = std::localtime(&logTime_t);
+	constexpr std::string_view LogInterface::LogTypeToColoredString(LogType logType) const
+	{
+		static constexpr std::string_view openingBracket = "[";
+		static constexpr std::string_view closingBracket = "]: ";
 
-	// Can lock mutex here if we want to make it thread safe.
+		switch (logType)
+		{
+			case LogType::Error:
+				return MetaUtility::ConcatenateStringViews_v<
+					colorError, openingBracket, GetEnumAsString(logType), closingBracket, colorReset
+				>;
+			//case LogType::Warning:
+			//	return MetaUtility::ConcatenateStringViews_v<
+			//		colorWarning, openingBracket, GetEnumAsString(LogType::Warning), closingBracket, colorReset
+			//	>;
+			//case LogType::Info:
+			//	return MetaUtility::ConcatenateStringViews_v<
+			//		colorInfo, openingBracket, GetEnumAsString(LogType::Info), closingBracket, colorReset
+			//	>;
+			//case LogType::Debug:
+			//	return MetaUtility::ConcatenateStringViews_v<
+			//		colorDebug, openingBracket, GetEnumAsString(LogType::Debug), closingBracket, colorReset
+			//	>;
+			default:
+				throw std::runtime_error("Tried to get string for unknown logtype: " + std::to_string(static_cast<int>(logType)));
+		}
+		return "";
+	}
 
-    std::cout << std::put_time(localTime, "%Y-%m-%d %H:%M:%S") << ' ' << LogTypeToString(logType) << logMessage << '\n';
-}
+	void LogInterface::Log(const std::string& logMessage, const LogType logType)
+	{
+		const auto logTimeStamp = std::chrono::system_clock::now();
+		const auto logTime_t = std::chrono::system_clock::to_time_t(logTimeStamp);
+		const auto localTime = std::localtime(&logTime_t);
 
-#undef COLOR_RESET
-#undef COLOR_ERROR
-#undef COLOR_WARNING
-#undef COLOR_INFO
-#undef COLOR_DEBUG
+		// Can lock mutex here if we want to make it thread safe.
+
+		std::cout << std::put_time(localTime, "%Y-%m-%d %H:%M:%S") << ' ' << LogTypeToColoredString(logType) << logMessage << '\n';
+	}
+
+} /* namespace logger */
+
