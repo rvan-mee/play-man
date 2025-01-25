@@ -39,7 +39,11 @@ namespace Logger
 	#undef LOG_TYPE_SEQ
 
 	/*!
-	* @brief Signleton logger for a unified and threadsafe output.
+	* @brief Singleton logger for a unified and not yet threadsafe output.
+	* 		 The logger currently writes to std::cout and to a log file. 
+	*		 Each time the logger is instaniated it will create a new file with
+	*		 the timestamp of when it was created, making it easy to find
+	*		 the logs you are looking for.
 	*/
 	class LogInterface
 	{
@@ -105,7 +109,7 @@ namespace Logger
 		static LogInterface& GetInstance();
 
 		/*!
-		* @brief Thread safe function for writing a log to stdout.
+		* @brief Not yet thread safe function for writing a log to stdout.
 		*		  Adds a timestamp and the logtype as prefix to the logmessage.
 		* @param logMessage
 		* @param logType
