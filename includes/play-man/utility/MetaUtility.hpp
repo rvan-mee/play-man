@@ -38,9 +38,9 @@ namespace MetaUtility
 		 */
 		static constexpr auto Impl() noexcept
 		{
-			constexpr size_t totalLength = (Views.size() + ... + 0);
+			constexpr size_t totalLength = (Views.size() + ...);
 
-			std::array<char, totalLength + 1> concatenatedArray_{};
+			std::array<char, totalLength> concatenatedArray_{};
 			size_t i = 0;
 
 			// Use a lambda for appending so we can use a fold expresion to append all of them.
@@ -52,7 +52,6 @@ namespace MetaUtility
 				}
 			};
 			(append(Views), ...);
-			concatenatedArray_[totalLength] = 0;
 			return concatenatedArray_;
 		}
 		
@@ -62,13 +61,5 @@ namespace MetaUtility
 
 		static constexpr std::string_view value {concatenatedArray.data(), concatenatedArray.size() - 1};
 	};
-
-	/**
-	 * @brief Concatenates all views and returns them as an array.
-	 * 
-	 * @return constexpr auto 
-	 */
-	template <std::string_view const&... Views>
-	using ConcatenateStringViews_v = typename ConcatenateStringViews<Views...>::value;
 
 } /* namespace MetaUtility */

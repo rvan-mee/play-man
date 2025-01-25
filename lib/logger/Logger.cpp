@@ -15,29 +15,26 @@ namespace Logger
 		return logger;
 	}
 
-	constexpr std::string_view LogInterface::LogTypeToColoredString(LogType logType) const
+	constexpr std::string_view LogInterface::LogTypeToColoredString(LogType logType)
 	{
-		static constexpr std::string_view openingBracket = "[";
-		static constexpr std::string_view closingBracket = "]: ";
-
 		switch (logType)
 		{
 			case LogType::Error:
-				return MetaUtility::ConcatenateStringViews_v<
-					colorError, openingBracket, GetEnumAsString(logType), closingBracket, colorReset
-				>;
-			//case LogType::Warning:
-			//	return MetaUtility::ConcatenateStringViews_v<
-			//		colorWarning, openingBracket, GetEnumAsString(LogType::Warning), closingBracket, colorReset
-			//	>;
-			//case LogType::Info:
-			//	return MetaUtility::ConcatenateStringViews_v<
-			//		colorInfo, openingBracket, GetEnumAsString(LogType::Info), closingBracket, colorReset
-			//	>;
-			//case LogType::Debug:
-			//	return MetaUtility::ConcatenateStringViews_v<
-			//		colorDebug, openingBracket, GetEnumAsString(LogType::Debug), closingBracket, colorReset
-			//	>;
+				return MetaUtility::ConcatenateStringViews<
+					colorError, errorHeader, colorReset
+				>::value;
+			case LogType::Warning:
+				return MetaUtility::ConcatenateStringViews<
+					colorWarning, warningHeader, colorReset
+				>::value;
+			case LogType::Info:
+				return MetaUtility::ConcatenateStringViews<
+					colorInfo, infoHeader, colorReset
+				>::value;
+			case LogType::Debug:
+				return MetaUtility::ConcatenateStringViews<
+					colorDebug, debugHeader, colorReset
+				>::value;
 			default:
 				throw std::runtime_error("Tried to get string for unknown logtype: " + std::to_string(static_cast<int>(logType)));
 		}
@@ -51,8 +48,9 @@ namespace Logger
 		const auto localTime = std::localtime(&logTime_t);
 
 		// Can lock mutex here if we want to make it thread safe.
+		// std::cout << LogTypeToColoredString(logType) << colorReset << "testing" << std::endl;
 
-		std::cout << std::put_time(localTime, "%Y-%m-%d %H:%M:%S") << ' ' << LogTypeToColoredString(logType) << logMessage << '\n';
+		std::cout << colorGray << std::put_time(localTime, "%Y-%m-%d %H:%M:%S") << ' ' << LogTypeToColoredString(logType) << logMessage << '\n';
 	}
 
 } /* namespace logger */

@@ -48,13 +48,22 @@ namespace Logger
 
 	private:
 
-		static constexpr std::string_view colorReset	=	"\033[0m"; /*!< -. */
-		static constexpr std::string_view colorError	=	"\033[38;5;160m"; /*!< -. */
-		static constexpr std::string_view colorWarning	=	"\033[38;5;208m"; /*!< -. */
-		static constexpr std::string_view colorInfo		=	"\033[38;5;13m"; /*!< -. */
-		static constexpr std::string_view colorDebug	=	"\033[38;5;21m"; /*!< -. */
+		/*
+		 * Defined as static constexpr because otherwise the concatenation wouldnt work 
+		*/
+		static constexpr std::string_view errorHeader	= "[Error]: ";
+		static constexpr std::string_view warningHeader	= "[Warning]: ";
+		static constexpr std::string_view infoHeader	= "[Info]: ";
+		static constexpr std::string_view debugHeader	= "[Debug]: ";
 
-		constexpr std::string_view LogTypeToColoredString(LogType logType) const;
+		static constexpr std::string_view colorReset	= "\033[0m ";
+		static constexpr std::string_view colorError	= "\033[38;5;160m";
+		static constexpr std::string_view colorWarning	= "\033[38;5;208m";
+		static constexpr std::string_view colorInfo		= "\033[38;5;13m";
+		static constexpr std::string_view colorDebug	= "\033[38;5;21m";
+		static constexpr std::string_view colorGray		= "\033[38;5;232m";
+
+		static constexpr std::string_view LogTypeToColoredString(LogType logType);
 
 		/*!
 		* @brief Hidden default constructor.
