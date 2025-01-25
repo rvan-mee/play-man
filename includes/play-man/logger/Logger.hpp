@@ -21,6 +21,7 @@
 
 #include <string>
 #include <string_view>
+#include <fstream>
 
 namespace Logger
 {
@@ -42,12 +43,6 @@ namespace Logger
 	*/
 	class LogInterface
 	{
-	public:
-
-
-
-	private:
-
 		/*
 		 * Defined as static constexpr because otherwise the concatenation wouldnt work 
 		*/
@@ -63,28 +58,45 @@ namespace Logger
 		static constexpr std::string_view colorDebug	= "\033[38;5;21m";
 		static constexpr std::string_view colorGray		= "\033[38;5;232m";
 
-		static constexpr std::string_view LogTypeToColoredString(LogType logType);
+		std::ofstream logFile; /*!< -. */
 
 		/*!
 		* @brief Hidden default constructor.
 		*/
-		LogInterface() = default;
+		LogInterface();
 
 		/*!
-		* @brief Hidden copy constructor.
+		* @brief
 		* @param
 		*/
-		LogInterface(const LogInterface&) = default;
+		LogInterface(const LogInterface&) = delete;
 
 		/*!
-		* @brief Hidden assignation operator.
+		* @brief
 		* @param
 		* @return
 		*/
-		LogInterface& operator = (const LogInterface&) = default;
+		LogInterface& operator = (const LogInterface&) = delete;
+
+		/**
+		 * @brief 
+		 * 
+		 * @param logType 
+		 * @return constexpr std::string_view 
+		 */
+		static constexpr std::string_view LogTypeHeader(LogType logType);
+
+		/**
+		 * @brief -.
+		 * 
+		 * @param logType 
+		 * @return constexpr std::string_view 
+		 */
+		static constexpr std::string_view LogTypeHeaderColored(LogType logType);
 
 	public:
 
+		const std::string logDir = "Logging";
 
 		/*!
 		* @brief
