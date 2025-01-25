@@ -19,7 +19,6 @@ class IssueHandler
 
 	const std::string moduleName; /*! */
 	const bool allowDebug; /*!< -. */
-	const std::optional<std::string> logFilePath; /*! */
 	std::map<ErrorCode, IssueResolvedCallbackType> issueResolvedCallbacks; /*!  */
 	std::map<ErrorCode, Issue> activeErrors; /*!<  */
 
@@ -36,8 +35,7 @@ public:
 	 */
 	IssueHandler(
 		const std::string& moduleName,
-		bool allowDebug = false,
-		std::optional<std::string> logFilePath = std::nullopt
+		bool allowDebug = false
 	);
 
 	/**

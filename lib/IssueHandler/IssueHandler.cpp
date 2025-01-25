@@ -1,13 +1,12 @@
 
 #include "play-man/IssueHandler/IssueHandler.hpp"
+#include "play-man/logger/Logger.hpp"
 
 IssueHandler::IssueHandler(
 	const std::string& moduleName_,
-	bool allowDebug_,
-	std::optional<std::string> logFilePath_)
+	bool allowDebug_)
 	: moduleName(moduleName_)
 	, allowDebug(allowDebug_)
-	, logFilePath(logFilePath_)
 {
 	
 }
@@ -33,6 +32,23 @@ void IssueHandler::SetIssue(
 		}
 	);
 
+	const auto errorMessage =
+		"Issue set: `a" + errorMessageToDisplay + ".\n"
+		"Detailed error message: " + detailedErrorMessage;
+
+	switch (issueType)
+	{
+		case IssueType::Error:
+			LOG_ERROR(errorMessage);
+			break;
+		case IssueType::Warning:
+			LOG_WARNING(errorMessage);
+			break;
+		case IssueType::Debug:
+			LOG_DEBUG(errorMessage);
+			break;
+	}
+
 	issueSet(errorCode);
 }
 
@@ -44,6 +60,8 @@ void IssueHandler::ResolveIssue(ErrorCode errorCode)
 	}
 
 	activeErrors.erase(errorCode);
+
+	LOG_INFO(std::string("Issue resolved: ") + GetEnumAsString(errorCode).data());
 
 	auto issueResolvedCallbackItr = issueResolvedCallbacks.find(errorCode);
 	if (issueResolvedCallbackItr != issueResolvedCallbacks.end())

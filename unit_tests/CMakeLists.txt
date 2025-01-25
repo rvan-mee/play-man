@@ -20,8 +20,8 @@ set(UTILITY_UNIT_TEST_EXECUTABLE utility_unit_tests)
 add_executable(${UTILITY_UNIT_TEST_EXECUTABLE}
 	utility/EnumMacro.cpp 
 	utility/ConcatenateStringViewTests.cpp
-	Utility/SignalTests.cpp
-	Utility/IssueHandlerTests.cpp
+	Signal/SignalTests.cpp
+	IssueHandler/IssueHandlerTests.cpp
 )
 target_link_libraries(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE ${LIBRARY_NAME})
 target_link_libraries(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::Catch2WithMain)
