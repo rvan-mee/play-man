@@ -9,15 +9,20 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(Catch2)
 
-# Creates a test executable
+# Create test executables
 
 set(GAMEBOY_UNIT_TEST_EXECUTABLE gameboy-unit-tests)
 add_executable(${GAMEBOY_UNIT_TEST_EXECUTABLE} gameboy/Test.cpp)
 target_link_libraries(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE ${LIBRARY_NAME})
 target_link_libraries(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::Catch2WithMain)
 
-set(UTILITY_UNIT_TEST_EXECUTABLE utility-unit-tests)
-add_executable(${UTILITY_UNIT_TEST_EXECUTABLE} Utility/SignalTests.cpp Utility/IssueHandlerTests.cpp)
+set(UTILITY_UNIT_TEST_EXECUTABLE utility_unit_tests)
+add_executable(${UTILITY_UNIT_TEST_EXECUTABLE}
+	utility/EnumMacro.cpp 
+	utility/ConcatenateStringViewTests.cpp
+	Utility/SignalTests.cpp
+	Utility/IssueHandlerTests.cpp
+)
 target_link_libraries(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE ${LIBRARY_NAME})
 target_link_libraries(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::Catch2WithMain)
 
@@ -25,8 +30,7 @@ target_link_libraries(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::Catch2With
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 include(CTest)
 include(Catch)
-catch_discover_tests(${GAMEBOY_UNIT_TEST_EXECUTABLE})
-catch_discover_tests(${UTILITY_UNIT_TEST_EXECUTABLE})
+catch_discover_tests(${GAMEBOY_UNIT_TEST_EXECUTABLE} ${UTILITY_UNIT_TEST_EXECUTABLE})
 
 install(
 	TARGETS ${GAMEBOY_UNIT_TEST_EXECUTABLE}
