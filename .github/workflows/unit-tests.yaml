@@ -20,13 +20,17 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake ..
+        cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=install ..
         make install
-    - name: run_unit_test
+    - name: gameboy_unit_tests
       run: |
-        cp unit_tests/run_all_tests.sh bin/unit_tests
-        cd bin/unit_tests
-        sh run_all_tests.sh
+        cd bin/unit_tests/gameboy
+        ./gameboy_unit_tests
+    - name: utility_unit_tests
+      run: |
+        cd bin/unit_tests/utility
+        ./utility_unit_tests
+
 
   macos:
 
@@ -40,30 +44,39 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake ..
+        cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=install ..
         make install
-    - name: run_unit_test
+    - name: gameboy_unit_tests
       run: |
-        cp unit_tests/run_all_tests.sh bin/unit_tests
-        cd bin/unit_tests
-        sh run_all_tests.sh
+        cd bin/unit_tests/gameboy
+        ./gameboy_unit_tests
+    - name: utility_unit_tests
+      run: |
+        cd bin/unit_tests/utility
+        ./utility_unit_tests
 
   windows:
 
-  runs-on: windows-latest
-  timeout-minutes: 5
+    runs-on: windows-latest
+    timeout-minutes: 5
 
-  steps:
-  - uses: actions/checkout@v3
+    steps:
+    - uses: actions/checkout@v3
 
-  - name: Build
-    run: |
-      mkdir build
-      cd build
-      cmake ..
-      make install
-  - name: run_unit_test
-    run: |
-      cp unit_tests/run_all_tests.sh bin/unit_tests
-      cd bin/unit_tests
-      sh run_all_tests.sh
+    - name: Install MinGW
+      run: choco install mingw
+
+    - name: Build
+      run: |
+        mkdir build
+        cd build
+        cmake -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX=install ..
+        make install  
+    - name: gameboy_unit_tests
+      run: |
+        cd bin/unit_tests/gameboy
+        ./gameboy_unit_tests
+    - name: utility_unit_tests
+      run: |
+        cd bin/unit_tests/utility
+        ./utility_unit_tests
