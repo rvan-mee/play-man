@@ -9,7 +9,7 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(Catch2)
 
-# Crate test executables
+# Create test executables
 set(GAMEBOY_UNIT_TEST_EXECUTABLE gameboy_unit_tests)
 add_executable(${GAMEBOY_UNIT_TEST_EXECUTABLE} gameboy/Test.cpp)
 target_link_libraries(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE ${LIBRARY_NAME})
