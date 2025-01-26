@@ -55,7 +55,7 @@ namespace Logger
 		static constexpr std::string_view infoHeader	= "[Info]: ";
 		static constexpr std::string_view debugHeader	= "[Debug]: ";
 
-		static constexpr std::string_view colorReset	= "\033[0m ";
+		static constexpr std::string_view colorReset	= "\033[0m";
 		static constexpr std::string_view colorError	= "\033[38;5;160m";
 		static constexpr std::string_view colorWarning	= "\033[38;5;208m";
 		static constexpr std::string_view colorInfo		= "\033[38;5;13m";

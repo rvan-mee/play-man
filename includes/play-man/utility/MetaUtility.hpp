@@ -59,7 +59,7 @@ namespace MetaUtility
 
 	public:
 
-		static constexpr std::string_view value {concatenatedArray.data(), concatenatedArray.size() - 1};
+		static constexpr std::string_view value {concatenatedArray.data(), concatenatedArray.size()};
 	};
 
 } /* namespace MetaUtility */
