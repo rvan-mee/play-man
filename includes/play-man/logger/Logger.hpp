@@ -142,7 +142,11 @@ namespace Logger
 	LogInterface& operator << (LogInterface& logInterface, const T& toWrite)
 	{
 		logInterface.logFile << toWrite;
-		std::cout << toWrite;
+
+		#ifndef PLAY_MAN_NO_COUT
+			std::cout << toWrite;
+		#endif
+	
 		return logInterface;
 	}
 

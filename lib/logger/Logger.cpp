@@ -3,7 +3,10 @@
 #include "play-man/utility/MetaUtility.hpp"
 #include "play-man/utility/UtilFunc.hpp"
 
-#include <iostream>
+#ifndef PLAY_MAN_NO_COUT
+	# include <iostream>
+#endif
+
 #include <filesystem>
 
 namespace Logger
@@ -70,7 +73,10 @@ namespace Logger
 		auto& instance = GetInstance();
 
 		instance.logFile << Utility::CurrentTimeAsString() << ' ' << LogTypeHeader(logType);
-		std::cout << colorGray << Utility::CurrentTimeAsString() << ' ' << LogTypeHeaderColored(logType);
+
+		#ifndef PLAY_MAN_NO_COUT
+			std::cout << colorGray << Utility::CurrentTimeAsString() << ' ' << LogTypeHeaderColored(logType);
+		#endif
 
 		return instance;
 	}
@@ -79,7 +85,10 @@ namespace Logger
 	{
 		WriteLogHeader(logType);
 		logFile << logMessage << '\n';
-		std::cout << logMessage << '\n';
+
+		#ifndef PLAY_MAN_NO_COUT
+			std::cout << logMessage << '\n';
+		#endif
 	}
 
 } /* namespace logger */
