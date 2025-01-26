@@ -5,7 +5,6 @@
 #include <string>
 
 
-
 #define ISSUE_TYPE_SEQ(X, n) \
 	X(n, Warning) \
 	X(n, Error) \

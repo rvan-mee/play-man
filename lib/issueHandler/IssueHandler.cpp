@@ -19,6 +19,11 @@ void IssueHandler::SetIssue(
 	IssueResolvable issueResolvable,
 	bool showAsPopup)
 {
+	if (!allowDebug && issueType == IssueType::Debug)
+	{
+		return;
+	}
+
 	activeErrors.emplace(
 		errorCode,
 		Issue{
