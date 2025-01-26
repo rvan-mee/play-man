@@ -9,7 +9,7 @@
 namespace Logger
 {
 
-	LogInterface::LogInterface()
+	LogInterface::LogInterface() : coutLoggingEnabled(true)
 	{
 		std::filesystem::create_directory(logDir);
 		logFile = std::ofstream(logDir + "/play-man-" + Utility::CurrentTimeAsString());
@@ -68,7 +68,16 @@ namespace Logger
 	void LogInterface::Log(const std::string& logMessage, const LogType logType)
 	{
 		logFile << Utility::CurrentTimeAsString() << ' ' << LogTypeHeader(logType) << logMessage << '\n';
-		std::cout << colorGray << Utility::CurrentTimeAsString() << ' ' << LogTypeHeaderColored(logType) << logMessage << '\n';
+
+		if (coutLoggingEnabled)
+		{
+			std::cout << colorGray << Utility::CurrentTimeAsString() << ' ' << LogTypeHeaderColored(logType) << logMessage << '\n';
+		}
+	}
+
+	void LogInterface::EnableCoutLogging(bool enabled)
+	{
+		coutLoggingEnabled = enabled;
 	}
 
 } /* namespace logger */

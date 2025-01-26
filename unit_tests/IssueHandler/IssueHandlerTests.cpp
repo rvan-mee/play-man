@@ -1,10 +1,12 @@
 
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch_test_macros.hpp>
-#include "play-man/IssueHandler/IssueHandler.hpp"
+#include "play-man/issueHandler/IssueHandler.hpp"
+#include "play-man/logger/Logger.hpp"
 
 TEST_CASE("Setting an issue")
 {
+	Logger::LogInterface::GetInstance().EnableCoutLogging(false);
 	IssueHandler issueHandler("test");
 
 	REQUIRE(!issueHandler.IsIssueActive(ErrorCode::AnErrorCodeForTestingPurposes));

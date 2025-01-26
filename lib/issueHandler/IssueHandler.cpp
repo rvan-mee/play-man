@@ -1,5 +1,5 @@
 
-#include "play-man/IssueHandler/IssueHandler.hpp"
+#include "play-man/issueHandler/IssueHandler.hpp"
 #include "play-man/logger/Logger.hpp"
 
 IssueHandler::IssueHandler(
@@ -33,7 +33,9 @@ void IssueHandler::SetIssue(
 	);
 
 	const auto errorMessage =
-		"Issue set: `a" + errorMessageToDisplay + ".\n"
+		"Issue set (" + std::string(GetEnumAsString(issueResolvable)) + "): " +
+		std::string(GetEnumAsString(errorCode)) + ".\n"
+		"Error message: " + errorMessageToDisplay + ".\n"
 		"Detailed error message: " + detailedErrorMessage;
 
 	switch (issueType)
@@ -55,6 +57,11 @@ void IssueHandler::SetIssue(
 void IssueHandler::ResolveIssue(ErrorCode errorCode)
 {
 	if (!IsIssueActive(errorCode))
+	{
+		return;
+	}
+
+	if (activeErrors.at(errorCode).issueResolvable == IssueResolvable::Fatal)
 	{
 		return;
 	}

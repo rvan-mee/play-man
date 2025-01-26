@@ -63,6 +63,7 @@ namespace Logger
 		static constexpr std::string_view colorGray		= "\033[38;5;232m";
 
 		std::ofstream logFile; /*!< -. */
+		bool coutLoggingEnabled; /*!< -. */
 
 		/*!
 		* @brief Hidden default constructor.
@@ -102,11 +103,19 @@ namespace Logger
 
 		const std::string logDir = "Logging";
 
-		/*!
-		* @brief
-		* @return The singleton instance.
-		*/
+		/**
+		 * @brief
+		 * 
+		 * @return 
+		 */
 		static LogInterface& GetInstance();
+
+		/**
+		 * @brief -.
+		 * 
+		 * @param enabled 
+		 */
+		void EnableCoutLogging(bool enabled);
 
 		/*!
 		* @brief Not yet thread safe function for writing a log to stdout.

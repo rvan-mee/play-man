@@ -4,25 +4,33 @@
 
 #include <string>
 
+
+
+#define ISSUE_TYPE_SEQ(X, n) \
+	X(n, Warning) \
+	X(n, Error) \
+	X(n, Debug)
 /**
  * @brief
  */
-enum class IssueType
-{
-	Warning,
-	Error,
-	Debug
-};
+CREATE_ENUM_WITH_UTILS(ISSUE_TYPE_SEQ, IssueType)
+#undef ISSUE_TYPE_SEQ
 
 /**
+ * @brief ManuallyResolvable: needs user confirmation to resolve.
+ * 		  AutomaticResolvable: the program itself can resolve it, i.e. when there
+ * 							   is a lost connection and it is reconneted again.
+ * 		  Fatal: The program needs to be restarted.
+ */
+#define ISSUE_RESOLVABLE_SEQ(X, n) \
+	X(n, ManuallyResolvable) \
+	X(n, AutomaticResolvable) \
+	X(n, Fatal)
+/**
  * @brief
  */
-enum class IssueResolvable
-{
-	ManuallyResolvable, // Click on Ok or whatever to resolve.
-	AutomaticResolvable, // Can be automatically resolved in the code.
-	ResetResolvable // Program needs to be restarted.
-};
+CREATE_ENUM_WITH_UTILS(ISSUE_RESOLVABLE_SEQ, IssueResolvable)
+#undef ISSUE_RESOLVABLE_SEQ
 
 /**
  * @brief
