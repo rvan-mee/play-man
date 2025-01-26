@@ -65,10 +65,21 @@ namespace Logger
 		return "";
 	}
 
+	LogInterface& LogInterface::WriteLogHeader(LogType logType)
+	{
+		auto& instance = GetInstance();
+
+		instance.logFile << Utility::CurrentTimeAsString() << ' ' << LogTypeHeader(logType);
+		std::cout << colorGray << Utility::CurrentTimeAsString() << ' ' << LogTypeHeaderColored(logType);
+
+		return instance;
+	}
+
 	void LogInterface::Log(const std::string& logMessage, const LogType logType)
 	{
-		logFile << Utility::CurrentTimeAsString() << ' ' << LogTypeHeader(logType) << logMessage << '\n';
-		std::cout << colorGray << Utility::CurrentTimeAsString() << ' ' << LogTypeHeaderColored(logType) << logMessage << '\n';
+		WriteLogHeader(logType);
+		logFile << logMessage << '\n';
+		std::cout << logMessage << '\n';
 	}
 
 } /* namespace logger */

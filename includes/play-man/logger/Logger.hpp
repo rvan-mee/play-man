@@ -86,7 +86,7 @@ namespace Logger
 		 * @brief 
 		 * 
 		 * @param logType 
-		 * @return constexpr std::string_view 
+		 * @return
 		 */
 		static constexpr std::string_view LogTypeHeader(LogType logType);
 
@@ -94,7 +94,7 @@ namespace Logger
 		 * @brief -.
 		 * 
 		 * @param logType 
-		 * @return constexpr std::string_view 
+		 * @return
 		 */
 		static constexpr std::string_view LogTypeHeaderColored(LogType logType);
 
@@ -116,10 +116,42 @@ namespace Logger
 		*/
 		void Log(const std::string& logMessage, const LogType logType);
 
+		/**
+		 * @brief Writes the right logHeader and returns a reference to the interface
+		 * 		  making it possible to stream to the logger after writing the header.
+		 *  
+		 * @param logType
+		 */
+		static LogInterface& WriteLogHeader(LogType logType);
+		
+
+		template <class T>
+		friend LogInterface& operator << (LogInterface& logInterface, const T& toWrite);
 	};
+
+	/**
+	 * @brief Note that when stream operator for writing logs you will have to write
+	 * 		  the logHeader and the newline yourself.
+	 * 
+	 * @tparam T 
+	 * @param logInterface 
+	 * @param toWrite 
+	 * @return
+	 */
+	template <class T>
+	LogInterface& operator << (LogInterface& logInterface, const T& toWrite)
+	{
+		logInterface.logFile << toWrite;
+		std::cout << toWrite;
+		return logInterface;
+	}
 
 } /* namespace Logger */
 
+#define LOG_ERROR_STREAM Logger::LogInterface::WriteLogHeader(Logger::LogType::Error)
+#define LOG_WARNING_STREAM Logger::LogInterface::WriteLogHeader(Logger::LogType::Warning)
+#define LOG_INFO_STREAM Logger::LogInterface::WriteLogHeader(Logger::LogType::Info)
+#define LOG_DEBUG_STREAM Logger::LogInterface::WriteLogHeader(Logger::LogType::Debug)
 
 #define LOG_ERROR(logMessage) Logger::LogInterface::GetInstance().Log(logMessage, Logger::LogType::Error);
 #define LOG_WARNING(logMessage) Logger::LogInterface::GetInstance().Log(logMessage, Logger::LogType::Warning);
