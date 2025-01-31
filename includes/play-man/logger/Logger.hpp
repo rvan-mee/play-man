@@ -21,12 +21,18 @@
 
 #include <string>
 #include <string_view>
-#include <fstream>
+#include <memory>
+#include <optional>
+
+#ifndef PLAY_MAN_NO_FILE_LOGGING
+	#include <fstream>
+#endif
 
 namespace Logger
 {
 
 	#define LOG_TYPE_SEQ(X, n) \
+		X(n, Fatal) \
 		X(n, Error) \
 		X(n, Warning) \
 		X(n, Info) \
@@ -37,6 +43,22 @@ namespace Logger
 	 */
 	CREATE_ENUM_WITH_UTILS(LOG_TYPE_SEQ, LogType)
 	#undef LOG_TYPE_SEQ
+
+	#define LOG_LEVEL(X, n) \
+		X(n, None) \
+		X(n, Sparse) \
+		X(n, Normal) \
+		X(n, Debug)
+
+	/**
+	 * @brief Enum describing how much to log.
+	 *        Debug: Logs all log types.
+	 *        Normal: Logs everything except debug.
+	 *        Sparse: Only logs Error, Fatal and warnings.
+	 *        None: self explanatory.
+	 */
+	CREATE_ENUM_WITH_UTILS(LOG_LEVEL, LogLevel)
+	#undef LOG_LEVEL
 
 	/*!
 	* @brief Singleton logger for a unified and not yet threadsafe output.
@@ -50,24 +72,33 @@ namespace Logger
 		/*
 		 * Defined as static constexpr because otherwise the concatenation wouldnt work 
 		*/
+		static constexpr std::string_view fatalHeader	= "[Fatal]: ";
 		static constexpr std::string_view errorHeader	= "[Error]: ";
 		static constexpr std::string_view warningHeader	= "[Warning]: ";
 		static constexpr std::string_view infoHeader	= "[Info]: ";
 		static constexpr std::string_view debugHeader	= "[Debug]: ";
 
 		static constexpr std::string_view colorReset	= "\033[0m";
+		static constexpr std::string_view colorFatal	= "\033[38;5;226m";
 		static constexpr std::string_view colorError	= "\033[38;5;160m";
 		static constexpr std::string_view colorWarning	= "\033[38;5;208m";
 		static constexpr std::string_view colorInfo		= "\033[38;5;13m";
 		static constexpr std::string_view colorDebug	= "\033[38;5;21m";
 		static constexpr std::string_view colorGray		= "\033[38;5;232m";
 
-		std::ofstream logFile; /*!< -. */
+
+	#ifndef PLAY_MAN_NO_FILE_LOGGING
+		std::string logDir;
+		std::ofstream logFile;
+	#endif
+
+		LogLevel logLevel;
+		std::optional<LogType> lastLoggedType; // LogType of the previous message logged, mainly usefull for the streaming operator.
 
 		/*!
 		* @brief Hidden default constructor.
 		*/
-		LogInterface();
+		LogInterface(const std::string& logDir, LogLevel logLevel);
 
 		/*!
 		* @brief
@@ -80,7 +111,7 @@ namespace Logger
 		* @param
 		* @return
 		*/
-		LogInterface& operator = (const LogInterface&) = delete;
+		std::unique_ptr<LogInterface>& operator = (const LogInterface&) = delete;
 
 		/**
 		 * @brief 
@@ -98,15 +129,38 @@ namespace Logger
 		 */
 		static constexpr std::string_view LogTypeHeaderColored(LogType logType);
 
-	public:
+		/**
+		 * @brief
+		 * 
+		 * @param logMessage 
+		 */
+		void LogWithoutHeader(const std::string& logMessage);
 
-		const std::string logDir = "Logging";
+		/**
+		 * @brief 
+		 * 
+		 * @param logType 
+		 * @return true 
+		 * @return false 
+		 */
+		bool CanLogLogWithSetLogLevel(LogType logType);
+
+	public:
 
 		/*!
 		* @brief
 		* @return The singleton instance.
 		*/
-		static LogInterface& GetInstance();
+		static std::unique_ptr<LogInterface>& GetInstance();
+
+		/**
+		 * @brief Initializes the instance, logging without initializing is not possible.
+		 *        It is still a signleton because if we ever want to mulithread this guarrantees one instance.
+		 * 
+		 * @param logDir
+		 * @param logLevel
+		 */
+		static void Initialize(const std::string& logDir, LogLevel logLevel);
 
 		/*!
 		* @brief Not yet thread safe function for writing a log to stdout.
@@ -122,9 +176,8 @@ namespace Logger
 		 *  
 		 * @param logType
 		 */
-		static LogInterface& WriteLogHeader(LogType logType);
+		LogInterface& WriteLogHeader(LogType logType);
 		
-
 		template <class T>
 		friend LogInterface& operator << (LogInterface& logInterface, const T& toWrite);
 	};
@@ -132,6 +185,8 @@ namespace Logger
 	/**
 	 * @brief Note that when stream operator for writing logs you will have to write
 	 * 		  the logHeader and the newline yourself.
+	 *        For writing the header you can use ie `LOG_ERROR_STREAM << "message"`;
+	 *        Do note that this is slower than logging through the LOG() function.
 	 * 
 	 * @tparam T 
 	 * @param logInterface 
@@ -141,23 +196,27 @@ namespace Logger
 	template <class T>
 	LogInterface& operator << (LogInterface& logInterface, const T& toWrite)
 	{
-		logInterface.logFile << toWrite;
+		if (!logInterface.lastLoggedType.has_value() ||
+			!logInterface.CanLogLogWithSetLogLevel(logInterface.lastLoggedType.value())
+			)
+		{
+			return logInterface;
+		}
 
-		#ifndef PLAY_MAN_NO_COUT
-			std::cout << toWrite;
-		#endif
-	
+		logInterface.LogWithoutHeader(toWrite);
 		return logInterface;
 	}
 
 } /* namespace Logger */
 
-#define LOG_ERROR_STREAM Logger::LogInterface::WriteLogHeader(Logger::LogType::Error)
-#define LOG_WARNING_STREAM Logger::LogInterface::WriteLogHeader(Logger::LogType::Warning)
-#define LOG_INFO_STREAM Logger::LogInterface::WriteLogHeader(Logger::LogType::Info)
-#define LOG_DEBUG_STREAM Logger::LogInterface::WriteLogHeader(Logger::LogType::Debug)
+#define LOG_ERROR_STREAM Logger::LogInterface::GetInstance()->WriteLogHeader(Logger::LogType::Error)
+#define LOG_FATAL_STREAM Logger::LogInterface::GetInstance()->WriteLogHeader(Logger::LogType::Fatal)
+#define LOG_WARNING_STREAM Logger::LogInterface::GetInstance()->WriteLogHeader(Logger::LogType::Warning)
+#define LOG_INFO_STREAM Logger::LogInterface::GetInstance()->WriteLogHeader(Logger::LogType::Info)
+#define LOG_DEBUG_STREAM Logger::LogInterface::GetInstance()->WriteLogHeader(Logger::LogType::Debug)
 
-#define LOG_ERROR(logMessage) Logger::LogInterface::GetInstance().Log(logMessage, Logger::LogType::Error);
-#define LOG_WARNING(logMessage) Logger::LogInterface::GetInstance().Log(logMessage, Logger::LogType::Warning);
-#define LOG_INFO(logMessage) Logger::LogInterface::GetInstance().Log(logMessage, Logger::LogType::Info);
-#define LOG_DEBUG(logMessage) Logger::LogInterface::GetInstance().Log(logMessage, Logger::LogType::Debug);
+#define LOG_ERROR(logMessage) Logger::LogInterface::GetInstance()->Log(logMessage, Logger::LogType::Error);
+#define LOG_FATAL(logMessage) Logger::LogInterface::GetInstance()->Log(logMessage, Logger::LogType::Fatal);
+#define LOG_WARNING(logMessage) Logger::LogInterface::GetInstance()->Log(logMessage, Logger::LogType::Warning);
+#define LOG_INFO(logMessage) Logger::LogInterface::GetInstance()->Log(logMessage, Logger::LogType::Info);
+#define LOG_DEBUG(logMessage) Logger::LogInterface::GetInstance()->Log(logMessage, Logger::LogType::Debug);

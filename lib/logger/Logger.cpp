@@ -3,31 +3,50 @@
 #include "play-man/utility/MetaUtility.hpp"
 #include "play-man/utility/UtilFunc.hpp"
 
-#ifndef PLAY_MAN_NO_COUT
+#ifndef PLAY_MAN_NO_COUT_LOGGING
 	# include <iostream>
 #endif
 
-#include <filesystem>
+#ifndef PLAY_MAN_NO_FILE_LOGGING
+	# include <filesystem>
+#endif
 
 namespace Logger
 {
 
-	LogInterface::LogInterface()
+	LogInterface::LogInterface(const std::string& logDir, LogLevel logLevel_)
+		: logLevel(logLevel_)
 	{
+	#ifndef PLAY_MAN_NO_FILE_LOGGING
 		std::filesystem::create_directory(logDir);
 		logFile = std::ofstream(logDir + "/play-man-" + Utility::CurrentTimeAsString());
+	#endif
 	}
 
-	LogInterface& LogInterface::GetInstance()
+	std::unique_ptr<LogInterface>& LogInterface::GetInstance()
 	{
-		static LogInterface logger;
+		static std::unique_ptr<LogInterface> logger;
 		return logger;
+	}
+
+	void LogInterface::Initialize(const std::string& logDir, LogLevel logLevel)
+	{
+		auto& logger = GetInstance();
+
+		if (logger != nullptr)
+		{
+			throw std::runtime_error("Logger is already initialized.");
+		}
+	
+		logger = std::unique_ptr<LogInterface>(new LogInterface(logDir, logLevel));
 	}
 
 	constexpr std::string_view LogInterface::LogTypeHeader(LogType logType)
 	{
 		switch (logType)
 		{
+			case LogType::Fatal:
+				return fatalHeader;
 			case LogType::Error:
 				return errorHeader;
 			case LogType::Warning:
@@ -46,6 +65,10 @@ namespace Logger
 	{
 		switch (logType)
 		{
+			case LogType::Fatal:
+				return MetaUtility::ConcatenateStringViews<
+					colorFatal, fatalHeader, colorReset
+				>::value;
 			case LogType::Error:
 				return MetaUtility::ConcatenateStringViews<
 					colorError, errorHeader, colorReset
@@ -68,27 +91,64 @@ namespace Logger
 		return "";
 	}
 
+	bool LogInterface::CanLogLogWithSetLogLevel(LogType logType)
+	{
+		switch (logLevel)
+		{
+			case LogLevel::None:	return false;
+			case LogLevel::Sparse:	return (logType != LogType::Debug && logType != LogType::Info);
+			case LogLevel::Normal:	return (logType != LogType::Debug);
+			case LogLevel::Debug:	return true;
+			default:
+				return false;
+		}
+	}
+
 	LogInterface& LogInterface::WriteLogHeader(LogType logType)
 	{
-		auto& instance = GetInstance();
+		// Setting lastLoggedType before checking because if it was written for the
+		// streaming operator it needs to be set so the later streams will not be written
+		// because of a previous log message.
+		lastLoggedType = logType;
+		if (!CanLogLogWithSetLogLevel(logType))
+		{
+			return *this;
+		}
 
-		instance.logFile << Utility::CurrentTimeAsString() << ' ' << LogTypeHeader(logType);
+		const auto logTimeString = Utility::CurrentTimeAsString();
 
-		#ifndef PLAY_MAN_NO_COUT
-			std::cout << colorGray << Utility::CurrentTimeAsString() << ' ' << LogTypeHeaderColored(logType);
-		#endif
+	#ifndef PLAY_MAN_NO_FILE_LOGGING
+		logFile << logTimeString << ' ' << LogTypeHeader(logType);
+	#endif
 
-		return instance;
+	#ifndef PLAY_MAN_NO_COUT
+		std::cout << colorGray << logTimeString << ' ' << LogTypeHeaderColored(logType);
+	#endif
+
+		return *this;
+	}
+
+	void LogInterface::LogWithoutHeader(const std::string& logMessage)
+	{
+	#ifndef PLAY_MAN_NO_FILE_LOGGING
+		logFile << logMessage;
+	#endif
+
+	#ifndef PLAY_MAN_NO_COUT
+		std::cout << logMessage;
+	#endif
 	}
 
 	void LogInterface::Log(const std::string& logMessage, const LogType logType)
 	{
-		WriteLogHeader(logType);
-		logFile << logMessage << '\n';
+		if (!CanLogLogWithSetLogLevel(logType))
+		{
+			return;
+		}
 
-		#ifndef PLAY_MAN_NO_COUT
-			std::cout << logMessage << '\n';
-		#endif
+		(void)WriteLogHeader(logType);
+		LogWithoutHeader(logMessage);
+		LogWithoutHeader("\n");
 	}
 
 } /* namespace logger */
