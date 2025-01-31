@@ -36,4 +36,31 @@ namespace Utility
 		return sstream.str();
 	}
 
+	std::string ReadFileToString(const std::string& fileToReadFrom)
+	{
+		std::ifstream file(fileToReadFrom);
+		if (!file.good())
+		{
+			throw std::runtime_error("ReadFileToString failed, could not open file");
+		}
+		return ReadFileToString(file);
+	}
+
+	std::string ReadFileToString(const std::filesystem::path& fileToReadFrom)
+	{
+		std::ifstream file(fileToReadFrom);
+		if (!file.good())
+		{
+			throw std::runtime_error("ReadFileToString failed, could not open file");
+		}
+		return ReadFileToString(file);
+	}
+
+	std::string ReadFileToString(std::ifstream& fileToReadFrom)
+	{
+		std::stringstream buffer;
+		buffer << fileToReadFrom.rdbuf();
+		return buffer.str();
+	}
+
 } /* namespace Utility */

@@ -14,12 +14,19 @@
 namespace Logger
 {
 
-	LogInterface::LogInterface(const std::string& logDir, LogLevel logLevel_)
-		: logLevel(logLevel_)
+	LogInterface::LogInterface(const std::string& logDir_, LogLevel logLevel_)
+		: logDir(logDir_)
+		, logFileName(logDir + "/play-man-" + Utility::CurrentTimeAsString() + ".log")
+		, logLevel(logLevel_)
 	{
 	#ifndef PLAY_MAN_NO_FILE_LOGGING
 		std::filesystem::create_directory(logDir);
-		logFile = std::ofstream(logDir + "/play-man-" + Utility::CurrentTimeAsString());
+		logFile.open(logFileName);
+
+		if (!logFile.good())
+		{
+			throw std::runtime_error("Unable to open logFile in " + logDir);
+		}
 	#endif
 	}
 
@@ -41,7 +48,7 @@ namespace Logger
 		logger = std::unique_ptr<LogInterface>(new LogInterface(logDir, logLevel));
 	}
 
-	constexpr std::string_view LogInterface::LogTypeHeader(LogType logType)
+	std::string_view LogInterface::LogTypeHeader(LogType logType)
 	{
 		switch (logType)
 		{
@@ -58,10 +65,9 @@ namespace Logger
 			default:
 				throw std::runtime_error("Tried to get header for unknown logtype: " + std::to_string(static_cast<int>(logType)));
 		}
-		return "";
 	}
 
-	constexpr std::string_view LogInterface::LogTypeHeaderColored(LogType logType)
+	std::string_view LogInterface::LogTypeHeaderColored(LogType logType)
 	{
 		switch (logType)
 		{

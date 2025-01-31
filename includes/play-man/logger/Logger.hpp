@@ -28,6 +28,12 @@
 	#include <fstream>
 #endif
 
+namespace TestFixtures
+{
+	// Forward declaration for unit testing purposes.
+	struct LoggerTestFixture;
+}
+
 namespace Logger
 {
 
@@ -44,7 +50,7 @@ namespace Logger
 	CREATE_ENUM_WITH_UTILS(LOG_TYPE_SEQ, LogType)
 	#undef LOG_TYPE_SEQ
 
-	#define LOG_LEVEL(X, n) \
+	#define LOG_EVEL_SEQ(X, n) \
 		X(n, None) \
 		X(n, Sparse) \
 		X(n, Normal) \
@@ -57,8 +63,8 @@ namespace Logger
 	 *        Sparse: Only logs Error, Fatal and warnings.
 	 *        None: self explanatory.
 	 */
-	CREATE_ENUM_WITH_UTILS(LOG_LEVEL, LogLevel)
-	#undef LOG_LEVEL
+	CREATE_ENUM_WITH_UTILS(LOG_EVEL_SEQ, LogLevel)
+	#undef LOG_EVEL_SEQ
 
 	/*!
 	* @brief Singleton logger for a unified and not yet threadsafe output.
@@ -69,8 +75,11 @@ namespace Logger
 	*/
 	class LogInterface
 	{
+		// For testing purposes.
+		friend struct TestFixtures::LoggerTestFixture;
+
 		/*
-		 * Defined as static constexpr because otherwise the concatenation wouldnt work 
+		 * Defined as static constexpr because otherwise the concatenation wouldnt work.
 		*/
 		static constexpr std::string_view fatalHeader	= "[Fatal]: ";
 		static constexpr std::string_view errorHeader	= "[Error]: ";
@@ -88,7 +97,8 @@ namespace Logger
 
 
 	#ifndef PLAY_MAN_NO_FILE_LOGGING
-		std::string logDir;
+		const std::string logDir;
+		const std::string logFileName;
 		std::ofstream logFile;
 	#endif
 
@@ -119,7 +129,7 @@ namespace Logger
 		 * @param logType 
 		 * @return
 		 */
-		static constexpr std::string_view LogTypeHeader(LogType logType);
+		static std::string_view LogTypeHeader(LogType logType);
 
 		/**
 		 * @brief -.
@@ -127,7 +137,7 @@ namespace Logger
 		 * @param logType 
 		 * @return
 		 */
-		static constexpr std::string_view LogTypeHeaderColored(LogType logType);
+		static std::string_view LogTypeHeaderColored(LogType logType);
 
 		/**
 		 * @brief
@@ -180,6 +190,7 @@ namespace Logger
 		
 		template <class T>
 		friend LogInterface& operator << (LogInterface& logInterface, const T& toWrite);
+
 	};
 
 	/**

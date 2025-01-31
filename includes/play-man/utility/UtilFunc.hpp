@@ -18,6 +18,8 @@
 #pragma once
 
 #include <string>
+#include <fstream>
+#include <filesystem>
 
 namespace Utility
 {
@@ -26,5 +28,30 @@ namespace Utility
 	 * @return
 	 */
 	std::string CurrentTimeAsString(const std::string& format = "%Y-%m-%d %H:%M:%S");
+
+	/**
+	 * @brief
+	 * 
+	 * @param fileToReadFrom path to file to read from.
+	 * @return
+	 */
+	std::string ReadFileToString(const std::string& fileToReadFrom);
+
+	/**
+	 * @brief
+	 * 
+	 * @param fileToReadFrom 
+	 * @return
+	 */
+	std::string ReadFileToString(const std::filesystem::path& fileToReadFrom);
+
+	/**
+	 * @brief
+	 * 
+	 * @param fileToReadFrom 
+	 * @return
+	 */
+	std::string ReadFileToString(std::ifstream& fileToReadFrom);
+
 
 } /* namespace Utility */
