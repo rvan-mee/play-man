@@ -67,10 +67,10 @@ namespace Utility
 
 	std::string SanitizePathString(std::string path)
 	{
-	#ifdef __linux__
+	#if defined(__linux__) || defined(__APPLE__)
 		constexpr auto toReplace = "\\";
 		constexpr auto toReplaceWith = "/";
-	#elif defined(_MSC_VER)
+	#elif defined(_WIN32)
 		constexpr auto toReplace = "/";
 		constexpr auto toReplaceWith = "\\";
 	#endif
