@@ -27,7 +27,7 @@ namespace Utility
 	 * @brief 
 	 * @return
 	 */
-	std::string CurrentTimeAsString(const std::string& format = "%Y-%m-%d %H:%M:%S");
+	std::string CurrentTimeAsString(const std::string& format = "%Y-%m-%d %H.%M.%S");
 
 	/**
 	 * @brief
