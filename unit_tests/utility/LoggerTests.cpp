@@ -30,7 +30,7 @@ namespace TestFixtures
 		bool TestLogMessageIsLogged(Logger::LogType logType)
 		{
 			
-			const std::string regexDateTimeString = "\\d\\d\\d\\d-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d ";
+			const std::string regexDateTimeString = "\\d\\d\\d\\d-\\d\\d-\\d\\d \\d\\d.\\d\\d.\\d\\d ";
 			const std::regex regexToMatch(regexDateTimeString + RegexLogTypeHeader(logType) + testLogMessage);
 
 			// Flushing the buffer because I was going bald trying to figure out why the file was empty :/
