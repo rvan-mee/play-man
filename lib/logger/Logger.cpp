@@ -9,6 +9,7 @@
 
 #ifndef PLAY_MAN_NO_FILE_LOGGING
 	# include <filesystem>
+	# include <cstring>
 #endif
 
 namespace Logger
@@ -25,7 +26,7 @@ namespace Logger
 
 		if (!logFile.good())
 		{
-			throw std::runtime_error("Unable to open logFile in " + logDir);
+			throw std::runtime_error("Unable to open logFile in " + logDir + ": " + std::strerror(errno));
 		}
 	#endif
 	}
