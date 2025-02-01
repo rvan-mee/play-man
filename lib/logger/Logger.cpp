@@ -17,7 +17,7 @@ namespace Logger
 
 	LogInterface::LogInterface(const std::string& logDir_, LogLevel logLevel_)
 		: logDir(logDir_)
-		, logFileName(logDir + "/play-man-" + Utility::CurrentTimeAsString() + ".log")
+		, logFileName(Utility::SanitizePathString(logDir + "/play-man-" + Utility::CurrentTimeAsString() + ".log"))
 		, logLevel(logLevel_)
 	{
 	#ifndef PLAY_MAN_NO_FILE_LOGGING

@@ -53,4 +53,30 @@ namespace Utility
 		return buffer.str();
 	}
 
+	void Replace(
+		std::string& stringToReplaceIn,
+		const std::string& wordToReplace,
+		const std::string& wordToReplaceWith)
+	{
+		for (size_t pos = 0; (pos = stringToReplaceIn.find(wordToReplace, pos)) != std::string::npos; )
+		{
+			stringToReplaceIn.replace(pos, wordToReplace.length(), wordToReplaceWith);
+			pos += wordToReplaceWith.length();
+		}
+	}
+
+	std::string SanitizePathString(std::string path)
+	{
+	#ifdef __linux__
+		constexpr auto toReplace = "\\";
+		constexpr auto toReplaceWith = "/";
+	#elif defined(_MSC_VER)
+		constexpr auto toReplace = "/";
+		constexpr auto toReplaceWith = "\\";
+	#endif
+		Replace(path, toReplace, toReplaceWith);
+
+		return path;
+	}
+
 } /* namespace Utility */

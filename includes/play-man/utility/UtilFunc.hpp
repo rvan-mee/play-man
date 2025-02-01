@@ -45,5 +45,25 @@ namespace Utility
 	 */
 	std::string ReadFileToString(std::ifstream& fileToReadFrom);
 
+	/**
+	 * @brief
+	 * 
+	 * @param stringToReplaceIn 
+	 * @param wordToReplace 
+	 * @param wordToReplaceWith 
+	 */
+	void Replace(
+		std::string& stringToReplaceIn,
+		const std::string& wordToReplace,
+		const std::string& wordToReplaceWith);
+
+	/**
+	 * @brief Because windows does other slashes than linux :/
+	 * 
+	 * @param path 
+	 * @return std::string 
+	 */
+	std::string SanitizePathString(std::string path);
+
 
 } /* namespace Utility */
