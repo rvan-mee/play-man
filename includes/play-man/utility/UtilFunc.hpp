@@ -32,14 +32,6 @@ namespace Utility
 	/**
 	 * @brief
 	 * 
-	 * @param fileToReadFrom path to file to read from.
-	 * @return
-	 */
-	std::string ReadFileToString(const std::string& fileToReadFrom);
-
-	/**
-	 * @brief
-	 * 
 	 * @param fileToReadFrom 
 	 * @return
 	 */
