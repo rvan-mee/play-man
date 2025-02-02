@@ -18,8 +18,9 @@ target_link_libraries(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::Catch2With
 set(UTILITY_UNIT_TEST_EXECUTABLE utility_unit_tests)
 add_executable(${UTILITY_UNIT_TEST_EXECUTABLE}
 	utility/EnumMacro.cpp 
-	utility/ConcatenateStringViewTests.cpp
-	utility/LoggerTests.cpp
+	utility/MetaUtilityTests.cpp
+	utility/UtilFuncTests.cpp
+	logger/LoggerTests.cpp
 )
 target_link_libraries(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE ${LIBRARY_NAME})
 target_link_libraries(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::Catch2WithMain)
