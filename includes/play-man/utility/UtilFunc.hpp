@@ -46,7 +46,8 @@ namespace Utility
 	std::string ReadFileToString(std::ifstream& fileToReadFrom);
 
 	/**
-	 * @brief
+	 * @brief Note that this function replaces it in stringToReplace in.
+	 *        If you still need the original value just make a copy.
 	 * 
 	 * @param stringToReplaceIn 
 	 * @param wordToReplace 
