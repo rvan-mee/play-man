@@ -52,9 +52,42 @@ namespace TestFixtures
 
 
 
-TEST_CASE_METHOD(TestFixtures::LoggerTestFixture, "LogLevel debug")
+TEST_CASE_METHOD(TestFixtures::LoggerTestFixture, "File logging")
 {
-	Logger::LogInterface::Initialize(unitTestLogDir, Logger::LogLevel::Debug);
+	bool shouldInfoBeLogged = true;
+	bool shouldWarningBeLogged = true;
+	bool shouldErrorBeLogged = true;
+	bool shouldFatalBeLogged = true;
+	bool shouldDebugBeLogged = true;
+
+	Logger::LogLevel logLevelToTest;
+
+	SECTION("LogLevel Debug")
+	{
+		logLevelToTest = Logger::LogLevel::Debug;
+	}
+	SECTION("LogLevel Normal")
+	{
+		logLevelToTest = Logger::LogLevel::Normal;
+		shouldDebugBeLogged = false;
+	}
+	SECTION("LogLevel Sparse")
+	{
+		logLevelToTest = Logger::LogLevel::Sparse;
+		shouldInfoBeLogged = false;
+		shouldDebugBeLogged = false;
+	}
+	SECTION("LogLevel None")
+	{
+		logLevelToTest = Logger::LogLevel::None;
+		shouldInfoBeLogged = false;
+		shouldWarningBeLogged = false;
+		shouldErrorBeLogged = false;
+		shouldFatalBeLogged = false;
+		shouldDebugBeLogged = false;
+	}
+
+	Logger::LogInterface::Initialize(unitTestLogDir, logLevelToTest);
 
 	LOG_INFO(testLogMessage);
 	LOG_WARNING(testLogMessage);
@@ -62,60 +95,11 @@ TEST_CASE_METHOD(TestFixtures::LoggerTestFixture, "LogLevel debug")
 	LOG_FATAL(testLogMessage);
 	LOG_DEBUG(testLogMessage);
 
-	REQUIRE(TestLogMessageIsLogged(Logger::LogType::Info));
-	REQUIRE(TestLogMessageIsLogged(Logger::LogType::Warning));
-	REQUIRE(TestLogMessageIsLogged(Logger::LogType::Error));
-	REQUIRE(TestLogMessageIsLogged(Logger::LogType::Fatal));
-	REQUIRE(TestLogMessageIsLogged(Logger::LogType::Debug));
-}
+	INFO("Testing loglevel " + std::string(GetEnumAsString(logLevelToTest)));
 
-TEST_CASE_METHOD(TestFixtures::LoggerTestFixture, "LogLevel Normal")
-{
-	Logger::LogInterface::Initialize(unitTestLogDir, Logger::LogLevel::Normal);
-
-	LOG_INFO(testLogMessage);
-	LOG_WARNING(testLogMessage);
-	LOG_ERROR(testLogMessage);
-	LOG_FATAL(testLogMessage);
-	LOG_DEBUG(testLogMessage);
-
-	REQUIRE(TestLogMessageIsLogged(Logger::LogType::Info));
-	REQUIRE(TestLogMessageIsLogged(Logger::LogType::Warning));
-	REQUIRE(TestLogMessageIsLogged(Logger::LogType::Error));
-	REQUIRE(TestLogMessageIsLogged(Logger::LogType::Fatal));
-	REQUIRE(!TestLogMessageIsLogged(Logger::LogType::Debug));
-}
-
-TEST_CASE_METHOD(TestFixtures::LoggerTestFixture, "LogLevel None")
-{
-	Logger::LogInterface::Initialize(unitTestLogDir, Logger::LogLevel::Sparse);
-
-	LOG_INFO(testLogMessage);
-	LOG_WARNING(testLogMessage);
-	LOG_ERROR(testLogMessage);
-	LOG_FATAL(testLogMessage);
-	LOG_DEBUG(testLogMessage);
-
-	REQUIRE(!TestLogMessageIsLogged(Logger::LogType::Info));
-	REQUIRE(TestLogMessageIsLogged(Logger::LogType::Warning));
-	REQUIRE(TestLogMessageIsLogged(Logger::LogType::Error));
-	REQUIRE(TestLogMessageIsLogged(Logger::LogType::Fatal));
-	REQUIRE(!TestLogMessageIsLogged(Logger::LogType::Debug));
-}
-
-TEST_CASE_METHOD(TestFixtures::LoggerTestFixture, "LogLevel Debug")
-{
-	Logger::LogInterface::Initialize(unitTestLogDir, Logger::LogLevel::None);
-
-	LOG_INFO(testLogMessage);
-	LOG_WARNING(testLogMessage);
-	LOG_ERROR(testLogMessage);
-	LOG_FATAL(testLogMessage);
-	LOG_DEBUG(testLogMessage);
-
-	REQUIRE(!TestLogMessageIsLogged(Logger::LogType::Info));
-	REQUIRE(!TestLogMessageIsLogged(Logger::LogType::Warning));
-	REQUIRE(!TestLogMessageIsLogged(Logger::LogType::Error));
-	REQUIRE(!TestLogMessageIsLogged(Logger::LogType::Fatal));
-	REQUIRE(!TestLogMessageIsLogged(Logger::LogType::Debug));
+	REQUIRE(TestLogMessageIsLogged(Logger::LogType::Info) == shouldInfoBeLogged);
+	REQUIRE(TestLogMessageIsLogged(Logger::LogType::Warning) == shouldWarningBeLogged);
+	REQUIRE(TestLogMessageIsLogged(Logger::LogType::Error) == shouldErrorBeLogged);
+	REQUIRE(TestLogMessageIsLogged(Logger::LogType::Fatal) == shouldFatalBeLogged);
+	REQUIRE(TestLogMessageIsLogged(Logger::LogType::Debug) == shouldDebugBeLogged);
 }
