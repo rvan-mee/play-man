@@ -36,7 +36,7 @@ TEST_CASE_METHOD(TestFixtures::IssueHandlerFixture, "Setting an issue")
 		"test error",
 		"setting an issue for testing purposes",
 		IssueType::Error,
-		IssueResolvable::AutomaticResolvable
+		IssueResolvable::AutomaticallyResolvable
 	);
 
 	REQUIRE(issueHandler.IsIssueActive(ErrorCode::AnErrorCodeForTestingPurposes));
@@ -49,7 +49,7 @@ TEST_CASE_METHOD(TestFixtures::IssueHandlerFixture, "Resolving an issue")
 		"test error",
 		"setting an issue for testing purposes",
 		IssueType::Error,
-		IssueResolvable::AutomaticResolvable
+		IssueResolvable::AutomaticallyResolvable
 	);
 
 	issueHandler.ResolveIssue(ErrorCode::AnErrorCodeForTestingPurposes);
@@ -72,7 +72,7 @@ TEST_CASE_METHOD(TestFixtures::IssueHandlerFixture, "Issue resolved signal")
 		"test error",
 		"setting an issue for testing purposes",
 		IssueType::Error,
-		IssueResolvable::AutomaticResolvable
+		IssueResolvable::AutomaticallyResolvable
 	);
 
 	issueHandler.ResolveIssue(ErrorCode::AnErrorCodeForTestingPurposes);
@@ -99,7 +99,7 @@ TEST_CASE_METHOD(TestFixtures::IssueHandlerFixture, "Unsubscribe issue resolved 
 		"test error",
 		"setting an issue for testing purposes",
 		IssueType::Error,
-		IssueResolvable::AutomaticResolvable
+		IssueResolvable::AutomaticallyResolvable
 	);
 
 	issueHandler.UnsubscribeIssueResolved(
@@ -126,7 +126,7 @@ TEST_CASE_METHOD(TestFixtures::IssueHandlerFixture, "Issue set signal")
 		"test error",
 		"setting an issue for testing purposes",
 		IssueType::Error,
-		IssueResolvable::AutomaticResolvable
+		IssueResolvable::AutomaticallyResolvable
 	);
 
 	issueHandler.ResolveIssue(ErrorCode::AnErrorCodeForTestingPurposes);

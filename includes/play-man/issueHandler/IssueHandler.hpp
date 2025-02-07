@@ -63,10 +63,10 @@ public:
 	void ResolveIssue(ErrorCode errorCode);
 
 	/**
-	 * @brief
+	 * @brief Note that if you destruct your callback i.e. a member function, you need to manually unsubscribe.
 	 * 
 	 * @param errorToSubscribeResolveOn 
-	 * @param issueResolvedCallback  The callback is a weak_ptr, so that raii can be used for member functions, be it not the most convenient.
+	 * @param issueResolvedCallback
 	 */
 	void SubscribeToIssueResolved(
 		ErrorCode errorToSubscribeResolveOn,
