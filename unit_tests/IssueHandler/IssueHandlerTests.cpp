@@ -4,11 +4,31 @@
 #include "play-man/issueHandler/IssueHandler.hpp"
 #include "play-man/logger/Logger.hpp"
 
-TEST_CASE("Setting an issue")
+namespace TestFixtures
 {
-	Logger::LogInterface::GetInstance().EnableCoutLogging(false);
-	IssueHandler issueHandler("test");
 
+	/**
+	 * @brief Fixture for testing the issueHandler.
+	 */
+	struct IssueHandlerFixture
+	{
+		IssueHandler issueHandler;
+
+		IssueHandlerFixture() : issueHandler("test")
+		{
+			Logger::LogInterface::Initialize("test", Logger::LogLevel::Debug);
+		}
+
+		~IssueHandlerFixture()
+		{
+			Logger::LogInterface::GetInstance().reset();
+		}
+	};
+
+} /* namespace TestFixtures*/
+
+TEST_CASE_METHOD(TestFixtures::IssueHandlerFixture, "Setting an issue")
+{
 	REQUIRE(!issueHandler.IsIssueActive(ErrorCode::AnErrorCodeForTestingPurposes));
 
 	issueHandler.SetIssue(
@@ -22,10 +42,8 @@ TEST_CASE("Setting an issue")
 	REQUIRE(issueHandler.IsIssueActive(ErrorCode::AnErrorCodeForTestingPurposes));
 }
 
-TEST_CASE("Resolving an issue")
+TEST_CASE_METHOD(TestFixtures::IssueHandlerFixture, "Resolving an issue")
 {
-	IssueHandler issueHandler("test");
-
 	issueHandler.SetIssue(
 		ErrorCode::AnErrorCodeForTestingPurposes,
 		"test error",
@@ -37,10 +55,8 @@ TEST_CASE("Resolving an issue")
 	issueHandler.ResolveIssue(ErrorCode::AnErrorCodeForTestingPurposes);
 }
 
-TEST_CASE("Issue resolved signal")
+TEST_CASE_METHOD(TestFixtures::IssueHandlerFixture, "Issue resolved signal")
 {
-	IssueHandler issueHandler("test");
-
 	bool wasCallbackCalled = false;
 
 	issueHandler.SubscribeToIssueResolved(
@@ -64,10 +80,8 @@ TEST_CASE("Issue resolved signal")
 	REQUIRE(wasCallbackCalled);
 }
 
-TEST_CASE("Unsubscribe issue resolved signal")
+TEST_CASE_METHOD(TestFixtures::IssueHandlerFixture, "Unsubscribe issue resolved signal")
 {
-	IssueHandler issueHandler("test");
-
 	bool wasCallbackCalled = false;
 
 	const auto callback = [&]()
@@ -98,10 +112,8 @@ TEST_CASE("Unsubscribe issue resolved signal")
 	REQUIRE(!wasCallbackCalled);
 }
 
-TEST_CASE("Issue set signal")
+TEST_CASE_METHOD(TestFixtures::IssueHandlerFixture, "Issue set signal")
 {
-	IssueHandler issueHandler("test");
-
 	bool wasSignalEmitted = false;
 
 	issueHandler.issueSet.Connect([&](ErrorCode ec)

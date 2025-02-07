@@ -18,6 +18,8 @@
 #pragma once
 
 #include <string>
+#include <fstream>
+#include <filesystem>
 
 namespace Utility
 {
@@ -25,6 +27,44 @@ namespace Utility
 	 * @brief 
 	 * @return
 	 */
-	std::string CurrentTimeAsString(const std::string& format = "%Y-%m-%d %H:%M:%S");
+	std::string CurrentTimeAsString(const std::string& format = "%Y-%m-%d %H.%M.%S");
+
+	/**
+	 * @brief
+	 * 
+	 * @param fileToReadFrom 
+	 * @return
+	 */
+	std::string ReadFileToString(const std::filesystem::path& fileToReadFrom);
+
+	/**
+	 * @brief
+	 * 
+	 * @param fileToReadFrom 
+	 * @return
+	 */
+	std::string ReadFileToString(std::ifstream& fileToReadFrom);
+
+	/**
+	 * @brief Note that this function replaces it in stringToReplace in.
+	 *        If you still need the original value just make a copy.
+	 * 
+	 * @param stringToReplaceIn 
+	 * @param wordToReplace 
+	 * @param wordToReplaceWith 
+	 */
+	void Replace(
+		std::string& stringToReplaceIn,
+		const std::string& wordToReplace,
+		const std::string& wordToReplaceWith);
+
+	/**
+	 * @brief Because windows does other slashes than linux :/
+	 * 
+	 * @param path 
+	 * @return std::string 
+	 */
+	std::string SanitizePathString(std::string path);
+
 
 } /* namespace Utility */
