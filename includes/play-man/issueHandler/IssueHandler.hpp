@@ -2,7 +2,7 @@
 
 #include "ErrorCodes.hpp"
 #include "Issue.hpp"
-#include <play-man/Signal/Signal.hpp>
+#include <play-man/signal/Signal.hpp>
 
 #include <string>
 #include <optional>
