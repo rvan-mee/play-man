@@ -1,3 +1,19 @@
+// ****************************************************************************** //
+//   _______   __                              __       __                        //
+//  /       \ /  |                            /  \     /  |                       //
+//  $$$$$$$  |$$ |  ______   __    __         $$  \   /$$ |  ______   _______     //
+//  $$ |__$$ |$$ | /      \ /  |  /  | ______ $$$  \ /$$$ | /      \ /       \    //
+//  $$    $$/ $$ | $$$$$$  |$$ |  $$ |/      |$$$$  /$$$$ | $$$$$$  |$$$$$$$  |   //
+//  $$$$$$$/  $$ | /    $$ |$$ |  $$ |$$$$$$/ $$ $$ $$/$$ | /    $$ |$$ |  $$ |   //
+//  $$ |      $$ |/$$$$$$$ |$$ \__$$ |        $$ |$$$/ $$ |/$$$$$$$ |$$ |  $$ |   //
+//  $$ |      $$ |$$    $$ |$$    $$ |        $$ | $/  $$ |$$    $$ |$$ |  $$ |   //
+//  $$/       $$/  $$$$$$$/  $$$$$$$ |        $$/      $$/  $$$$$$$/ $$/   $$/    //
+//                          /  \__$$ |                                            //
+//                          $$    $$/                                             //
+//                           $$$$$$/                                              //
+//                                                                                //
+//                            By: K1ngmar and rvan-mee                            //
+// ****************************************************************************** //
 #pragma once
 
 #include <play-man/utility/JsonUtility.hpp>
@@ -36,7 +52,8 @@ public:
 	 */
 	static Derived ReadFromFile(const std::filesystem::path& fileToReadSettingsFrom)
 	{
-		nlohmann::json settingsAsJson;
+		// Creating with empty initializer list because of bug `https://github.com/nlohmann/json/issues/2046`
+		nlohmann::json settingsAsJson({});
 		if (std::filesystem::exists(fileToReadSettingsFrom))
 		{
 			const auto settingsAsString = Utility::ReadFileToString(fileToReadSettingsFrom);
@@ -52,7 +69,7 @@ public:
 	{
 		// This is kind of abusing the from_json function as we try to convert an empty
 		// json tree to an instance of the settings, if a setting is not supplied the default will be used :).
-		nlohmann::json j;
+		nlohmann::json j({});
 		derived = j.template get<Derived>();
 	}
 
@@ -73,7 +90,7 @@ public:
 	}
 
 	/**
-	 * @brief Serializes the class into a json string.
+	 * @brief Serializes the class into a formatted json string.
 	 * @return
 	 */
 	std::string ToString() const
@@ -82,6 +99,10 @@ public:
 		return serializedClass.dump(Utility::Json::numberOfSpacesIndentation);
 	}
 
+	/**
+	 * @brief Serializes the class into json.
+	 * @return
+	 */
 	nlohmann::json ToJson() const
 	{
 		nlohmann::json json = derived;

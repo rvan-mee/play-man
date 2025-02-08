@@ -53,7 +53,11 @@ file(GLOB_RECURSE LIB_SOURCES "${LIB_DIR}/*.cpp")
 add_library(${LIBRARY_NAME} STATIC ${LIB_SOURCES})
 
 # Specify include directories for the library
-target_include_directories(${LIBRARY_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/includes)
+target_include_directories(
+	${LIBRARY_NAME}
+	PUBLIC ${CMAKE_SOURCE_DIR}/includes
+	PUBLIC json/include
+)
 
 # Create the executable target
 add_executable(${EXECUTABLE_NAME} src/main.cpp)
