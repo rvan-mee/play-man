@@ -12,6 +12,6 @@ int main(int argc, char** argv)
 	PlayManSettings settings = PlayManSettings::ReadFromFile("settings.json");
 	Logger::LogInterface::Initialize(settings.logDirectory, settings.logLevel);
 	
-	std::cout << settings.ToString() << std::endl;
+	LOG_INFO("Settings being used:\n" + settings.ToString());
 	return 0;
 }

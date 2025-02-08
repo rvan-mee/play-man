@@ -14,36 +14,19 @@
 //                                                                                //
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
-#pragma once
 
-#include "ISettings.hpp"
-#include <play-man/logger/Logger.hpp>
+#include <play-man/settings/PlayManSettings.hpp>
 
-#include <filesystem>
-
-/**
- * @brief Struct containing all settings for play-man not specific to any emulator.
- */
-struct PlayManSettings : public ISettings<PlayManSettings>
+void to_json(nlohmann::json& j, const PlayManSettings& p)
 {
-	Logger::LogLevel logLevel;
-	static constexpr Logger::LogLevel defaultLogLevel = Logger::LogLevel::Normal;
-	std::filesystem::path logDirectory;
-	static constexpr std::string_view defaultLogDirectory = "Logging";
-};
+	j = nlohmann::json {
+		{"logLevel", p.logLevel},
+		{"logDirectory", p.logDirectory}
+	};
+}
 
-/**
- * @brief 
- * 
- * @param j 
- * @param p 
- */
-void to_json(nlohmann::json& j, const PlayManSettings& p);
-
-/**
- * @brief 
- * 
- * @param j 
- * @param p 
- */
-void from_json(const nlohmann::json& j, PlayManSettings& p);
+void from_json(const nlohmann::json& j, PlayManSettings& p)
+{
+	p.logLevel = j.value<Logger::LogLevel>("logLevel", PlayManSettings::defaultLogLevel);
+	p.logDirectory = j.value<std::filesystem::path>("logDirectory", PlayManSettings::defaultLogDirectory);
+}
