@@ -18,6 +18,7 @@
 
 #include <play-man/utility/JsonUtility.hpp>
 #include <play-man/utility/UtilFunc.hpp>
+#include <play-man/logger/Logger.hpp>
 
 #include <string>
 #include <filesystem>
@@ -41,6 +42,12 @@ protected:
 	{
 	}
 
+	ISettings& operator = (const ISettings& rhs)
+	{
+		(void)rhs;
+		return *this;
+	}
+
 public:
 
 
@@ -52,12 +59,14 @@ public:
 	 */
 	static Derived ReadFromFile(const std::filesystem::path& fileToReadSettingsFrom)
 	{
-		// Creating with empty initializer list because of bug `https://github.com/nlohmann/json/issues/2046`
-		nlohmann::json settingsAsJson({});
+		nlohmann::json settingsAsJson;
 		if (std::filesystem::exists(fileToReadSettingsFrom))
 		{
-			const auto settingsAsString = Utility::ReadFileToString(fileToReadSettingsFrom);
-			settingsAsJson = nlohmann::json::parse(settingsAsString);
+			settingsAsJson = Utility::Json::ReadJsonFromFile(fileToReadSettingsFrom);
+		}
+		else
+		{
+			settingsAsJson = Utility::Json::CreateEmptyJson();
 		}
 		return settingsAsJson.template get<Derived>();
 	}
@@ -69,8 +78,8 @@ public:
 	{
 		// This is kind of abusing the from_json function as we try to convert an empty
 		// json tree to an instance of the settings, if a setting is not supplied the default will be used :).
-		nlohmann::json j({});
-		derived = j.template get<Derived>();
+		nlohmann::json emptyJson = Utility::Json::CreateEmptyJson();
+		derived = emptyJson.template get<Derived>();
 	}
 
 	/**
@@ -79,13 +88,14 @@ public:
 	 */
 	void SaveToFile(const std::filesystem::path fileToSaveSettingsTo) const
 	{
-		const auto containingDirectory = fileToSaveSettingsTo.parent_path();
+		const auto absolutePath = std::filesystem::absolute(fileToSaveSettingsTo);
+		const auto containingDirectory = absolutePath.parent_path();
 		if (!std::filesystem::exists(containingDirectory))
 		{
 			std::filesystem::create_directories(containingDirectory);
 		}
 
-		std::ofstream fileToSaveTo(fileToSaveSettingsTo);
+		std::ofstream fileToSaveTo(absolutePath);
 		fileToSaveTo << ToString() << std::endl;
 	}
 

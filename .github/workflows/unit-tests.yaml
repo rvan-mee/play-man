@@ -22,6 +22,10 @@ jobs:
         cd build
         cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=install ..
         make install
+    - name: general_play_man_unit_tests
+      run: |
+        cd bin/unit_tests/play-man
+        ./general-play-man-unit-tests
     - name: gameboy_unit_tests
       run: |
         cd bin/unit_tests/gameboy
@@ -46,6 +50,10 @@ jobs:
         cd build
         cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=install ..
         make install
+    - name: general_play_man_unit_tests
+      run: |
+        cd bin/unit_tests/play-man
+        ./general-play-man-unit-tests
     - name: gameboy_unit_tests
       run: |
         cd bin/unit_tests/gameboy
@@ -71,7 +79,11 @@ jobs:
         mkdir build
         cd build
         cmake -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX=install ..
-        make install  
+        make install
+    - name: general_play_man_unit_tests
+      run: |
+        cd bin/unit_tests/play-man
+        ./general-play-man-unit-tests
     - name: gameboy_unit_tests
       run: |
         cd bin/unit_tests/gameboy

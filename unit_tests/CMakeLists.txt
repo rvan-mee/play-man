@@ -11,10 +11,20 @@ FetchContent_MakeAvailable(Catch2)
 
 # Create test executables
 
+set(GENERAL_PLAY_MAN_UNIT_TEST_EXECUTABLE general-play-man-unit-tests)
+add_executable(${GENERAL_PLAY_MAN_UNIT_TEST_EXECUTABLE}
+	settings/PlayManSettingsTests.cpp
+)
+target_link_libraries(${GENERAL_PLAY_MAN_UNIT_TEST_EXECUTABLE} PRIVATE ${LIBRARY_NAME})
+target_link_libraries(${GENERAL_PLAY_MAN_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::Catch2WithMain)
+
 set(GAMEBOY_UNIT_TEST_EXECUTABLE gameboy-unit-tests)
-add_executable(${GAMEBOY_UNIT_TEST_EXECUTABLE} gameboy/Test.cpp)
+add_executable(${GAMEBOY_UNIT_TEST_EXECUTABLE}
+	gameboy/Test.cpp
+)
 target_link_libraries(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE ${LIBRARY_NAME})
 target_link_libraries(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::Catch2WithMain)
+
 
 set(UTILITY_UNIT_TEST_EXECUTABLE utility_unit_tests)
 add_executable(${UTILITY_UNIT_TEST_EXECUTABLE}
@@ -28,18 +38,35 @@ add_executable(${UTILITY_UNIT_TEST_EXECUTABLE}
 target_link_libraries(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE ${LIBRARY_NAME})
 target_link_libraries(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::Catch2WithMain)
 
+# Copy unit test test data
+add_custom_target(
+	copy_test_data ALL
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
+		${CMAKE_CURRENT_LIST_DIR}/testData/
+		${PROJECT_BINARY_DIR}/testData/
+)
+
 # Enable Catch2's CMake testing integration
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 include(CTest)
 include(Catch)
-catch_discover_tests(${GAMEBOY_UNIT_TEST_EXECUTABLE} ${UTILITY_UNIT_TEST_EXECUTABLE})
+catch_discover_tests(
+	${GENERAL_PLAY_MAN_UNIT_TEST_EXECUTABLE}
+	${GAMEBOY_UNIT_TEST_EXECUTABLE}
+	${UTILITY_UNIT_TEST_EXECUTABLE}
+)
+
+install(
+	TARGETS ${GENERAL_PLAY_MAN_UNIT_TEST_EXECUTABLE}
+	RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin/unit_tests/play-man/
+)
 
 install(
 	TARGETS ${GAMEBOY_UNIT_TEST_EXECUTABLE}
-    RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin/unit_tests/gameboy/
+	RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin/unit_tests/gameboy/
 )
 
 install(
 	TARGETS ${UTILITY_UNIT_TEST_EXECUTABLE}
-    RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin/unit_tests/Utility/
+	RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin/unit_tests/utility/
 )
