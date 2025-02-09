@@ -39,6 +39,9 @@ We chose [CMake](https://cmake.org/) for our C++ project due to its flexibility,
 ### 🧑‍🔬 Unit testing
 For our unit tets we chose [Catch2](https://github.com/catchorg/Catch2) as it is quick and easy to get started with no external dependencies, has cmake integration and is well established.
 
+### 📋 Settings and serialization
+For our settings and serialization we used [nlohmann's json library](https://github.com/nlohmann/json). This is very usefull as it supplies an easy interface for serializing classes into json [see](https://json.nlohmann.me/features/arbitrary_types/). On top of that it integrates nicely with our enum macro for storing enum values in the json [see](https://json.nlohmann.me/features/enum_conversion/).
+
 ## 🗺️ Emulation Roadmap
 
 ### 🎯 Supported compilation targets
