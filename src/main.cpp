@@ -9,9 +9,9 @@ int main(int argc, char** argv)
 	(void)argc;
 	(void)argv;
 
-	PlayManSettings settings = PlayManSettings::ReadFromFile("settings.json");
-	Logger::LogInterface::Initialize(settings.logDirectory, settings.logLevel);
+	std::shared_ptr<PlayManSettings> settings = PlayManSettings::ReadFromFile("settings.json");
+	Logger::LogInterface::Initialize(settings->logDirectory, settings->logLevel);
 	
-	LOG_INFO("Settings being used:\n" + settings.ToString());
+	LOG_INFO("Settings being used:\n" + settings->ToString());
 	return 0;
 }

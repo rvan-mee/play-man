@@ -14,17 +14,15 @@ namespace TestFixtures
 	private:
 
 		std::vector<std::filesystem::path> filesToRemoveUponDestruction;
-
 		
 	public:
 
-		PlayManSettings settings;
+		std::shared_ptr<PlayManSettings> settings;
 
 		const std::string testDataDir = "testData/settings/";
 	
-		PlayManSettingsFixture()
+		PlayManSettingsFixture() : settings(std::make_shared<PlayManSettings>())
 		{
-			settings = PlayManSettings::ReadFromFile("");
 		}
 
 		~PlayManSettingsFixture()
@@ -41,7 +39,7 @@ namespace TestFixtures
 		void SaveSettingsToFile(const std::filesystem::path& file)
 		{
 			filesToRemoveUponDestruction.emplace_back(file);
-			settings.SaveToFile(file);
+			settings->SaveToFile(file);
 		}
 
 	};
@@ -49,21 +47,21 @@ namespace TestFixtures
 
 TEST_CASE_METHOD(TestFixtures::PlayManSettingsFixture, "Generate Default settings")
 {
-	REQUIRE(settings.logDirectory == settings.defaultLogDirectory);
-	REQUIRE(settings.logLevel == settings.defaultLogLevel);
+	REQUIRE(settings->logDirectory == settings->defaultLogDirectory);
+	REQUIRE(settings->logLevel == settings->defaultLogLevel);
 }
 
 TEST_CASE_METHOD(TestFixtures::PlayManSettingsFixture, "Load partial settings")
 {
 	settings = PlayManSettings::ReadFromFile(testDataDir + "partialPlayManSettings.json");
-	REQUIRE(settings.logDirectory == settings.defaultLogDirectory);
-	REQUIRE(settings.logLevel == Logger::LogLevel::None);
+	REQUIRE(settings->logDirectory == settings->defaultLogDirectory);
+	REQUIRE(settings->logLevel == Logger::LogLevel::None);
 }
 
 TEST_CASE_METHOD(TestFixtures::PlayManSettingsFixture, "Saving settings")
 {
-	settings.logLevel = Logger::LogLevel::Debug;
-	settings.logDirectory = "unitTestLogDirectory";
+	settings->logLevel = Logger::LogLevel::Debug;
+	settings->logDirectory = "unitTestLogDirectory";
 
 	constexpr auto fileName = "savingSettings.json";
 
@@ -71,17 +69,22 @@ TEST_CASE_METHOD(TestFixtures::PlayManSettingsFixture, "Saving settings")
 
 	auto newSettings = PlayManSettings::ReadFromFile(fileName);
 	
-	REQUIRE(newSettings.logLevel == Logger::LogLevel::Debug);
-	REQUIRE(newSettings.logDirectory == "unitTestLogDirectory");
+	REQUIRE(newSettings->logLevel == Logger::LogLevel::Debug);
+	REQUIRE(newSettings->logDirectory == "unitTestLogDirectory");
 }
 
 TEST_CASE_METHOD(TestFixtures::PlayManSettingsFixture, "Reset to default settings")
 {
-	settings.logDirectory = "changed";
-	settings.logLevel = Logger::LogLevel::Sparse;
+	settings->logDirectory = "changed";
+	settings->logLevel = Logger::LogLevel::Sparse;
 
-	settings.ResetToDefaults();
+	settings->ResetToDefaults();
 
-	REQUIRE(settings.logDirectory == settings.defaultLogDirectory);
-	REQUIRE(settings.logLevel == settings.defaultLogLevel);
+	REQUIRE(settings->logDirectory == settings->defaultLogDirectory);
+	REQUIRE(settings->logLevel == settings->defaultLogLevel);
+}
+
+TEST_CASE_METHOD(TestFixtures::PlayManSettingsFixture, "Invalid settings")
+{
+	REQUIRE_THROWS(settings->ReadFromFile(testDataDir + "invalidSettings.json"));
 }

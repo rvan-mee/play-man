@@ -22,6 +22,7 @@
 
 #include <string>
 #include <filesystem>
+#include <memory>
 
 /**
  * @brief Basic interface for a settings object.
@@ -38,10 +39,19 @@ class ISettings
 
 protected:
 
+	/**
+	 * @brief
+	 */
 	ISettings() : derived(*(static_cast<Derived*>(this)))
 	{
 	}
 
+	/**
+	 * @brief
+	 * 
+	 * @param rhs 
+	 * @return
+	 */
 	ISettings& operator = (const ISettings& rhs)
 	{
 		(void)rhs;
@@ -50,25 +60,17 @@ protected:
 
 public:
 
-
 	/**
 	 * @brief Instantiates Derived from json file.
 	 * 
 	 * @param fileToReadSettingsFrom 
 	 * @return
 	 */
-	static Derived ReadFromFile(const std::filesystem::path& fileToReadSettingsFrom)
+	static std::shared_ptr<Derived> ReadFromFile(const std::filesystem::path& fileToReadSettingsFrom)
 	{
 		nlohmann::json settingsAsJson;
-		if (std::filesystem::exists(fileToReadSettingsFrom))
-		{
-			settingsAsJson = Utility::Json::ReadJsonFromFile(fileToReadSettingsFrom);
-		}
-		else
-		{
-			settingsAsJson = Utility::Json::CreateEmptyJson();
-		}
-		return settingsAsJson.template get<Derived>();
+		settingsAsJson = Utility::Json::ReadJsonFromFile(fileToReadSettingsFrom);
+		return std::make_shared<Derived>(settingsAsJson.template get<Derived>());
 	}
 
 	/**
@@ -76,10 +78,7 @@ public:
 	 */
 	void ResetToDefaults()
 	{
-		// This is kind of abusing the from_json function as we try to convert an empty
-		// json tree to an instance of the settings, if a setting is not supplied the default will be used :).
-		nlohmann::json emptyJson = Utility::Json::CreateEmptyJson();
-		derived = emptyJson.template get<Derived>();
+		derived = Derived();
 	}
 
 	/**
