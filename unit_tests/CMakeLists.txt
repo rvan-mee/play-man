@@ -16,7 +16,7 @@ add_executable(${GAMEBOY_UNIT_TEST_EXECUTABLE} gameboy/Test.cpp)
 target_link_libraries(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE ${LIBRARY_NAME})
 target_link_libraries(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::Catch2WithMain)
 
-set(UTILITY_UNIT_TEST_EXECUTABLE utility_unit_tests)
+set(UTILITY_UNIT_TEST_EXECUTABLE utility-unit-tests)
 add_executable(${UTILITY_UNIT_TEST_EXECUTABLE}
 	utility/EnumMacro.cpp 
 	utility/MetaUtilityTests.cpp
@@ -36,10 +36,10 @@ catch_discover_tests(${GAMEBOY_UNIT_TEST_EXECUTABLE} ${UTILITY_UNIT_TEST_EXECUTA
 
 install(
 	TARGETS ${GAMEBOY_UNIT_TEST_EXECUTABLE}
-    RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin/unit_tests/gameboy/
+    RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin/unit-tests/gameboy/
 )
 
 install(
 	TARGETS ${UTILITY_UNIT_TEST_EXECUTABLE}
-    RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin/unit_tests/Utility/
+    RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin/unit-tests/Utility/
 )

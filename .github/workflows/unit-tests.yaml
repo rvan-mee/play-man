@@ -22,14 +22,14 @@ jobs:
         cd build
         cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=install ..
         make install
-    - name: gameboy_unit_tests
+    - name: gameboy-unit-tests
       run: |
-        cd bin/unit_tests/gameboy
-        ./gameboy_unit_tests
-    - name: utility_unit_tests
+        cd bin/unit-tests/gameboy
+        ./gameboy-unit-tests
+    - name: utility-unit-tests
       run: |
-        cd bin/unit_tests/utility
-        ./utility_unit_tests
+        cd bin/unit-tests/utility
+        ./utility-unit-tests
 
 
   macos:
@@ -46,14 +46,14 @@ jobs:
         cd build
         cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=install ..
         make install
-    - name: gameboy_unit_tests
+    - name: gameboy-unit-tests
       run: |
-        cd bin/unit_tests/gameboy
-        ./gameboy_unit_tests
-    - name: utility_unit_tests
+        cd bin/unit-tests/gameboy
+        ./gameboy-unit-tests
+    - name: utility-unit-tests
       run: |
-        cd bin/unit_tests/utility
-        ./utility_unit_tests
+        cd bin/unit-tests/utility
+        ./utility-unit-tests
 
   windows:
 
@@ -72,11 +72,11 @@ jobs:
         cd build
         cmake -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX=install ..
         make install  
-    - name: gameboy_unit_tests
+    - name: gameboy-unit-tests
       run: |
-        cd bin/unit_tests/gameboy
-        ./gameboy_unit_tests
-    - name: utility_unit_tests
+        cd bin/unit-tests/gameboy
+        ./gameboy-unit-tests
+    - name: utility-unit-tests
       run: |
-        cd bin/unit_tests/utility
-        ./utility_unit_tests
+        cd bin/unit-tests/utility
+        ./utility-unit-tests
