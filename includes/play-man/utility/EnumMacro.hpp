@@ -51,7 +51,7 @@ enum class enum_class_name {\
     ENUM_DEFINITION(__ENUM_CREATION, enum_class_name)\
 }; \
 \
-std::string_view GetEnumAsString(enum_class_name val)\
+inline constexpr std::string_view GetEnumAsString(enum_class_name val)\
 {\
     switch (val)\
     {\
@@ -60,11 +60,11 @@ std::string_view GetEnumAsString(enum_class_name val)\
 			throw (std::runtime_error("Unknown enum value for enum: " #enum_class_name));\
     }\
 }\
-inline int32_t GetEnumAsValue(enum_class_name val)\
+inline constexpr int32_t GetEnumAsValue(enum_class_name val)\
 {\
     return (static_cast<int32_t>(val));\
 }\
-std::ostream& operator << (std::ostream& os, const enum_class_name& val)\
+inline std::ostream& operator << (std::ostream& os, const enum_class_name& val)\
 {\
     os << GetEnumAsString(val);\
     return (os);\
