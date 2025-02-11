@@ -58,7 +58,7 @@ target_link_libraries(${EXECUTABLE_NAME} PRIVATE ${LIBRARY_NAME})
 #
 
 # Add subdirectory for tests
-add_subdirectory(unit_tests)
+add_subdirectory(unit-tests)
 
 #
 # Install targets in other directory
