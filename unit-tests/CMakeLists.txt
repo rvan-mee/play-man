@@ -41,5 +41,5 @@ install(
 
 install(
 	TARGETS ${UTILITY_UNIT_TEST_EXECUTABLE}
-    RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin/unit-tests/Utility/
+    RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin/unit-tests/utility/
 )
