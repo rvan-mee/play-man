@@ -63,9 +63,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Install MinGW
-      run: choco install mingw
-
     - name: Build
       run: |
         mkdir build
