@@ -59,15 +59,24 @@ jobs:
 
     runs-on: windows-latest
     timeout-minutes: 5
-
+  
     steps:
     - uses: actions/checkout@v3
+
+    - name: Setup Ninja
+      uses: seanmiddleditch/gha-setup-ninja@v5
+
+    - name: Build Project
+      uses: threeal/cmake-action@v2.1.0
+      with:
+        generator: Ninja
+        cxx-compiler: clang++
 
     - name: Build
       run: |
         mkdir build
         cd build
-        cmake -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX=install ..
+        cmake -G Ninja -DCMAKE_INSTALL_PREFIX=install ..
         make install  
     - name: gameboy-unit-tests
       run: |
