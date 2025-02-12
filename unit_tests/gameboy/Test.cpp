@@ -8,3 +8,8 @@ TEST_CASE("Unit tests work correctly")
 {
     REQUIRE(SomeTest::GetValue() == 42);
 }
+
+TEST_CASE("Is mingw at fault?")
+{
+    REQUIRE(SomeTest::GetValue() != 36);
+}
