@@ -22,8 +22,8 @@ add_executable(${UTILITY_UNIT_TEST_EXECUTABLE}
 	utility/MetaUtilityTests.cpp
 	utility/UtilFuncTests.cpp
 	logger/LoggerTests.cpp
-	# signal/SignalTests.cpp
-	# issueHandler/IssueHandlerTests.cpp
+	signal/SignalTests.cpp
+	issueHandler/IssueHandlerTests.cpp
 )
 target_link_libraries(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE ${LIBRARY_NAME})
 target_link_libraries(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::Catch2WithMain)
