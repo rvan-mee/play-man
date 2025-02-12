@@ -66,13 +66,19 @@ jobs:
     - name: Setup Ninja
       uses: seanmiddleditch/gha-setup-ninja@v5
 
-    - name: Build
+    - name: Cmake
       uses: threeal/cmake-action@v2.1.0
       with:
         generator: Ninja
+        c-compiler: clang
         cxx-compiler: clang++
-        build-dir: build
-        args: install
+        run-build: false
+
+    - name: make
+      run: |
+        mkdir build
+        cd build
+        make install        
   
     - name: gameboy-unit-tests
       run: |
