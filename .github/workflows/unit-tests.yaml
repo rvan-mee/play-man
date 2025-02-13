@@ -87,9 +87,9 @@ jobs:
     - name: Configure and Build
       run: |
         cmake -S . -B build -G "Ninja" \
-		  -DCMAKE_C_COMPILER="C:/msys64/mingw64/bin/gcc.exe" \
-          -DCMAKE_CXX_COMPILER="C:/msys64/mingw64/bin/g++.exe"
-		  -DCMAKE_CXX_STANDARD=23
+          -DCMAKE_C_COMPILER="C:/msys64/mingw64/bin/gcc.exe" \
+          -DCMAKE_CXX_COMPILER="C:/msys64/mingw64/bin/g++.exe" \
+          -DCMAKE_CXX_STANDARD=23
         cmake --build build
         make install
       shell: bash      
