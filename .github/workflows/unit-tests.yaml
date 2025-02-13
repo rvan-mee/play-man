@@ -76,11 +76,11 @@ jobs:
             mingw-w64-x86_64-cmake
             mingw-w64-x86_64-ninja
           update: true
-	- name: Add MSYS2 to PATH
+    - name: Add MSYS2 to PATH
       shell: bash
       run: echo "C:/msys64/mingw64/bin" >> $GITHUB_PATH
 
-	- name: Check GCC Version
+    - name: Check GCC Version
       run: g++ --version
       shell: bash
     
