@@ -73,7 +73,7 @@ jobs:
         c-compiler: gcc
         cxx-compiler: g++
         build-dir: build
-        args: -DCMAKE_INSTALL_PREFIX=install
+        args: -DCMAKE_INSTALL_PREFIX=install -DCMAKE_CXX_STANDARD=23
     
     - name: make
       run: |
