@@ -11,6 +11,9 @@ FetchContent_MakeAvailable(Catch2)
 
 # Create test executables
 
+set(COMPILE_OPTIONS -DCATCH_CONFIG_DISABLE_JUNIT)
+add_compile_options(${COMPILE_OPTIONS})
+
 set(GAMEBOY_UNIT_TEST_EXECUTABLE gameboy-unit-tests)
 add_executable(${GAMEBOY_UNIT_TEST_EXECUTABLE} gameboy/Test.cpp)
 target_link_libraries(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE ${LIBRARY_NAME})
