@@ -70,8 +70,8 @@ jobs:
       uses: threeal/cmake-action@v2.1.0
       with:
         generator: Ninja
-        c-compiler: clang
-        cxx-compiler: clang++
+        c-compiler: gcc
+        cxx-compiler: g++
         build-dir: build
         args: -DCMAKE_INSTALL_PREFIX=install
     
