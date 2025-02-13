@@ -59,6 +59,8 @@ jobs:
 
     runs-on: windows-latest
     timeout-minutes: 5
+  
+    steps:
 
     - name: Setup Ninja
       uses: seanmiddleditch/gha-setup-ninja@v5
