@@ -78,7 +78,7 @@ jobs:
         update: true
     - name: Add MSYS2 to PATH
       shell: bash
-      run: echo "C:/msys64/mingw64/bin" >> $GITHUB_PATH
+      run: echo "C:/msys64/mingw64/bin" > $GITHUB_PATH
 
     - name: Check GCC Version
       run: g++ --version
