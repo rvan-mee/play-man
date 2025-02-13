@@ -70,12 +70,12 @@ jobs:
       uses: msys2/setup-msys2@v2
       with:
         msystem: MINGW64
-          install: >-
-            mingw-w64-x86_64-gcc
-            mingw-w64-x86_64-gcc-libs
-            mingw-w64-x86_64-cmake
-            mingw-w64-x86_64-ninja
-          update: true
+        install: >-
+          mingw-w64-x86_64-gcc
+          mingw-w64-x86_64-gcc-libs
+          mingw-w64-x86_64-cmake
+          mingw-w64-x86_64-ninja
+        update: true
     - name: Add MSYS2 to PATH
       shell: bash
       run: echo "C:/msys64/mingw64/bin" >> $GITHUB_PATH
