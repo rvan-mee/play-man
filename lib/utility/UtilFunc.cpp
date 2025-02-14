@@ -26,7 +26,7 @@
 #include <string.h>
 #include <errno.h>
 #include <time.h>
-#include <exception>
+#include <stdexcept>
 
 namespace Utility
 {
