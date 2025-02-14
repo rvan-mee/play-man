@@ -63,12 +63,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Setup Ninja
-      uses: seanmiddleditch/gha-setup-ninja@v5
-
     - name: Build
       run: |
-        cmake -B build -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_INSTALL_PREFIX=install
+        cmake -B build -G "MinGW Makefiles" -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_INSTALL_PREFIX=install
         make -C build install
 
     - name: gameboy-unit-tests
