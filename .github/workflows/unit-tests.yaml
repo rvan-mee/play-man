@@ -67,6 +67,7 @@ jobs:
         cd bin/unit-tests/utility
         ./utility-unit-tests
 
+
   windows:
 
     runs-on: windows-latest
@@ -74,15 +75,12 @@ jobs:
   
     steps:
     - uses: actions/checkout@v3
-      with:
-        submodules: 'true'
 
     - name: Build
       run: |
-        mkdir build
-        cd build
-        cmake -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX=install ..
-        make install
+        cmake -B build -G "MinGW Makefiles" -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_INSTALL_PREFIX=install
+        make -C build install
+
     - name: general-play-man-unit-tests
       run: |
         cd bin/unit-tests/play-man

@@ -42,7 +42,7 @@ add_custom_target(
 	copy_test_data ALL
 	COMMAND ${CMAKE_COMMAND} -E copy_directory
 		${CMAKE_CURRENT_LIST_DIR}/../test-data/
-		${PROJECT_BINARY_DIR}/testData/
+		${PROJECT_BINARY_DIR}/test-data/
 )
 
 # Enable Catch2's CMake testing integration
