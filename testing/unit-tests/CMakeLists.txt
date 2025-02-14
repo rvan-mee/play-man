@@ -41,7 +41,7 @@ target_link_libraries(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::Catch2With
 add_custom_target(
 	copy_test_data ALL
 	COMMAND ${CMAKE_COMMAND} -E copy_directory
-		${CMAKE_CURRENT_LIST_DIR}/testData/
+		${CMAKE_CURRENT_LIST_DIR}/../test-data/
 		${PROJECT_BINARY_DIR}/testData/
 )
 

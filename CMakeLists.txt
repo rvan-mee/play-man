@@ -74,7 +74,7 @@ target_link_libraries(
 #
 
 # Add subdirectory for tests
-add_subdirectory(unit-tests)
+add_subdirectory(testing/unit-tests)
 
 #
 # Install targets in other directory
