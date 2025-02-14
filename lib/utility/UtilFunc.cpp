@@ -26,7 +26,6 @@
 #include <string.h>
 #include <errno.h>
 #include <time.h>
-#include <stdexcept>
 
 namespace Utility
 {
@@ -40,12 +39,14 @@ namespace Utility
 	#if defined(__STDC_LIB_EXT1__)
 		if (localtime_s(&logTime_t, &localTime) == nullprt)
 		{
-			throw std::rutime_error("Unable to get current time: " + ErrnoToString());
+			const auto errorMessage = "Unable to get current time: " + ErrnoToString();
+			throw std::rutime_error(errorMessage.c_str());
 		}
 	#elif defined(_WIN32)
 		if (localtime_s(&localTime, &logTime_t) != 0)
 		{
-			throw std::rutime_error("Unable to get current time: " + ErrnoToString());
+			const auto errorMessage = "Unable to get current time: " + ErrnoToString();
+			throw std::rutime_error(errorMessage.c_str());
 		}
 	#else
 		localTime = *std::localtime(&logTime_t);
