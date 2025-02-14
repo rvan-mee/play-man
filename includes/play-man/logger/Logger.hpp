@@ -172,13 +172,6 @@ namespace Logger
 		 */
 		static void Initialize(const std::string& logDir, LogLevel logLevel);
 
-		/**
-		 * @brief -.
-		 * 
-		 * @param enabled 
-		 */
-		void EnableCoutLogging(bool enabled);
-
 		/*!
 		* @brief Not yet thread safe function for writing a log to stdout.
 		*		  Adds a timestamp and the logtype as prefix to the logmessage.
