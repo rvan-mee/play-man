@@ -50,7 +50,6 @@ public:
 	 * 
 	 * @param moduleName 
 	 * @param allowDebug 
-	 * @param logFilePath 
 	 */
 	IssueHandler(
 		const std::string& moduleName,
@@ -63,6 +62,8 @@ public:
 	 * @param errorCode 
 	 * @param errorMessageToDisplay 
 	 * @param detailedErrorMessage 
+     * @param issueType 
+     * @param issueResolvable  
 	 * @param showAsPopup 
 	 */
 	void SetIssue(
