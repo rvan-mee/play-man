@@ -28,7 +28,8 @@
 #include <functional>
 
 /**
- * @brief
+ * @brief The intention of the issue-handler is to be able to set issues, and have callbacks on certain issues being set.
+ *        This way it is easy to see what problems are active in the program/component and handle accordingly.
  */
 class IssueHandler
 {
@@ -128,8 +129,7 @@ public:
 	 * @brief 
 	 * 
 	 * @param errorCode 
-	 * @return true 
-	 * @return false 
+	 * @return
 	 */
 	bool IsIssueActive(ErrorCode errorCode);
 

@@ -47,7 +47,8 @@ CREATE_ENUM_WITH_UTILS(ISSUE_RESOLVABLE_SEQ, IssueResolvable)
 #undef ISSUE_RESOLVABLE_SEQ
 
 /**
- * @brief
+ * @brief Struct containing all information about an issue.
+ *        These isues are mainly used by the issuehandler.
  */
 struct Issue
 {
