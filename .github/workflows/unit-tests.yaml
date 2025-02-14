@@ -74,12 +74,7 @@ jobs:
         cxx-compiler: clang++
         build-dir: build
         args: -DCMAKE_INSTALL_PREFIX=install
-    
-    - name: make
-      run: |
-        cd build
-        make install        
-  
+
     - name: gameboy-unit-tests
       run: |
         cd bin/unit-tests/gameboy
