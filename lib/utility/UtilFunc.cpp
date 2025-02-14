@@ -86,7 +86,7 @@ namespace Utility
 
 	std::string ErrnoToString()
 	{
-		#ifdef __STDC_LIB_EXT1__
+		#if defined(__STDC_LIB_EXT1__)|| defined(_WIN32)
 			size_t errmsglen = strerrorlen_s(errno) + 1;
 			char errmsg[errmsglen]; 
 			strerror_s(errmsg, errmsglen, errno);
