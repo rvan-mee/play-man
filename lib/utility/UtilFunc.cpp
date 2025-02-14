@@ -15,12 +15,16 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
+#define __STDC_WANT_LIB_EXT1__ 1
+
 #include <play-man/utility/UtilFunc.hpp>
 
 #include <ctime>
 #include <sstream>
 #include <chrono>
 #include <iomanip>
+#include <string.h>
+#include <errno.h>
 
 namespace Utility
 {
@@ -77,6 +81,19 @@ namespace Utility
 		Replace(path, toReplace, toReplaceWith);
 
 		return path;
+	}
+
+
+	std::string ErrnoToString()
+	{
+		#ifdef __STDC_LIB_EXT1__
+			size_t errmsglen = strerrorlen_s(errno) + 1;
+			char errmsg[errmsglen]; 
+			strerror_s(errmsg, errmsglen, errno);
+			return errmsg;
+		#else
+			return strerror(errno);
+		#endif
 	}
 
 } /* namespace Utility */

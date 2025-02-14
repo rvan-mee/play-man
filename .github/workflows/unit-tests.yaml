@@ -61,34 +61,24 @@ jobs:
     timeout-minutes: 5
   
     steps:
+    - uses: actions/checkout@v3
 
     - name: Setup Ninja
       uses: seanmiddleditch/gha-setup-ninja@v5
 
-    - name: Setup MSYS2
-      uses: msys2/setup-msys2@v2
+    - name: Cmake
+      uses: threeal/cmake-action@v2.1.0
       with:
-        msystem: MINGW64
-        install: >-
-          mingw-w64-x86_64-gcc
-          mingw-w64-x86_64-gcc-libs
-          mingw-w64-x86_64-cmake
-          mingw-w64-x86_64-ninja
-        update: true
-    - name: Add MSYS2 to PATH
-      shell: bash
-      run: echo "C:/msys64/mingw64/bin" > $GITHUB_PATH
-
-    - name: Check GCC Version
-      run: g++ --version
-      shell: bash
+        generator: Ninja
+        c-compiler: clang
+        cxx-compiler: clang++
+        build-dir: build
+        args: -DCMAKE_INSTALL_PREFIX=install
     
-    - name: Configure and Build
+    - name: make
       run: |
-        cmake -S . -B build -G "Ninja" -DCMAKE_CXX_STANDARD=23
-        cmake --build build
-        make install
-      shell: bash
+        cd build
+        make install        
   
     - name: gameboy-unit-tests
       run: |
