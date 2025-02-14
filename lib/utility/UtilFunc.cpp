@@ -37,7 +37,7 @@ namespace Utility
 
 	#if defined(__STDC_LIB_EXT1__) || defined(_WIN32)
 		struct tm buf;
-		const auto localTime = localtime_s(&t, &buf)
+		const auto localTime = localtime_s(&logTime_t, &buf);
 	#else
 		const auto localTime = std::localtime(&logTime_t);
 	#endif
