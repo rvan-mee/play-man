@@ -41,7 +41,7 @@ namespace Utility
 	#elif defined(_WIN32)
 		struct tm buf;
 		const auto localTime = localtime_s(&buf, &logTime_t);
-	#endif
+	#else
 		const auto localTime = std::localtime(&logTime_t);
 	#endif
 
