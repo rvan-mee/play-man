@@ -35,10 +35,13 @@ namespace Utility
 		const auto logTimeStamp = std::chrono::system_clock::now();
 		const auto logTime_t = std::chrono::system_clock::to_time_t(logTimeStamp);
 
-	#if defined(__STDC_LIB_EXT1__) || defined(_WIN32)
+	#if defined(__STDC_LIB_EXT1__)
 		struct tm buf;
 		const auto localTime = localtime_s(&logTime_t, &buf);
-	#else
+	#elif defined(_WIN32)
+		struct tm buf;
+		const auto localTime = localtime_s(&buf, &logTime_t);
+	#endif
 		const auto localTime = std::localtime(&logTime_t);
 	#endif
 
