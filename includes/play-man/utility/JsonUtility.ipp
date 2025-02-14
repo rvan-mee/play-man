@@ -11,6 +11,6 @@ std::optional<T> GetOptional(
 	}
 	catch (const std::exception&)
 	{
-		std::nullopt;
+		return std::nullopt;
 	}
 }
