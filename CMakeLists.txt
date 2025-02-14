@@ -12,7 +12,7 @@ project(p VERSION 0.0.1 LANGUAGES C CXX)
 #
 
 # Set the C++ standard
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Add compile options
@@ -74,7 +74,7 @@ target_link_libraries(
 #
 
 # Add subdirectory for tests
-add_subdirectory(unit_tests)
+add_subdirectory(unit-tests)
 
 #
 # Install targets in other directory

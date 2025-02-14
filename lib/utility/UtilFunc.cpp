@@ -15,12 +15,17 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
+#define __STDC_WANT_LIB_EXT1__ 1
+
 #include <play-man/utility/UtilFunc.hpp>
 
 #include <ctime>
 #include <sstream>
 #include <chrono>
 #include <iomanip>
+#include <string.h>
+#include <errno.h>
+#include <time.h>
 
 namespace Utility
 {
@@ -29,10 +34,24 @@ namespace Utility
 	{
 		const auto logTimeStamp = std::chrono::system_clock::now();
 		const auto logTime_t = std::chrono::system_clock::to_time_t(logTimeStamp);
-		const auto localTime = std::localtime(&logTime_t);
+
+	struct tm localTime;
+	#if defined(__STDC_LIB_EXT1__)
+		if (localtime_s(&logTime_t, &localTime) == nullprt)
+		{
+			throw std::runtime_error("Unable to get current time: " + ErrnoToString());
+		}
+	#elif defined(_WIN32)
+		if (localtime_s(&localTime, &logTime_t) != 0)
+		{
+			throw std::runtime_error("Unable to get current time: " + ErrnoToString());
+		}
+	#else
+		localTime = *std::localtime(&logTime_t);
+	#endif
 
 		std::stringstream sstream;
-		sstream << std::put_time(localTime, format.c_str());
+		sstream << std::put_time(&localTime, format.c_str());
 		return sstream.str();
 	}
 
@@ -77,6 +96,23 @@ namespace Utility
 		Replace(path, toReplace, toReplaceWith);
 
 		return path;
+	}
+
+	std::string ErrnoToString()
+	{
+	#ifdef __STDC_LIB_EXT1__
+		size_t errmsglen = strerrorlen_s(errno) + 1;
+		char errmsg[errmsglen]; 
+		strerror_s(errmsg, errmsglen, errno);
+		return errmsg;
+	#elif defined(_WIN32)
+		constexpr size_t errmsglen = 256;
+		char errmsg[errmsglen];
+		strerror_s(errmsg, errmsglen - 1, errno);
+		return errmsg;
+	#else
+		return strerror(errno);
+	#endif
 	}
 
 } /* namespace Utility */

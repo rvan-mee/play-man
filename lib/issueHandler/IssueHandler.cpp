@@ -1,3 +1,19 @@
+// ****************************************************************************** //
+//   _______   __                              __       __                        //
+//  /       \ /  |                            /  \     /  |                       //
+//  $$$$$$$  |$$ |  ______   __    __         $$  \   /$$ |  ______   _______     //
+//  $$ |__$$ |$$ | /      \ /  |  /  | ______ $$$  \ /$$$ | /      \ /       \    //
+//  $$    $$/ $$ | $$$$$$  |$$ |  $$ |/      |$$$$  /$$$$ | $$$$$$  |$$$$$$$  |   //
+//  $$$$$$$/  $$ | /    $$ |$$ |  $$ |$$$$$$/ $$ $$ $$/$$ | /    $$ |$$ |  $$ |   //
+//  $$ |      $$ |/$$$$$$$ |$$ \__$$ |        $$ |$$$/ $$ |/$$$$$$$ |$$ |  $$ |   //
+//  $$ |      $$ |$$    $$ |$$    $$ |        $$ | $/  $$ |$$    $$ |$$ |  $$ |   //
+//  $$/       $$/  $$$$$$$/  $$$$$$$ |        $$/      $$/  $$$$$$$/ $$/   $$/    //
+//                          /  \__$$ |                                            //
+//                          $$    $$/                                             //
+//                           $$$$$$/                                              //
+//                                                                                //
+//                            By: K1ngmar and rvan-mee                            //
+// ****************************************************************************** //
 
 #include "play-man/issueHandler/IssueHandler.hpp"
 #include "play-man/logger/Logger.hpp"
@@ -57,6 +73,12 @@ void IssueHandler::SetIssue(
 	}
 
 	issueSet(errorCode);
+
+	auto issueSetCallbackItr = issueSetCallbacks.find(errorCode);
+	if (issueSetCallbackItr != issueSetCallbacks.end())
+	{
+		issueSetCallbackItr->second();
+	}
 }
 
 void IssueHandler::ResolveIssue(ErrorCode errorCode)
@@ -82,11 +104,25 @@ void IssueHandler::ResolveIssue(ErrorCode errorCode)
 	}
 }
 
+void IssueHandler::SubscribeToIssueSet(
+	ErrorCode errorToSubscribeResolveOn,
+	const std::function<void()>& issueResolvedCallback)
+{
+	issueSetCallbacks[errorToSubscribeResolveOn].Connect(issueResolvedCallback);
+}
+
 void IssueHandler::SubscribeToIssueResolved(
 	ErrorCode errorToSubscribeResolveOn,
 	const std::function<void()>& issueResolvedCallback)
 {
 	issueResolvedCallbacks[errorToSubscribeResolveOn].Connect(issueResolvedCallback);
+}
+
+void IssueHandler::UnsubscribeIssueSet(
+	ErrorCode errorToUnsubscribeResolveOn,
+	const std::function<void()>& issueResolvedCallbackToRemove)
+{
+	issueSetCallbacks.at(errorToUnsubscribeResolveOn).Disconnect(issueResolvedCallbackToRemove);
 }
 
 void IssueHandler::UnsubscribeIssueResolved(

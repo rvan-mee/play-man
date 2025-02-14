@@ -22,18 +22,18 @@ jobs:
         cd build
         cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=install ..
         make install
-    - name: general_play_man_unit_tests
+    - name: general-play-man-unit-tests
       run: |
-        cd bin/unit_tests/play-man
+        cd bin/unit-tests/play-man
         ./general-play-man-unit-tests
-    - name: gameboy_unit_tests
+    - name: gameboy-unit-tests
       run: |
-        cd bin/unit_tests/gameboy
-        ./gameboy_unit_tests
-    - name: utility_unit_tests
+        cd bin/unit-tests/gameboy
+        ./gameboy-unit-tests
+    - name: utility-unit-tests
       run: |
-        cd bin/unit_tests/utility
-        ./utility_unit_tests
+        cd bin/unit-tests/utility
+        ./utility-unit-tests
 
 
   macos:
@@ -50,29 +50,26 @@ jobs:
         cd build
         cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=install ..
         make install
-    - name: general_play_man_unit_tests
+    - name: general-play-man-unit-tests
       run: |
-        cd bin/unit_tests/play-man
+        cd bin/unit-tests/play-man
         ./general-play-man-unit-tests
-    - name: gameboy_unit_tests
+    - name: gameboy-unit-tests
       run: |
-        cd bin/unit_tests/gameboy
-        ./gameboy_unit_tests
-    - name: utility_unit_tests
+        cd bin/unit-tests/gameboy
+        ./gameboy-unit-tests
+    - name: utility-unit-tests
       run: |
-        cd bin/unit_tests/utility
-        ./utility_unit_tests
+        cd bin/unit-tests/utility
+        ./utility-unit-tests
 
   windows:
 
     runs-on: windows-latest
-    timeout-minutes: 5
-
+    timeout-minutes: 10
+  
     steps:
     - uses: actions/checkout@v3
-
-    - name: Install MinGW
-      run: choco install mingw
 
     - name: Build
       run: |
@@ -80,15 +77,15 @@ jobs:
         cd build
         cmake -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX=install ..
         make install
-    - name: general_play_man_unit_tests
+    - name: general-play-man-unit-tests
       run: |
-        cd bin/unit_tests/play-man
+        cd bin/unit-tests/play-man
         ./general-play-man-unit-tests
-    - name: gameboy_unit_tests
+    - name: gameboy-unit-tests
       run: |
-        cd bin/unit_tests/gameboy
-        ./gameboy_unit_tests
-    - name: utility_unit_tests
+        cd bin/unit-tests/gameboy
+        ./gameboy-unit-tests
+    - name: utility-unit-tests
       run: |
-        cd bin/unit_tests/utility
-        ./utility_unit_tests
+        cd bin/unit-tests/utility
+        ./utility-unit-tests

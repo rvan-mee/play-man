@@ -18,6 +18,8 @@
 
 #include <nlohmann/json.hpp>
 
+#pragma once
+
 #include <iostream>
 #include <exception>
 #include <string_view>
