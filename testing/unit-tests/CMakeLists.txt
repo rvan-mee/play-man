@@ -37,12 +37,19 @@ add_executable(${UTILITY_UNIT_TEST_EXECUTABLE}
 target_link_libraries(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE ${LIBRARY_NAME})
 target_link_libraries(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::Catch2WithMain)
 
+set(UNIT_TEST_INSTALL_DIR ${CMAKE_SOURCE_DIR}/bin/unit-tests)
+
 # Copy unit test test data
 add_custom_target(
 	copy_test_data ALL
+
 	COMMAND ${CMAKE_COMMAND} -E copy_directory
 		${CMAKE_CURRENT_LIST_DIR}/../test-data/
-		${PROJECT_BINARY_DIR}/testData/
+		${UNIT_TEST_INSTALL_DIR}/test-data/
+
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
+		${CMAKE_CURRENT_LIST_DIR}/../test-data/
+		${PROJECT_BINARY_DIR}/testing/test-data/
 )
 
 # Enable Catch2's CMake testing integration
@@ -57,15 +64,15 @@ catch_discover_tests(
 
 install(
 	TARGETS ${GENERAL_PLAY_MAN_UNIT_TEST_EXECUTABLE}
-	RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin/unit-tests/play-man/
+	RUNTIME DESTINATION ${UNIT_TEST_INSTALL_DIR}/play-man/
 )
 
 install(
 	TARGETS ${GAMEBOY_UNIT_TEST_EXECUTABLE}
-    RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin/unit-tests/gameboy/
+    RUNTIME DESTINATION ${UNIT_TEST_INSTALL_DIR}/gameboy/
 )
 
 install(
 	TARGETS ${UTILITY_UNIT_TEST_EXECUTABLE}
-    RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin/unit-tests/utility/
+    RUNTIME DESTINATION ${UNIT_TEST_INSTALL_DIR}/utility/
 )

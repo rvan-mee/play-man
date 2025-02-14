@@ -19,7 +19,7 @@ namespace TestFixtures
 
 		std::shared_ptr<PlayManSettings> settings;
 
-		const std::string testDataDir = "testData/settings/";
+		const std::string testDataDir = "test-data/settings/";
 	
 		PlayManSettingsFixture() : settings(std::make_shared<PlayManSettings>())
 		{
