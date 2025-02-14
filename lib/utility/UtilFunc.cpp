@@ -39,14 +39,12 @@ namespace Utility
 	#if defined(__STDC_LIB_EXT1__)
 		if (localtime_s(&logTime_t, &localTime) == nullprt)
 		{
-			const auto errorMessage = "Unable to get current time: " + ErrnoToString();
-			throw std::rutime_error(errorMessage.c_str());
+			throw std::runtime_error("Unable to get current time: " + ErrnoToString());
 		}
 	#elif defined(_WIN32)
 		if (localtime_s(&localTime, &logTime_t) != 0)
 		{
-			const auto errorMessage = "Unable to get current time: " + ErrnoToString();
-			throw std::rutime_error(errorMessage.c_str());
+			throw std::runtime_error("Unable to get current time: " + ErrnoToString());
 		}
 	#else
 		localTime = *std::localtime(&logTime_t);
