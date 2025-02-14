@@ -35,18 +35,23 @@ namespace Utility
 		const auto logTimeStamp = std::chrono::system_clock::now();
 		const auto logTime_t = std::chrono::system_clock::to_time_t(logTimeStamp);
 
+	struct tm localTime;
 	#if defined(__STDC_LIB_EXT1__)
-		struct tm buf;
-		const auto localTime = localtime_s(&logTime_t, &buf);
+		if (localtime_s(&logTime_t, &localTime) == nullprt)
+		{
+			throw std::rutime_error("Unable to get current time: " + ErrnoToString());
+		}
 	#elif defined(_WIN32)
-		struct tm buf;
-		const auto localTime = localtime_s(&buf, &logTime_t);
+		if (localtime_s(&localTime, &logTime_t) != 0)
+		{
+			throw std::rutime_error("Unable to get current time: " + ErrnoToString());
+		}
 	#else
-		const auto localTime = std::localtime(&logTime_t);
+		localTime = *std::localtime(&logTime_t);
 	#endif
 
 		std::stringstream sstream;
-		sstream << std::put_time(localTime, format.c_str());
+		sstream << std::put_time(&localTime, format.c_str());
 		return sstream.str();
 	}
 
