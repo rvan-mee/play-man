@@ -42,6 +42,51 @@ TEST_CASE_METHOD(TestFixtures::IssueHandlerFixture, "Setting an issue")
 	REQUIRE(issueHandler.IsIssueActive(ErrorCode::AnErrorCodeForTestingPurposes));
 }
 
+TEST_CASE_METHOD(TestFixtures::IssueHandlerFixture, "Issue set subscribe")
+{
+	REQUIRE(!issueHandler.IsIssueActive(ErrorCode::AnErrorCodeForTestingPurposes));
+
+	bool issueSet = false;
+	issueHandler.SubscribeToIssueSet(ErrorCode::AnErrorCodeForTestingPurposes, [&](){
+		issueSet = true;
+	});
+
+	issueHandler.SetIssue(
+		ErrorCode::AnErrorCodeForTestingPurposes,
+		"test error",
+		"setting an issue for testing purposes",
+		IssueType::Error,
+		IssueResolvable::AutomaticallyResolvable
+	);
+
+	REQUIRE(issueSet == true);
+}
+
+TEST_CASE_METHOD(TestFixtures::IssueHandlerFixture, "Issue set unsubscribe")
+{
+	REQUIRE(!issueHandler.IsIssueActive(ErrorCode::AnErrorCodeForTestingPurposes));
+
+	bool issueSet = false;
+
+	auto callback = [&](){
+		issueSet = true;
+	};
+
+	issueHandler.SubscribeToIssueSet(ErrorCode::AnErrorCodeForTestingPurposes, callback);
+
+	issueHandler.UnsubscribeIssueSet(ErrorCode::AnErrorCodeForTestingPurposes, callback);
+
+	issueHandler.SetIssue(
+		ErrorCode::AnErrorCodeForTestingPurposes,
+		"test error",
+		"setting an issue for testing purposes",
+		IssueType::Error,
+		IssueResolvable::AutomaticallyResolvable
+	);
+
+	REQUIRE(issueSet == false);
+}
+
 TEST_CASE_METHOD(TestFixtures::IssueHandlerFixture, "Resolving an issue")
 {
 	issueHandler.SetIssue(

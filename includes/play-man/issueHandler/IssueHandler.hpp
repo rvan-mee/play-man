@@ -20,11 +20,12 @@ class IssueHandler
 	const std::string moduleName; /*! */
 	const bool allowDebug; /*!< -. */
 	std::map<ErrorCode, IssueResolvedCallbackType> issueResolvedCallbacks; /*!  */
+	std::map<ErrorCode, IssueResolvedCallbackType> issueSetCallbacks; /*!  */
 	std::map<ErrorCode, Issue> activeErrors; /*!<  */
 
 public:
 
-	Signal<void(ErrorCode)> issueSet; /*!< Signal emitted when an issue is set. */
+	Signal<void(ErrorCode)> issueSet; /*!< Signal emitted when any issue is set. */
 
 	/**
 	 * @brief
@@ -68,9 +69,31 @@ public:
 	 * @param errorToSubscribeResolveOn 
 	 * @param issueResolvedCallback
 	 */
+	void SubscribeToIssueSet(
+		ErrorCode errorToSubscribeResolveOn,
+		const std::function<void()>& issueResolvedCallback
+	);
+
+	/**
+	 * @brief Note that if you destruct your callback i.e. a member function, you need to manually unsubscribe.
+	 * 
+	 * @param errorToSubscribeResolveOn 
+	 * @param issueResolvedCallback
+	 */
 	void SubscribeToIssueResolved(
 		ErrorCode errorToSubscribeResolveOn,
 		const std::function<void()>& issueResolvedCallback
+	);
+
+	/**
+	 * @brief 
+	 * 
+	 * @param errorToUnsubscribeResolveOn 
+	 * @param issueResolvedCallback 
+	 */
+	void UnsubscribeIssueSet(
+		ErrorCode errorToUnsubscribeResolveOn,
+		const std::function<void()>& issueResolvedCallbackToRemove
 	);
 
 	/**
