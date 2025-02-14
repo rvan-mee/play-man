@@ -17,4 +17,14 @@
 
 #pragma once
 
-#define HEADER_OFFSET 0x0134
+#include <cstddef>
+#include <string>
+#include <play-man/ROM/Rom.hpp>
+
+namespace GameBoy {
+
+constexpr size_t headerOffset = 0x0134;
+
+RomHeader   ParseRomHeader(std::string fileName);
+
+};

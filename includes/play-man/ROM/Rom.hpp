@@ -21,12 +21,15 @@
 #include <array>
 #include <vector>
 #include <stdint.h>
+#include <ostream>
+
+namespace GameBoy {
 
 class RomHeader {
     public:
-        std::array<int8_t, NINTENDO_LOGO_SIZE>      nintendoLogo;
-        std::array<char, ROM_TITLE_SIZE>            title;
-        std::array<char, MANUFACTURER_CODE_SIZE>    manufacturerCode;
+        std::array<int8_t, nintendoLogoSize>        nintendoLogo;
+        std::array<char, romTitleSize + 1>          title;
+        std::array<char, manufacturerCodeSize + 1>  manufacturerCode;
         int8_t                                      cgbFlag;
         NewLicensingCodes                           newLicensingCode;
         int8_t                                      sgbFlag; 
@@ -38,14 +41,19 @@ class RomHeader {
         int8_t                                      romVersion;
         int8_t                                      headerChecksum;
         int16_t                                     globalChecksum;
-}; // TODO: ostream OVERLOAD
+};
 
-class Rom
-{
-    private:
-        RomHeader           header;
-        std::vector<int8_t> romData;
+std::ostream& operator << (std::ostream& lhs, const RomHeader& header);
 
-    public:
+// class Rom
+// {
+//     private:
+//         RomHeader           header;
+//         std::vector<int8_t> romData;
 
-}; // TODO: ostream OVERLOAD
+
+//     public:
+
+// }; // TODO: ostream OVERLOAD
+
+};
