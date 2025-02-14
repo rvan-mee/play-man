@@ -34,7 +34,7 @@ jobs:
 
       run: |
         cd bin/unit-tests
-        ./general-play-man-unit-tests
+        ./play-man/general-play-man-unit-tests
 
     - name: gameboy-unit-tests
       run: |
@@ -72,7 +72,7 @@ jobs:
     - name: general-play-man-unit-tests
       run: |
         cd bin/unit-tests
-        ./general-play-man-unit-tests
+        ./play-man/general-play-man-unit-tests
 
     - name: gameboy-unit-tests
       run: |
@@ -108,7 +108,7 @@ jobs:
     - name: general-play-man-unit-tests
       run: |
         cd bin/unit-tests
-        ./general-play-man-unit-tests
+        ./play-man/general-play-man-unit-tests
 
     - name: gameboy-unit-tests
       run: |
