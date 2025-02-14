@@ -66,5 +66,12 @@ namespace Utility
 	 */
 	std::string SanitizePathString(std::string path);
 
+	/**
+	 * @brief Returns the associated error message of the current errno value.
+	 * 
+	 * @return std::string 
+	 */
+	std::string ErrnoToString();
+
 
 } /* namespace Utility */

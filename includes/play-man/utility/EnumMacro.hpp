@@ -15,6 +15,8 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
+#pragma once
+
 #include <iostream>
 #include <exception>
 #include <string_view>

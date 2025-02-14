@@ -15,29 +15,24 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <iostream>
+#include <play-man/issueHandler/Issue.hpp>
 
-#include "play-man/logger/Logger.hpp"
-
-int main(int argc, char** argv)
+bool operator == (const Issue& lhs, const Issue& rhs)
 {
-	(void)argc;
-	(void)argv;
-	Logger::LogInterface::Initialize("Logging", Logger::LogLevel::Debug);
+	return (lhs.errorCode == rhs.errorCode &&
+			lhs.moduleName == rhs.moduleName &&
+			lhs.errorMessage == rhs.errorMessage &&
+			lhs.detailedErrorMessage == rhs.detailedErrorMessage &&
+			lhs.showAsPopup == rhs.showAsPopup
+	);
+}
 
-	LOG_INFO("Welcome to play-man!");
-	LOG_INFO_STREAM << "Welcome to play-man!\n";
+bool operator != (const Issue& lhs, const Issue& rhs)
+{
+	return !(lhs == rhs);
+}
 
-	LOG_WARNING("Welcome to play-man!");
-	LOG_WARNING_STREAM << "Welcome to play-man!\n";
-
-	LOG_ERROR("Welcome to play-man!");
-	LOG_ERROR_STREAM << "Welcome to play-man!\n";
-
-	LOG_FATAL("Welcome to play-man!");
-	LOG_FATAL_STREAM << "Welcome to play-man!\n";
-
-	LOG_DEBUG("Welcome to play-man!");
-	LOG_DEBUG_STREAM << "Welcome to play-man!\n";
-	return 0;
+bool operator < (const Issue& lhs, const Issue& rhs)
+{
+	return lhs.errorCode < rhs.errorCode;
 }

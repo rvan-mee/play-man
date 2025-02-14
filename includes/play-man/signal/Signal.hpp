@@ -15,29 +15,63 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <iostream>
+#pragma once
 
-#include "play-man/logger/Logger.hpp"
+#include <vector>
+#include <functional>
 
-int main(int argc, char** argv)
+template <class>
+class Signal;
+
+/**
+ * @brief Signal slot implementation, callback aka targets can be added by calling Connect.
+ * 		  Targets can be removed by callin Disconnect.
+ * 
+ * @note Callback are executed in the order they were added.
+ */
+template <class R, class ...Args>
+class Signal<R(Args...)>
 {
-	(void)argc;
-	(void)argv;
-	Logger::LogInterface::Initialize("Logging", Logger::LogLevel::Debug);
+	using CallbackType = std::function<R(Args...)>;
 
-	LOG_INFO("Welcome to play-man!");
-	LOG_INFO_STREAM << "Welcome to play-man!\n";
+	std::vector<CallbackType> callbacks;
 
-	LOG_WARNING("Welcome to play-man!");
-	LOG_WARNING_STREAM << "Welcome to play-man!\n";
+public:
 
-	LOG_ERROR("Welcome to play-man!");
-	LOG_ERROR_STREAM << "Welcome to play-man!\n";
+	/**
+	 * @brief Registers a callback for the signal.
+	 * 
+	 * @param callBackToAdd 
+	 */
+	void Connect(const CallbackType& callBackToAdd)
+	{
+		callbacks.emplace_back(callBackToAdd);
+	}
 
-	LOG_FATAL("Welcome to play-man!");
-	LOG_FATAL_STREAM << "Welcome to play-man!\n";
+	/**
+	 * @brief 
+	 * 
+	 * @param callBackToRemove 
+	 */
+	void Disconnect(const CallbackType& callBackToRemove)
+	{
+		std::erase_if(callbacks, [&](const CallbackType& element)
+		{
+			return element.target_type() == callBackToRemove.target_type();
+		});
+	}
 
-	LOG_DEBUG("Welcome to play-man!");
-	LOG_DEBUG_STREAM << "Welcome to play-man!\n";
-	return 0;
-}
+	/**
+	 * @brief
+	 * 
+	 * @param args 
+	 */
+	void operator () (Args... args)
+	{
+		for (auto callback : callbacks)
+		{
+			callback(args...);
+		}
+	}
+
+};
