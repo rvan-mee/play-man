@@ -66,14 +66,10 @@ jobs:
     - name: Setup Ninja
       uses: seanmiddleditch/gha-setup-ninja@v5
 
-    - name: Cmake
-      uses: threeal/cmake-action@v2.1.0
-      with:
-        generator: Ninja
-        c-compiler: clang
-        cxx-compiler: clang++
-        build-dir: build
-        args: -DCMAKE_INSTALL_PREFIX=install
+    - name: Build
+      run: |
+        cmake -B build -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_INSTALL_PREFIX=install
+        make -C build install
 
     - name: gameboy-unit-tests
       run: |
