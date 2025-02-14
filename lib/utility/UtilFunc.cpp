@@ -25,6 +25,7 @@
 #include <iomanip>
 #include <string.h>
 #include <errno.h>
+#include <time.h>
 
 namespace Utility
 {
@@ -33,7 +34,13 @@ namespace Utility
 	{
 		const auto logTimeStamp = std::chrono::system_clock::now();
 		const auto logTime_t = std::chrono::system_clock::to_time_t(logTimeStamp);
+
+	#if defined(__STDC_LIB_EXT1__) || defined(_WIN32)
+		struct tm buf;
+		const auto localTime = localtime_s(&t, &buf)
+	#else
 		const auto localTime = std::localtime(&logTime_t);
+	#endif
 
 		std::stringstream sstream;
 		sstream << std::put_time(localTime, format.c_str());
@@ -83,22 +90,21 @@ namespace Utility
 		return path;
 	}
 
-
 	std::string ErrnoToString()
 	{
-		#ifdef __STDC_LIB_EXT1__
-			size_t errmsglen = strerrorlen_s(errno) + 1;
-			char errmsg[errmsglen]; 
-			strerror_s(errmsg, errmsglen, errno);
-			return errmsg;
-		#elif defined(_WIN32)
-			constexpr size_t errmsglen = 256;
-			char errmsg[errmsglen];
-			strerror_s(errmsg, errmsglen - 1, errno);
-			return errmsg;
-		#else
-			return strerror(errno);
-		#endif
+	#ifdef __STDC_LIB_EXT1__
+		size_t errmsglen = strerrorlen_s(errno) + 1;
+		char errmsg[errmsglen]; 
+		strerror_s(errmsg, errmsglen, errno);
+		return errmsg;
+	#elif defined(_WIN32)
+		constexpr size_t errmsglen = 256;
+		char errmsg[errmsglen];
+		strerror_s(errmsg, errmsglen - 1, errno);
+		return errmsg;
+	#else
+		return strerror(errno);
+	#endif
 	}
 
 } /* namespace Utility */
