@@ -15,19 +15,18 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <iostream>
-
-#include "play-man/test.hpp"
 #include <play-man/settings/PlayManSettings.hpp>
 
-int main(int argc, char** argv)
+void to_json(nlohmann::json& j, const PlayManSettings& p)
 {
-	(void)argc;
-	(void)argv;
+	j = nlohmann::json {
+		{"logLevel", p.logLevel},
+		{"logDirectory", p.logDirectory}
+	};
+}
 
-	std::shared_ptr<PlayManSettings> settings = PlayManSettings::ReadFromFile("settings.json");
-	Logger::LogInterface::Initialize(settings->logDirectory, settings->logLevel);
-	
-	LOG_INFO("Settings being used:\n" + settings->ToString());
-	return 0;
+void from_json(const nlohmann::json& j, PlayManSettings& p)
+{
+	p.logLevel = j.value<Logger::LogLevel>("logLevel", PlayManSettings::defaultLogLevel);
+	p.logDirectory = j.value<std::filesystem::path>("logDirectory", PlayManSettings::defaultLogDirectory);
 }

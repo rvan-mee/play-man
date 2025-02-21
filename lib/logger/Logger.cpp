@@ -31,18 +31,19 @@
 namespace Logger
 {
 
-	LogInterface::LogInterface(const std::string& logDir_, LogLevel logLevel_)
+	LogInterface::LogInterface(const std::filesystem::path& logDir_, LogLevel logLevel_)
 		: logDir(logDir_)
-		, logFileName(Utility::SanitizePathString(logDir + "/play-man-" + Utility::CurrentTimeAsString() + ".log"))
+		, logFileName("play-man-" + Utility::CurrentTimeAsString() + ".log")
 		, logLevel(logLevel_)
 	{
 	#ifndef PLAY_MAN_NO_FILE_LOGGING
 		std::filesystem::create_directory(logDir);
-		logFile.open(logFileName);
+		const auto logFilePath = logDir / logFileName;
+		logFile.open(logFilePath);
 
 		if (!logFile.good())
 		{
-			throw std::runtime_error("Unable to open logFile in " + logDir + ": " + Utility::ErrnoToString());
+			throw std::runtime_error("Unable to open logFile in " + logFilePath.string() + ": " + Utility::ErrnoToString());
 		}
 	#endif
 	}
@@ -53,7 +54,7 @@ namespace Logger
 		return logger;
 	}
 
-	void LogInterface::Initialize(const std::string& logDir, LogLevel logLevel)
+	void LogInterface::Initialize(const std::filesystem::path& logDir, LogLevel logLevel)
 	{
 		auto& logger = GetInstance();
 
