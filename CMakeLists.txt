@@ -25,7 +25,7 @@ add_compile_options(${COMPILE_OPTIONS})
 
 # Disable unit tests for nlohmann_json
 set(JSON_BuildTests OFF CACHE INTERNAL "")
-add_subdirectory(json)
+add_subdirectory(external-libs/json)
 
 #
 # Sources
@@ -56,7 +56,7 @@ add_library(${LIBRARY_NAME} STATIC ${LIB_SOURCES})
 target_include_directories(
 	${LIBRARY_NAME}
 	PUBLIC ${CMAKE_SOURCE_DIR}/includes
-	PUBLIC json/include
+	PUBLIC external-libs/json/include
 )
 
 # Create the executable target
