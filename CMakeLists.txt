@@ -16,7 +16,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Add compile options
-set(COMPILE_OPTIONS -Wall -Wextra -Werror -pedantic -O3 -g -march=native)
+set(COMPILE_OPTIONS -Wall -Wextra -Werror -pedantic -O3 -march=native)
 add_compile_options(${COMPILE_OPTIONS})
 
 #
