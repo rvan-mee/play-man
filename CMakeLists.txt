@@ -17,11 +17,11 @@ set(EXECUTABLE_NAME play-man)
 add_executable(${EXECUTABLE_NAME} src/main.cpp)
 
 # Add compile options
-set(COMPILE_OPTIONS -Wall -Wextra -Werror -pedantic -O3 -march=native)
+set(COMPILE_OPTIONS -Wall -Wextra -Werror -pedantic -O3 -march=native -std=c++20)
 target_compile_options(${EXECUTABLE_NAME} PRIVATE ${COMPILE_OPTIONS})
 
 # Set the C++ standard
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 #
