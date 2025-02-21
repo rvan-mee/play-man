@@ -1,0 +1,3 @@
+[submodule "SDL"]
+	path = external-libs/SDL
+	url = https://github.com/libsdl-org/SDL
