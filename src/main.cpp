@@ -20,6 +20,7 @@
 #include "play-man/test.hpp"
 #include <play-man/settings/PlayManSettings.hpp>
 #include <play-man/gameboy/cpu/Opcodes.hpp>
+#include <play-man/gameboy/cpu/Cpu.hpp>
 
 int main(int argc, char** argv)
 {
@@ -31,8 +32,10 @@ int main(int argc, char** argv)
 	
 	LOG_INFO("Settings being used:\n" + settings->ToString());
 
+	Gameboy::Cpu t;
+	t.ExecuteInstruction(Gameboy::PrefixedOpCode::BIT_0_A);
 	const auto opcodeJson = Utility::Json::ReadJsonFromFile("opcodes.json");
-	const auto unprefixedOpcodes = opcodeJson.find("cbprefixed");
+	const auto unprefixedOpcodes = opcodeJson.find("unprefixed");
 
 	for (const auto& [key, value] : unprefixedOpcodes.value().items())
 	{
@@ -53,7 +56,8 @@ int main(int argc, char** argv)
 			}
 			enumName += (op.value<bool>("immediate", true) ? "" : "_NI");
 		}
-		std::cout << "X(n, " << enumName << ", " << key << ")\t\t\t\\" << std::endl;
+		// std::cout << "X(n, " << enumName << ", " << key << ")\t\t\t\\" << std::endl;
+		std::cout << "case OpCode::" << enumName << ": \n{\n\n\tbreak;\n}\n";
 	}
 
 	// std::cout << unprefixedOpcodes.value() << std::endl;

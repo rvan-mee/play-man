@@ -19,6 +19,7 @@
 
 #include <play-man/gameboy/cpu/Register.hpp>
 #include <inttypes.h>
+#include <play-man/gameboy/cpu/Opcodes.hpp>
 
 namespace Gameboy
 {
@@ -31,10 +32,21 @@ namespace Gameboy
 		Register SP; /* Stack pionter */
 		Register PC; /* Program counter */
 
+		uint16_t cyclesPassed = 0; /* */
+
 	public:
 
-		void ExecuteInstruction();
-		
+		/**
+		 * @brief -.
+		 * @param opCode 
+		 */
+		void ExecuteInstruction(OpCode opCode);
+
+		/**
+		 * @brief -.
+		 * @param opCode 
+		 */
+		void ExecuteInstruction(PrefixedOpCode opCode);
 	};
 
 } /* namespace Gameboy */
