@@ -8,26 +8,34 @@ int main(int argc, char** argv)
 	(void)argv;
 	std::cout << "Welcome to play-man!" << std::endl;
 
-	{
-		GameBoy::RomHeader header;
 
-		header.title = {"Pokemon Blue"};
-		header.manufacturerCode = {"NINT"};
-		header.cgbFlag = static_cast<int8_t>(0x01);
-		header.newLicensingCode = NewLicensingCodes::Nintendo;
-		header.sgbFlag = 0x00;
-		header.cartridgeType = CartridgeType::MBC1;
-		header.romSize = RomSize::MiB8;
-		header.ramSize = RamSize::KiB128;
-		header.destinationCode = DestinationCode::Overseas;
-		header.oldLicensingCodes = OldLicensingCodes::NewLicenseeCode;
-		header.romVersion = 0xFF;
-		header.headerChecksum = 0x16;
-		header.globalChecksum = 0;
+    if (argc > 1)
+    {
+        GameBoy::Rom rom(argv[1]);
 
-		std::cout << "Hard-coded header:" << std::endl;
-		std::cout << header << std::endl;
-	}
+        std::cout << rom << std::endl;
+    }
+    else
+    {
+        GameBoy::RomHeader header;
+
+        header.title = {"Pokemon Blue"};
+        header.manufacturerCode = {"NINT"};
+        header.cgbFlag = static_cast<int8_t>(0x01);
+        header.newLicensingCode = NewLicensingCode::Nintendo;
+        header.sgbFlag = 0x00;
+        header.cartridgeType = CartridgeType::MBC1;
+        header.romSize = RomSize::MiB8;
+        header.ramSize = RamSize::KiB128;
+        header.destinationCode = DestinationCode::Overseas;
+        header.oldLicensingCode = OldLicensingCode::UseNewLicenseeCode;
+        header.romVersion = 0xFF;
+        header.headerChecksum = 0x16;
+        header.globalChecksum = 0;
+
+        std::cout << "Hard-coded header:" << std::endl;
+        std::cout << header << std::endl;
+    }
 
 	return 0;
 }

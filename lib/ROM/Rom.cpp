@@ -23,6 +23,15 @@
 #include <optional>
 #include <ios>
 
+namespace GameBoy {
+
+    Rom::Rom(const char* filePath)
+    {
+        _filePath = filePath;
+        ParseRomFile(filePath);
+    }
+}
+
 
 static int32_t GetPaddingAfterName(const std::string_view name)
 {
@@ -79,6 +88,21 @@ static void PrintHeaderLine(const std::string_view name, int16_t var)
 
 namespace GameBoy {
 
+    RomHeader& Rom::GetHeader()
+    {
+        return _header;
+    }
+
+    std::vector<int8_t>& Rom::GetData()
+    {
+        return _romData;
+    }
+
+    const char* Rom::GetFilePath()
+    {
+        return _filePath;
+    }
+
     std::ostream& operator << (std::ostream& lhs, const RomHeader& header)
     {
         std::cout << "/**************************************************\\" << "\n";
@@ -93,12 +117,19 @@ namespace GameBoy {
         PrintHeaderLine("Rom size",           header.romSize);
         PrintHeaderLine("Ram size",           header.ramSize);
         PrintHeaderLine("Destination code",   header.destinationCode);
-        PrintHeaderLine("Old licensing code", header.oldLicensingCodes);
+        PrintHeaderLine("Old licensing code", header.oldLicensingCode);
         PrintHeaderLine("Rom version",        header.romVersion);
         PrintHeaderLine("Header checksum",    header.headerChecksum);
         PrintHeaderLine("Global checksum",    header.globalChecksum);
         std::cout << "/                                                  \\" << "\n";
         std::cout << "/**************************************************\\" << "\n";
+        return (lhs);
+    }
+
+    std::ostream& operator << (std::ostream& lhs, Rom& rom)
+    {
+        std::cout << "Info for ROM located on: " << rom.GetFilePath() << std::endl;
+        std::cout << rom.GetHeader();
         return (lhs);
     }
 }

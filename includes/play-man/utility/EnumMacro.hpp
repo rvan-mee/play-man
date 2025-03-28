@@ -59,7 +59,7 @@ inline std::string_view GetEnumAsString(enum_class_name val)\
     {\
         ENUM_DEFINITION(__ENUM_TO_STRING_CASE, enum_class_name)\
         default:\
-			throw (std::runtime_error("Unknown enum value for enum: " #enum_class_name));\
+			throw (std::runtime_error("Unknown enum value for enum: " #enum_class_name + std::to_string(static_cast<uint32_t>(val))));\
     }\
 }\
 inline int32_t GetEnumAsValue(enum_class_name val)\

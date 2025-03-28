@@ -31,29 +31,41 @@ class RomHeader {
         std::array<char, romTitleSize + 1>          title;
         std::array<char, manufacturerCodeSize + 1>  manufacturerCode;
         int8_t                                      cgbFlag;
-        NewLicensingCodes                           newLicensingCode;
+        NewLicensingCode                            newLicensingCode;
         int8_t                                      sgbFlag; 
         CartridgeType                               cartridgeType;
         RomSize                                     romSize;
         RamSize                                     ramSize;
         DestinationCode                             destinationCode;
-        OldLicensingCodes                           oldLicensingCodes;
+        OldLicensingCode                            oldLicensingCode;
         int8_t                                      romVersion;
         int8_t                                      headerChecksum;
         int16_t                                     globalChecksum;
+
+        void ParseRawData(const std::vector<int8_t>& data);
 };
 
 std::ostream& operator << (std::ostream& lhs, const RomHeader& header);
 
-// class Rom
-// {
-//     private:
-//         RomHeader           header;
-//         std::vector<int8_t> romData;
+class Rom
+{
+    private:
+        RomHeader           _header;
+        std::vector<int8_t> _romData;
+        const char*         _filePath;
 
+        void ParseRomFile(const char* filePath);
 
-//     public:
+    public:
+        Rom() = delete;
+        Rom(const char* filePath);
 
-// }; // TODO: ostream OVERLOAD
+        RomHeader&              GetHeader();
+        std::vector<int8_t>&    GetData();
+        const char*             GetFilePath();
+
+};
+
+std::ostream& operator << (std::ostream& lhs, Rom& rom);
 
 };

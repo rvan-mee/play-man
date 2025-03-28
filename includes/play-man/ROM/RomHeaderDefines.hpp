@@ -24,8 +24,22 @@ constexpr size_t nintendoLogoSize = 48;
 
 // Parts of the title are used for the manufacturer code and cgb flag on later cartridges, reducing the actual title size.
 constexpr size_t romTitleSize = 16;
-
 constexpr size_t manufacturerCodeSize = 4;
+
+constexpr size_t nintendoLogoIndex = 0x0104;
+constexpr size_t titleIndex = 0x0134;
+constexpr size_t manufacturerCodeIndex = 0x013F;
+constexpr size_t cgbFlagIndex = 0x0143;
+constexpr size_t newLicensingCodeIndex = 0x0144;
+constexpr size_t sgbFlagIndex = 0x0146;
+constexpr size_t cartridgeTypeIndex = 0x0147;
+constexpr size_t romSizeIndex = 0x0148;
+constexpr size_t ramSizeIndex = 0x0149;
+constexpr size_t destinationCodeindex = 0x014A;
+constexpr size_t oldLicensingCodeindex = 0x014B;
+constexpr size_t romVersionIndex =  0x014C;
+constexpr size_t headerChecksumIndex = 0x014D;
+constexpr size_t globalChecksumIndex = 0x014E; 
 
 // TODO: use pascalCase
 
@@ -39,7 +53,8 @@ constexpr size_t manufacturerCodeSize = 4;
  * 
  * The final encoding will be 0x3031, we have separated the two bytes with a \' to make reading the values easier.
  */
-#define NewLicensingCodesSeq(x, n) \
+#define NewLicensingCodeSeq(x, n) \
+    x(n, UseOldLicensingCode                     , 0x00'00) \
     x(n, None                                    , 0x30'30)  /* "00" */ \
     x(n, Nintendo_Research_and_Development_1     , 0x30'31)  /* "01" */ \
     x(n, Capcom                                  , 0x30'38)  /* "08" */ \
@@ -104,9 +119,9 @@ constexpr size_t manufacturerCodeSize = 4;
     x(n, MTO                                     , 0x42'4C)  /* "BL" */ \
     x(n, Kodansha                                , 0x44'4B)  /* "DK" */
 
-CREATE_ENUM_WITH_UTILS(NewLicensingCodesSeq, NewLicensingCodes);
+CREATE_ENUM_WITH_UTILS(NewLicensingCodeSeq, NewLicensingCode);
 
-#undef NewLicensingCodesSeq
+#undef NewLicensingCodeSeq
     
 
 /**
@@ -204,7 +219,7 @@ CREATE_ENUM_WITH_UTILS(DestinationCodeSeq, DestinationCode);
  * means to refer to the new Licensing code to get the correct licensing company.
  */
 
-#define OldLicensingCodesSeq(x, n) \
+#define OldLicensingCodeSeq(x, n) \
     x(n, None                    , 0x00)                                                \
     x(n, Nintendo                , 0x01)                                                \
     x(n, Capcom                  , 0x08)                                                \
@@ -225,7 +240,7 @@ CREATE_ENUM_WITH_UTILS(DestinationCodeSeq, DestinationCode);
     x(n, Infogrames              , 0x30)                                                \
     x(n, Nintendo_2              , 0x31) /* Prevents collision with "Nintendo" */       \
     x(n, Bandai                  , 0x32)                                                \
-    x(n, NewLicenseeCode         , 0x33)                                                \
+    x(n, UseNewLicenseeCode      , 0x33)                                                \
     x(n, Konami                  , 0x34)                                                \
     x(n, Hector                  , 0x35)                                                \
     x(n, Capcom_2                , 0x38) /* Prevents collision with "Capcom" */         \
@@ -353,7 +368,7 @@ CREATE_ENUM_WITH_UTILS(DestinationCodeSeq, DestinationCode);
     x(n, ExtremeEntertainment    , 0xF3)                                                \
     x(n, LJN_3                   , 0xFF) /* Prevents collision with "LJN" */            \
 
-CREATE_ENUM_WITH_UTILS(OldLicensingCodesSeq, OldLicensingCodes);
+CREATE_ENUM_WITH_UTILS(OldLicensingCodeSeq, OldLicensingCode);
 
-#undef OldLicensingCodesSeq
+#undef OldLicensingCodeSeq
 
