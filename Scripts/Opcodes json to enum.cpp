@@ -17,19 +17,13 @@
 
 #include <iostream>
 
-#include "play-man/test.hpp"
-#include <play-man/settings/PlayManSettings.hpp>
-#include <play-man/gameboy/cpu/Opcodes.hpp>
+#include <play-man/utility/UtilFunc.hpp>
+#include <play-man/utility/JsonUtility.hpp>
 
 int main(int argc, char** argv)
 {
 	(void)argc;
 	(void)argv;
-
-	std::shared_ptr<PlayManSettings> settings = PlayManSettings::ReadFromFile("settings.json");
-	Logger::LogInterface::Initialize(settings->logDirectory, settings->logLevel);
-	
-	LOG_INFO("Settings being used:\n" + settings->ToString());
 
 	const auto opcodeJson = Utility::Json::ReadJsonFromFile("opcodes.json");
 	const auto unprefixedOpcodes = opcodeJson.find("unprefixed");
@@ -55,8 +49,6 @@ int main(int argc, char** argv)
 		}
 		std::cout << "X(n, " << enumName << ", " << key << ")\t\t\t\\" << std::endl;
 	}
-
-	// std::cout << unprefixedOpcodes.value() << std::endl;
 
 	return 0;
 }

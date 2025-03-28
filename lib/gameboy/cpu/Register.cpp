@@ -15,48 +15,43 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <iostream>
+#include <play-man/gameboy/cpu/Register.hpp>
 
-#include "play-man/test.hpp"
-#include <play-man/settings/PlayManSettings.hpp>
-#include <play-man/gameboy/cpu/Opcodes.hpp>
-
-int main(int argc, char** argv)
+namespace Gameboy
 {
-	(void)argc;
-	(void)argv;
-
-	std::shared_ptr<PlayManSettings> settings = PlayManSettings::ReadFromFile("settings.json");
-	Logger::LogInterface::Initialize(settings->logDirectory, settings->logLevel);
-	
-	LOG_INFO("Settings being used:\n" + settings->ToString());
-
-	const auto opcodeJson = Utility::Json::ReadJsonFromFile("opcodes.json");
-	const auto unprefixedOpcodes = opcodeJson.find("unprefixed");
-
-	for (const auto& [key, value] : unprefixedOpcodes.value().items())
+	Register::Register(uint16_t initialValue)
 	{
-		(void)key;
-		(void)value;
-		// std::cout << value["operands"];
-		std::string enumName = value.find("mnemonic").value();
-		for (const auto& op : value["operands"])
-		{
-			enumName += "_" + op.value<std::string>("name", "");
-			if (op.contains("increment"))
-			{
-				enumName += "_INC";
-			}
-			else if (op.contains("decrement"))
-			{
-				enumName += "_DEC";
-			}
-			enumName += (op.value<bool>("immediate", true) ? "" : "_NI");
-		}
-		std::cout << "X(n, " << enumName << ", " << key << ")\t\t\t\\" << std::endl;
+		internalRegister.value = initialValue;
 	}
 
-	// std::cout << unprefixedOpcodes.value() << std::endl;
+	void Register::SetLowByte(uint8_t value)
+	{
+		internalRegister.byte.low = value;
+	}
 
-	return 0;
+	void Register::SetHighByte(uint8_t value)
+	{
+		internalRegister.byte.high = value;
+	}
+
+	void Register::SetValue(uint16_t value)
+	{
+		internalRegister.value = value;
+	}
+
+	uint8_t Register::LowByte() const
+	{
+		return internalRegister.byte.low;
+	}
+
+	uint8_t Register::HighByte() const
+	{
+		return internalRegister.byte.high;
+	}
+
+	uint16_t Register::Value() const
+	{
+		return internalRegister.value;
+	}
+	
 }

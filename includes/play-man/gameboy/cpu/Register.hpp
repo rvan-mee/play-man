@@ -17,54 +17,15 @@
 
 #pragma once
 
-#include <play-man/utility/EnumMacro.hpp>
-
 #include <inttypes.h>
 
-namespace gameboy
+namespace Gameboy
 {
-
-	#define REGISTER_NAMES_SEQ(X, n) \
-		x(n, Flag, 0x00) \
-		X(n, A, 0x01) \
-		X(n, B, 0x02) \
-		X(n, C, 0x03) \
-		X(n, D, 0x04) \
-		X(n, E, 0x05) \
-		x(n, H, 0x06) \
-		x(n, L, 0x07) \
-		x(n, SP, 0x0a) \
-		x(n, PC, 0x0b)
-
-	/**
-	 * @brief Enum describing the severity of the log.
-	 */
-	CREATE_ENUM_WITH_UTILS(REGISTER_NAMES_SEQ, RegisterName)
-	#undef REGISTER_NAMES_SEQ
-
-	#define SIXTEEN_BIT_REGISTER_NAMES_SEQ(X, n) \
-		X(n, AF, RegisterName::Flag << 8 | RegisterName::A) \
-		X(n, BC, RegisterName::B << 8 | RegisterName::C) \
-		X(n, DE, RegisterName::D << 8 | RegisterName::E) \
-		X(n, HL, RegisterName::H << 8 | RegisterName::L) \
-		x(n, RegisterName::SP) \
-		x(n, RegisterName::PC)
-
-	CREATE_ENUM_WITH_UTILS(SIXTEEN_BIT_REGISTER_NAMES_SEQ, CombinedRegisterName)
-	#undef SIXTEEN_BIT_REGISTER_NAMES_SEQ
-
-	/**
-	 * @brief Enum describing the severity of the log.
-	 */
-	CREATE_ENUM_WITH_UTILS REGISTER_NAMES_SEQ, RegisterName)
-	#undef REGISTER_NAMES_SEQ
-
 	/**
 	 * @brief A gameboy register :)
 	 * 
 	 * @tparam Based on the register operations can be made hidden because the stack pointer for examle does not support 8bit operations. 
 	 */
-	template <CombinedRegisterName CombinedRegister>
 	class Register
 	{
 
@@ -77,21 +38,59 @@ namespace gameboy
 		union InternalRegisterLayout
 		{
 			struct {
-				uint8_t lowByte;
-				uint8_t highByte;
-			}
-			uint16_t value;
+				uint8_t low  : 8;
+				uint8_t high : 8;
+			} byte;
+			uint16_t value : 16;
 		};
 
 		InternalRegisterLayout internalRegister;
 
 	public:
 
+		/**
+		 * @brief -.
+		 * @param initialValue 
+		 */
 		Register(uint16_t initialValue = 0x0000);
 
+		/**
+		 * @brief -.
+		 * @param value 
+		 */
+		void SetLowByte(uint8_t value);
+
+		/**
+		 * @brief -.
+		 * @param value 
+		 */
+		void SetHighByte(uint8_t value);
+
+		/**
+		 * @brief -.
+		 * @param value 
+		 */
+		void SetValue(uint16_t value);
+
+		/**
+		 * @brief -.
+		 * @return uint8_t 
+		 */
+		uint8_t LowByte() const;
+
+		/**
+		 * @brief -.
+		 * @return uint8_t 
+		 */
+		uint8_t HighByte() const;
+
+		/**
+		 * @brief -.
+		 * @return uint16_t 
+		 */
+		uint16_t Value() const;
 
 	};
 
-	#include "Register.ipp"
 
 } /* namespace gameboy */
