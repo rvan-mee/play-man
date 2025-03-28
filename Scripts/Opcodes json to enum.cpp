@@ -26,7 +26,7 @@ int main(int argc, char** argv)
 	(void)argv;
 
 	const auto opcodeJson = Utility::Json::ReadJsonFromFile("opcodes.json");
-	const auto unprefixedOpcodes = opcodeJson.find("unprefixed");
+	const auto unprefixedOpcodes = opcodeJson.find("cbprefixed");
 
 	for (const auto& [key, value] : unprefixedOpcodes.value().items())
 	{

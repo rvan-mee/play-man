@@ -32,7 +32,7 @@ int main(int argc, char** argv)
 	LOG_INFO("Settings being used:\n" + settings->ToString());
 
 	const auto opcodeJson = Utility::Json::ReadJsonFromFile("opcodes.json");
-	const auto unprefixedOpcodes = opcodeJson.find("unprefixed");
+	const auto unprefixedOpcodes = opcodeJson.find("cbprefixed");
 
 	for (const auto& [key, value] : unprefixedOpcodes.value().items())
 	{
