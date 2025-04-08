@@ -45,7 +45,7 @@ int main(int argc, char** argv)
         header.ramSize = RamSize::KiB128;
         header.destinationCode = DestinationCode::Overseas;
         header.oldLicensingCode = OldLicensingCode::UseNewLicenseeCode;
-        header.romVersion = 0xFF;
+        header.romVersion = 0x01;
         header.headerChecksum = 0x16;
         header.globalChecksum = 0;
 
