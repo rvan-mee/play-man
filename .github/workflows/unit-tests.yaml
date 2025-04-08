@@ -15,6 +15,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        submodules: 'true'
 
     - name: Build
       run: |
@@ -22,14 +24,27 @@ jobs:
         cd build
         cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=install ..
         make install
+
+    - name: Set test-data permisions
+      run: |
+        cd bin/unit-tests
+        chmod 666 test-data/*/*
+
+    - name: general-play-man-unit-tests
+
+      run: |
+        cd bin/unit-tests
+        ./play-man/general-play-man-unit-tests
+
     - name: gameboy-unit-tests
       run: |
-        cd bin/unit-tests/gameboy
-        ./gameboy-unit-tests
+        cd bin/unit-tests
+        ./gameboy/gameboy-unit-tests
+
     - name: utility-unit-tests
       run: |
-        cd bin/unit-tests/utility
-        ./utility-unit-tests
+        cd bin/unit-tests
+        ./utility/utility-unit-tests
 
 
   macos:
@@ -39,6 +54,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        submodules: 'true'
 
     - name: Build
       run: |
@@ -46,14 +63,27 @@ jobs:
         cd build
         cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=install ..
         make install
+
+    - name: Set test-data permisions
+      run: |
+        cd bin/unit-tests
+        chmod 666 test-data/*/*
+  
+    - name: general-play-man-unit-tests
+      run: |
+        cd bin/unit-tests
+        ./play-man/general-play-man-unit-tests
+
     - name: gameboy-unit-tests
       run: |
-        cd bin/unit-tests/gameboy
-        ./gameboy-unit-tests
+        cd bin/unit-tests
+        ./gameboy/gameboy-unit-tests
+
     - name: utility-unit-tests
       run: |
-        cd bin/unit-tests/utility
-        ./utility-unit-tests
+        cd bin/unit-tests
+        ./utility/utility-unit-tests
+
 
   windows:
 
@@ -62,17 +92,30 @@ jobs:
   
     steps:
     - uses: actions/checkout@v3
+      with:
+        submodules: 'true'
 
     - name: Build
       run: |
         cmake -B build -G "MinGW Makefiles" -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_INSTALL_PREFIX=install
         make -C build install
 
+    - name: Set test-data permisions
+      run: |
+        cd bin/unit-tests
+        chmod 666 test-data/*/*
+
+    - name: general-play-man-unit-tests
+      run: |
+        cd bin/unit-tests
+        ./play-man/general-play-man-unit-tests
+
     - name: gameboy-unit-tests
       run: |
-        cd bin/unit-tests/gameboy
-        ./gameboy-unit-tests
+        cd bin/unit-tests
+        ./gameboy/gameboy-unit-tests
+
     - name: utility-unit-tests
       run: |
-        cd bin/unit-tests/utility
-        ./utility-unit-tests
+        cd bin/unit-tests
+        ./utility/utility-unit-tests

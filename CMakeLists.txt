@@ -20,6 +20,14 @@ set(COMPILE_OPTIONS -Wall -Wextra -Werror -pedantic -O3 -march=native)
 add_compile_options(${COMPILE_OPTIONS})
 
 #
+# External libraries
+#
+
+# Disable unit tests for nlohmann_json
+set(JSON_BuildTests OFF CACHE INTERNAL "")
+add_subdirectory(external-libs/json)
+
+#
 # Sources
 #
 
@@ -45,20 +53,28 @@ file(GLOB_RECURSE LIB_SOURCES "${LIB_DIR}/*.cpp")
 add_library(${LIBRARY_NAME} STATIC ${LIB_SOURCES})
 
 # Specify include directories for the library
-target_include_directories(${LIBRARY_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/includes)
+target_include_directories(
+	${LIBRARY_NAME}
+	PUBLIC ${CMAKE_SOURCE_DIR}/includes
+	PUBLIC external-libs/json/include
+)
 
 # Create the executable target
 add_executable(${EXECUTABLE_NAME} src/main.cpp)
 
 # Link the executable to the library
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE ${LIBRARY_NAME})
+target_link_libraries(
+	${EXECUTABLE_NAME}
+	PRIVATE ${LIBRARY_NAME}
+	PRIVATE nlohmann_json::nlohmann_json
+)
 
 #
 # Unit testing
 #
 
 # Add subdirectory for tests
-add_subdirectory(unit-tests)
+add_subdirectory(testing/unit-tests)
 
 #
 # Install targets in other directory

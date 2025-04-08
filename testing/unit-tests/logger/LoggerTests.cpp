@@ -35,7 +35,7 @@ namespace TestFixtures
 
 			// Flushing the buffer because I was going bald trying to figure out why the file was empty :/
 			logger->logFile.flush();
-			std::ifstream f(logger->logFileName);
+			std::ifstream f(logger->logDir / logger->logFileName);
 			for (std::string line; std::getline(f, line) ; )
 			{
 				if (std::regex_match(line, regexToMatch))

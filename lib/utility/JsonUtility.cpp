@@ -15,19 +15,22 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <iostream>
+#include <play-man/utility/JsonUtility.hpp>
+#include <play-man/utility/UtilFunc.hpp>
 
-#include "play-man/test.hpp"
-#include <play-man/settings/PlayManSettings.hpp>
+namespace Utility { namespace Json {
 
-int main(int argc, char** argv)
-{
-	(void)argc;
-	(void)argv;
+	nlohmann::json CreateEmptyJson()
+	{
+		return nlohmann::json({});
+	}
 
-	std::shared_ptr<PlayManSettings> settings = PlayManSettings::ReadFromFile("settings.json");
-	Logger::LogInterface::Initialize(settings->logDirectory, settings->logLevel);
-	
-	LOG_INFO("Settings being used:\n" + settings->ToString());
-	return 0;
-}
+	nlohmann::json ReadJsonFromFile(const std::filesystem::path& fileToReadFrom)
+	{
+		const auto settingsAsString = Utility::ReadFileToString(fileToReadFrom);
+		return nlohmann::json::parse(settingsAsString);
+	}
+
+} /* namespace Json */
+
+} /* namespace Utility */

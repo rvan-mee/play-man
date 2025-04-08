@@ -14,20 +14,47 @@
 //                                                                                //
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
+#pragma once
 
-#include <iostream>
+#include <nlohmann/json.hpp>
 
-#include "play-man/test.hpp"
-#include <play-man/settings/PlayManSettings.hpp>
+#include <optional>
 
-int main(int argc, char** argv)
-{
-	(void)argc;
-	(void)argv;
+namespace Utility { namespace Json {
 
-	std::shared_ptr<PlayManSettings> settings = PlayManSettings::ReadFromFile("settings.json");
-	Logger::LogInterface::Initialize(settings->logDirectory, settings->logLevel);
-	
-	LOG_INFO("Settings being used:\n" + settings->ToString());
-	return 0;
-}
+	constexpr size_t numberOfSpacesIndentation = 4; /* The number of spaces to use when indenting for serialization. */
+
+	/**
+	 * @brief Due to bug `https://github.com/nlohmann/json/issues/2046` the default
+	 *        constructor of the json creates invalid/unusable json on certain compilers.
+	 *        Just use this function and all should be well :).
+	 * 
+	 * @return
+	 */
+	nlohmann::json CreateEmptyJson();
+
+	/**
+	 * @brief Reads file as json.
+	 * @param fileToReadFrom
+	 * @return
+	 */
+	nlohmann::json ReadJsonFromFile(const std::filesystem::path& fileToReadFrom);
+
+	/**
+	 * @brief Get the value from the tree as T if it exists.
+	 * 
+	 * @tparam T 
+	 * @param jsonTree 
+	 * @param pathToValue 
+	 * @return
+	 */
+	template <class T>
+	std::optional<T> GetOptional(
+		const nlohmann::json& jsonTree,
+		const nlohmann::json::json_pointer& pathToValue);
+
+	#include "JsonUtility.ipp"
+
+} /* namespace Json */
+
+} /* namespace Utility */

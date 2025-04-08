@@ -14,20 +14,68 @@
 //                                                                                //
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
+#pragma once
 
-#include <iostream>
+#include "ISettings.hpp"
+#include <play-man/logger/Logger.hpp>
 
-#include "play-man/test.hpp"
-#include <play-man/settings/PlayManSettings.hpp>
+#include <filesystem>
 
-int main(int argc, char** argv)
+/**
+ * @brief Struct containing all settings for play-man not specific to any emulator.
+ */
+struct PlayManSettings : public ISettings<PlayManSettings>
 {
-	(void)argc;
-	(void)argv;
+	/**
+	 * @brief -.
+	 */
+	PlayManSettings()
+		: logLevel(defaultLogLevel)
+		, logDirectory(defaultLogDirectory)
+	{}
 
-	std::shared_ptr<PlayManSettings> settings = PlayManSettings::ReadFromFile("settings.json");
-	Logger::LogInterface::Initialize(settings->logDirectory, settings->logLevel);
+	/**
+	 * @brief -.
+	 * 
+	 * @param rhs 
+	 */
+	PlayManSettings(const PlayManSettings& rhs)
+	{
+		*this = rhs;
+	}
+
+	/**
+	 * @brief -.
+	 * 
+	 * @param rhs 
+	 * @return
+	 */
+	PlayManSettings& operator = (const PlayManSettings& rhs)
+	{
+		logLevel = rhs.logLevel;
+		logDirectory = rhs.logDirectory;
+		return *this;
+	}
 	
-	LOG_INFO("Settings being used:\n" + settings->ToString());
-	return 0;
-}
+	Logger::LogLevel logLevel;
+	static constexpr Logger::LogLevel defaultLogLevel = Logger::LogLevel::Normal;
+
+	std::filesystem::path logDirectory;
+	static constexpr std::string_view defaultLogDirectory = "Logging";
+};
+
+/**
+ * @brief 
+ * 
+ * @param j 
+ * @param p 
+ */
+void to_json(nlohmann::json& j, const PlayManSettings& p);
+
+/**
+ * @brief 
+ * 
+ * @param j 
+ * @param p 
+ */
+void from_json(const nlohmann::json& j, PlayManSettings& p);

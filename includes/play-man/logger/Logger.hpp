@@ -23,6 +23,7 @@
 #include <string_view>
 #include <memory>
 #include <optional>
+#include <filesystem>
 
 #ifndef PLAY_MAN_NO_FILE_LOGGING
 	#include <fstream>
@@ -97,7 +98,7 @@ namespace Logger
 
 
 	#ifndef PLAY_MAN_NO_FILE_LOGGING
-		const std::string logDir;
+		const std::filesystem::path logDir;
 		const std::string logFileName;
 		std::ofstream logFile;
 	#endif
@@ -108,7 +109,7 @@ namespace Logger
 		/*!
 		* @brief Hidden default constructor.
 		*/
-		LogInterface(const std::string& logDir, LogLevel logLevel);
+		LogInterface(const std::filesystem::path& logDir, LogLevel logLevel);
 
 		/*!
 		* @brief
@@ -170,7 +171,7 @@ namespace Logger
 		 * @param logDir
 		 * @param logLevel
 		 */
-		static void Initialize(const std::string& logDir, LogLevel logLevel);
+		static void Initialize(const std::filesystem::path& logDir, LogLevel logLevel);
 
 		/*!
 		* @brief Not yet thread safe function for writing a log to stdout.
