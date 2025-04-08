@@ -16,6 +16,7 @@
 // ****************************************************************************** //
 
 #include <play-man/ROM/Rom.hpp>
+#include <play-man/utility/UtilFunc.hpp>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -78,7 +79,7 @@ namespace GameBoy {
         if (!rom.is_open())
         {
             std::cerr << "Failed to open ROM: " << filePath << std::endl;
-            std::cerr << "Error: " << strerror(errno) << std::endl;
+            std::cerr << "Error: " << Utility::ErrnoToString() << std::endl;
             throw std::runtime_error("Failed open ROM"); 
         }
 
