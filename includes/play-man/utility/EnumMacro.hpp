@@ -20,6 +20,7 @@
 #include <iostream>
 #include <exception>
 #include <string_view>
+#include <stdint.h>
 
 #define __CREATE_DEFAULT_ENUM(enum_class_name, enum_value_name) enum_value_name,
 #define __CREATE_DEFINED_ENUM(enum_class_name, enum_value_name, value) enum_value_name = value,
