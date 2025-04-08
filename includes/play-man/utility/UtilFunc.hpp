@@ -15,47 +15,63 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <iostream>
-#include <play-man/ROM/RomParser.hpp>
-#include <play-man/settings/PlayManSettings.hpp>
+#pragma once
 
-int main(int argc, char** argv)
+#include <string>
+#include <fstream>
+#include <filesystem>
+
+namespace Utility
 {
-	(void)argc;
-	(void)argv;
-	std::cout << "Welcome to play-man!" << std::endl;
+	/**
+	 * @brief 
+	 * @return
+	 */
+	std::string CurrentTimeAsString(const std::string& format = "%Y-%m-%d %H.%M.%S");
 
-    if (argc > 1)
-    {
-        GameBoy::Rom rom(argv[1]);
+	/**
+	 * @brief
+	 * 
+	 * @param fileToReadFrom 
+	 * @return
+	 */
+	std::string ReadFileToString(const std::filesystem::path& fileToReadFrom);
 
-        std::cout << rom << std::endl;
-    }
-    else
-    {
-        GameBoy::RomHeader header;
+	/**
+	 * @brief
+	 * 
+	 * @param fileToReadFrom 
+	 * @return
+	 */
+	std::string ReadFileToString(std::ifstream& fileToReadFrom);
 
-        header.title = {"Pokemon Blue"};
-        header.manufacturerCode = {"NINT"};
-        header.cgbFlag = static_cast<int8_t>(0x01);
-        header.newLicensingCode = NewLicensingCode::Nintendo;
-        header.sgbFlag = 0x00;
-        header.cartridgeType = CartridgeType::MBC1;
-        header.romSize = RomSize::MiB8;
-        header.ramSize = RamSize::KiB128;
-        header.destinationCode = DestinationCode::Overseas;
-        header.oldLicensingCode = OldLicensingCode::UseNewLicenseeCode;
-        header.romVersion = 0xFF;
-        header.headerChecksum = 0x16;
-        header.globalChecksum = 0;
+	/**
+	 * @brief Note that this function replaces it in stringToReplace in.
+	 *        If you still need the original value just make a copy.
+	 * 
+	 * @param stringToReplaceIn 
+	 * @param wordToReplace 
+	 * @param wordToReplaceWith 
+	 */
+	void Replace(
+		std::string& stringToReplaceIn,
+		const std::string& wordToReplace,
+		const std::string& wordToReplaceWith);
 
-        std::cout << "Hard-coded header:" << std::endl;
-        std::cout << header << std::endl;
-    }
+	/**
+	 * @brief Because windows does other slashes than linux :/
+	 * 
+	 * @param path 
+	 * @return std::string 
+	 */
+	std::string SanitizePathString(std::string path);
 
-	std::shared_ptr<PlayManSettings> settings = PlayManSettings::ReadFromFile("settings.json");
-	Logger::LogInterface::Initialize(settings->logDirectory, settings->logLevel);
-	
-	LOG_INFO("Settings being used:\n" + settings->ToString());
-	return 0;
-}
+	/**
+	 * @brief Returns the associated error message of the current errno value.
+	 * 
+	 * @return std::string 
+	 */
+	std::string ErrnoToString();
+
+
+} /* namespace Utility */

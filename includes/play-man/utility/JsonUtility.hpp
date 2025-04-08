@@ -14,48 +14,47 @@
 //                                                                                //
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
+#pragma once
 
-#include <iostream>
-#include <play-man/ROM/RomParser.hpp>
-#include <play-man/settings/PlayManSettings.hpp>
+#include <nlohmann/json.hpp>
 
-int main(int argc, char** argv)
-{
-	(void)argc;
-	(void)argv;
-	std::cout << "Welcome to play-man!" << std::endl;
+#include <optional>
 
-    if (argc > 1)
-    {
-        GameBoy::Rom rom(argv[1]);
+namespace Utility { namespace Json {
 
-        std::cout << rom << std::endl;
-    }
-    else
-    {
-        GameBoy::RomHeader header;
+	constexpr size_t numberOfSpacesIndentation = 4; /* The number of spaces to use when indenting for serialization. */
 
-        header.title = {"Pokemon Blue"};
-        header.manufacturerCode = {"NINT"};
-        header.cgbFlag = static_cast<int8_t>(0x01);
-        header.newLicensingCode = NewLicensingCode::Nintendo;
-        header.sgbFlag = 0x00;
-        header.cartridgeType = CartridgeType::MBC1;
-        header.romSize = RomSize::MiB8;
-        header.ramSize = RamSize::KiB128;
-        header.destinationCode = DestinationCode::Overseas;
-        header.oldLicensingCode = OldLicensingCode::UseNewLicenseeCode;
-        header.romVersion = 0xFF;
-        header.headerChecksum = 0x16;
-        header.globalChecksum = 0;
+	/**
+	 * @brief Due to bug `https://github.com/nlohmann/json/issues/2046` the default
+	 *        constructor of the json creates invalid/unusable json on certain compilers.
+	 *        Just use this function and all should be well :).
+	 * 
+	 * @return
+	 */
+	nlohmann::json CreateEmptyJson();
 
-        std::cout << "Hard-coded header:" << std::endl;
-        std::cout << header << std::endl;
-    }
+	/**
+	 * @brief Reads file as json.
+	 * @param fileToReadFrom
+	 * @return
+	 */
+	nlohmann::json ReadJsonFromFile(const std::filesystem::path& fileToReadFrom);
 
-	std::shared_ptr<PlayManSettings> settings = PlayManSettings::ReadFromFile("settings.json");
-	Logger::LogInterface::Initialize(settings->logDirectory, settings->logLevel);
-	
-	LOG_INFO("Settings being used:\n" + settings->ToString());
-	return 0;
-}
+	/**
+	 * @brief Get the value from the tree as T if it exists.
+	 * 
+	 * @tparam T 
+	 * @param jsonTree 
+	 * @param pathToValue 
+	 * @return
+	 */
+	template <class T>
+	std::optional<T> GetOptional(
+		const nlohmann::json& jsonTree,
+		const nlohmann::json::json_pointer& pathToValue);
+
+	#include "JsonUtility.ipp"
+
+} /* namespace Json */
+
+} /* namespace Utility */

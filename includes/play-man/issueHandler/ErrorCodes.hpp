@@ -15,47 +15,15 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <iostream>
-#include <play-man/ROM/RomParser.hpp>
-#include <play-man/settings/PlayManSettings.hpp>
+#pragma once
 
-int main(int argc, char** argv)
-{
-	(void)argc;
-	(void)argv;
-	std::cout << "Welcome to play-man!" << std::endl;
+#include "play-man/utility/EnumMacro.hpp"
 
-    if (argc > 1)
-    {
-        GameBoy::Rom rom(argv[1]);
+#define ErrorCodeSeq(x, n) \
+    x(n, AnErrorCodeForTestingPurposes)
 
-        std::cout << rom << std::endl;
-    }
-    else
-    {
-        GameBoy::RomHeader header;
-
-        header.title = {"Pokemon Blue"};
-        header.manufacturerCode = {"NINT"};
-        header.cgbFlag = static_cast<int8_t>(0x01);
-        header.newLicensingCode = NewLicensingCode::Nintendo;
-        header.sgbFlag = 0x00;
-        header.cartridgeType = CartridgeType::MBC1;
-        header.romSize = RomSize::MiB8;
-        header.ramSize = RamSize::KiB128;
-        header.destinationCode = DestinationCode::Overseas;
-        header.oldLicensingCode = OldLicensingCode::UseNewLicenseeCode;
-        header.romVersion = 0xFF;
-        header.headerChecksum = 0x16;
-        header.globalChecksum = 0;
-
-        std::cout << "Hard-coded header:" << std::endl;
-        std::cout << header << std::endl;
-    }
-
-	std::shared_ptr<PlayManSettings> settings = PlayManSettings::ReadFromFile("settings.json");
-	Logger::LogInterface::Initialize(settings->logDirectory, settings->logLevel);
-	
-	LOG_INFO("Settings being used:\n" + settings->ToString());
-	return 0;
-}
+/**
+ * @brief -.
+ */
+CREATE_ENUM_WITH_UTILS(ErrorCodeSeq, ErrorCode)
+#undef ErrorCodeSeq

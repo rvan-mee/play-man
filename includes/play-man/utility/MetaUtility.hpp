@@ -15,47 +15,51 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <iostream>
-#include <play-man/ROM/RomParser.hpp>
-#include <play-man/settings/PlayManSettings.hpp>
+#pragma once
 
-int main(int argc, char** argv)
+#include <string_view>
+#include <array>
+
+namespace MetaUtility
 {
-	(void)argc;
-	(void)argv;
-	std::cout << "Welcome to play-man!" << std::endl;
+	/**
+	 * @brief 
+	 * 
+	 * @tparam T 
+	 * @tparam Views 
+	 */
+	template <std::string_view const&... Views>
+	class ConcatenateStringViews
+	{
+		/**
+		 * @brief Concatenates all views and returns them as an array.
+		 * 
+		 * @return constexpr auto 
+		 */
+		static constexpr auto Impl() noexcept
+		{
+			constexpr size_t totalLength = (Views.size() + ...);
 
-    if (argc > 1)
-    {
-        GameBoy::Rom rom(argv[1]);
+			std::array<char, totalLength> concatenatedArray_{};
+			size_t i = 0;
 
-        std::cout << rom << std::endl;
-    }
-    else
-    {
-        GameBoy::RomHeader header;
+			// Use a lambda for appending so we can use a fold expresion to append all of them.
+			auto append = [&](auto const& s) mutable
+			{
+				for (auto c : s)
+				{
+					concatenatedArray_[i++] = c;
+				}
+			};
+			(append(Views), ...);
+			return concatenatedArray_;
+		}
+		
+		static constexpr auto concatenatedArray = Impl();
 
-        header.title = {"Pokemon Blue"};
-        header.manufacturerCode = {"NINT"};
-        header.cgbFlag = static_cast<int8_t>(0x01);
-        header.newLicensingCode = NewLicensingCode::Nintendo;
-        header.sgbFlag = 0x00;
-        header.cartridgeType = CartridgeType::MBC1;
-        header.romSize = RomSize::MiB8;
-        header.ramSize = RamSize::KiB128;
-        header.destinationCode = DestinationCode::Overseas;
-        header.oldLicensingCode = OldLicensingCode::UseNewLicenseeCode;
-        header.romVersion = 0xFF;
-        header.headerChecksum = 0x16;
-        header.globalChecksum = 0;
+	public:
 
-        std::cout << "Hard-coded header:" << std::endl;
-        std::cout << header << std::endl;
-    }
+		static constexpr std::string_view value {concatenatedArray.data(), concatenatedArray.size()};
+	};
 
-	std::shared_ptr<PlayManSettings> settings = PlayManSettings::ReadFromFile("settings.json");
-	Logger::LogInterface::Initialize(settings->logDirectory, settings->logLevel);
-	
-	LOG_INFO("Settings being used:\n" + settings->ToString());
-	return 0;
-}
+} /* namespace MetaUtility */
