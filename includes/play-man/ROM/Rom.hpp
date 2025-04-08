@@ -42,6 +42,11 @@ class RomHeader {
         int8_t                                      headerChecksum;
         int16_t                                     globalChecksum;
 
+        /**
+         * @brief Parses the data given and sets all the RomHeader values.
+         * 
+         * @param data A vector that contains the raw data from a ROM. 
+         */
         void ParseRawData(const std::vector<int8_t>& data);
 };
 

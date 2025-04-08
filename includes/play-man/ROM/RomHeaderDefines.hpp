@@ -41,8 +41,6 @@ constexpr size_t romVersionIndex =  0x014C;
 constexpr size_t headerChecksumIndex = 0x014D;
 constexpr size_t globalChecksumIndex = 0x014E; 
 
-// TODO: use pascalCase
-
 /**
  * @brief These are the new licensing codes inside the header of a ROM.
  * They are encoded as 2-byte values, representing ascii characters.
@@ -56,66 +54,66 @@ constexpr size_t globalChecksumIndex = 0x014E;
 #define NewLicensingCodeSeq(x, n) \
     x(n, UseOldLicensingCode                     , 0x00'00) \
     x(n, None                                    , 0x30'30)  /* "00" */ \
-    x(n, Nintendo_Research_and_Development_1     , 0x30'31)  /* "01" */ \
+    x(n, NintendoResearchAndDevelopment          , 0x30'31)  /* "01" */ \
     x(n, Capcom                                  , 0x30'38)  /* "08" */ \
-    x(n, EA_Electronic_Arts                      , 0x31'33)  /* "13" */ \
-    x(n, Hudson_Soft                             , 0x31'38)  /* "18" */ \
-    x(n, B_AI                                    , 0x31'39)  /* "19" */ \
+    x(n, ElectronicArts                          , 0x31'33)  /* "13" */ \
+    x(n, HudsonSoft                              , 0x31'38)  /* "18" */ \
+    x(n, bAI                                     , 0x31'39)  /* "19" */ \
     x(n, KSS                                     , 0x32'30)  /* "20" */ \
-    x(n, Planning_Office_WADA                    , 0x32'32)  /* "22" */ \
+    x(n, PlanningOfficeWADA                      , 0x32'32)  /* "22" */ \
     x(n, PCM_Complete                            , 0x32'34)  /* "24" */ \
-    x(n, San_X                                   , 0x32'35)  /* "25" */ \
+    x(n, SanX                                    , 0x32'35)  /* "25" */ \
     x(n, Kemco                                   , 0x32'38)  /* "28" */ \
-    x(n, SETA_Corporation                        , 0x32'39)  /* "29" */ \
+    x(n, SETACorporation                         , 0x32'39)  /* "29" */ \
     x(n, Viacom                                  , 0x33'30)  /* "30" */ \
     x(n, Nintendo                                , 0x33'31)  /* "31" */ \
     x(n, Bandai                                  , 0x33'32)  /* "32" */ \
-    x(n, Ocean_Software_Acclaim_Entertainment    , 0x33'33)  /* "33" */ \
+    x(n, OceanSoftwareAcclaimEntertainment       , 0x33'33)  /* "33" */ \
     x(n, Konami                                  , 0x33'34)  /* "34" */ \
     x(n, HectorSoft                              , 0x33'35)  /* "35" */ \
     x(n, Taito                                   , 0x33'37)  /* "37" */ \
-    x(n, Hudson_Soft_2                           , 0x33'38)  /* "38" */ \
+    x(n, HudsonSoft_2                            , 0x33'38)  /* "38" */ \
     x(n, Banpresto                               , 0x33'39)  /* "39" */ \
-    x(n, Ubi_Soft1                               , 0x34'31)  /* "41" */ \
+    x(n, UbiSoft                                 , 0x34'31)  /* "41" */ \
     x(n, Atlus                                   , 0x34'32)  /* "42" */ \
-    x(n, Malibu_Interactive                      , 0x34'34)  /* "44" */ \
+    x(n, MalibuInteractive                       , 0x34'34)  /* "44" */ \
     x(n, Angel                                   , 0x34'36)  /* "46" */ \
-    x(n, Bullet_Proof_Software                   , 0x34'37)  /* "47" */ \
+    x(n, BulletProofSoftware                     , 0x34'37)  /* "47" */ \
     x(n, Irem                                    , 0x34'39)  /* "49" */ \
     x(n, Absolute                                , 0x35'30)  /* "50" */ \
-    x(n, Acclaim_Entertainment                   , 0x35'31)  /* "51" */ \
+    x(n, AcclaimEntertainment                    , 0x35'31)  /* "51" */ \
     x(n, Activision                              , 0x35'32)  /* "52" */ \
-    x(n, Sammy_USA_Corporation                   , 0x35'33)  /* "53" */ \
-    x(n, Hi_Tech_Expressions                     , 0x35'35)  /* "55" */ \
+    x(n, SammyUSACorporation                     , 0x35'33)  /* "53" */ \
+    x(n, HiTechExpressions                       , 0x35'35)  /* "55" */ \
     x(n, LJN                                     , 0x35'36)  /* "56" */ \
     x(n, Matchbox                                , 0x35'37)  /* "57" */ \
     x(n, Mattel                                  , 0x35'38)  /* "58" */ \
-    x(n, Milton_Bradley_Company                  , 0x35'39)  /* "59" */ \
-    x(n, Titus_Interactive                       , 0x36'30)  /* "60" */ \
-    x(n, Virgin_Games_Ltd3                       , 0x36'31)  /* "61" */ \
-    x(n, Lucasfilm_Games4                        , 0x36'34)  /* "64" */ \
-    x(n, Ocean_Software_2                        , 0x36'37)  /* "67" */ \
-    x(n, EA_Electronic_Arts_2                    , 0x36'39)  /* "69" */ \
-    x(n, Infogrames5                             , 0x37'30)  /* "70" */ \
-    x(n, Interplay_Entertainment                 , 0x37'31)  /* "71" */ \
+    x(n, MiltonBradleyCompany                    , 0x35'39)  /* "59" */ \
+    x(n, TitusInteractive                        , 0x36'30)  /* "60" */ \
+    x(n, VirginGamesLtd                          , 0x36'31)  /* "61" */ \
+    x(n, LucasfilmGames                          , 0x36'34)  /* "64" */ \
+    x(n, OceanSoftware                           , 0x36'37)  /* "67" */ \
+    x(n, ElectronicArts_2                        , 0x36'39)  /* "69" */ \
+    x(n, Infogrames                              , 0x37'30)  /* "70" */ \
+    x(n, InterplayEntertainment                  , 0x37'31)  /* "71" */ \
     x(n, Broderbund                              , 0x37'32)  /* "72" */ \
-    x(n, Sculptured_Software                     , 0x37'33)  /* "73" */ \
-    x(n, The_Sales_Curve_Limited                 , 0x37'35)  /* "75" */ \
+    x(n, SculpturedSoftware                      , 0x37'33)  /* "73" */ \
+    x(n, TheSalesCurveLimited                    , 0x37'35)  /* "75" */ \
     x(n, THQ                                     , 0x37'38)  /* "78" */ \
     x(n, Accolade                                , 0x37'39)  /* "79" */ \
-    x(n, Misawa_Entertainment                    , 0x38'30)  /* "80" */ \
+    x(n, MisawaEntertainment                     , 0x38'30)  /* "80" */ \
     x(n, lozc                                    , 0x38'33)  /* "83" */ \
-    x(n, Tokuma_Shoten                           , 0x38'36)  /* "86" */ \
-    x(n, Tsukuda_Original                        , 0x38'37)  /* "87" */ \
-    x(n, Chunsoft_Co8                            , 0x39'31)  /* "91" */ \
-    x(n, Video_System                            , 0x39'32)  /* "92" */ \
-    x(n, Ocean_Software_Acclaim_Entertainment_2  , 0x39'33)  /* "93" */ \
+    x(n, TokumaShoten                            , 0x38'36)  /* "86" */ \
+    x(n, TsukudaOriginal                         , 0x38'37)  /* "87" */ \
+    x(n, ChunsoftCo                              , 0x39'31)  /* "91" */ \
+    x(n, VideoSystem                             , 0x39'32)  /* "92" */ \
+    x(n, OceanSoftwareAcclaimEntertainment_2     , 0x39'33)  /* "93" */ \
     x(n, Varie                                   , 0x39'35)  /* "95" */ \
-    x(n, Yonezawa_s_pal                          , 0x39'36)  /* "96" */ \
+    x(n, YonezawaSPal                            , 0x39'36)  /* "96" */ \
     x(n, Kaneko                                  , 0x39'37)  /* "97" */ \
-    x(n, Pack_In_Video                           , 0x39'39)  /* "99" */ \
-    x(n, Bottom_Up                               , 0x39'48)  /* "9H" */ \
-    x(n, Konami_Yu_Gi_Oh                         , 0x41'34)  /* "A4" */ \
+    x(n, PackInVideo                             , 0x39'39)  /* "99" */ \
+    x(n, BottomUp                                , 0x39'48)  /* "9H" */ \
+    x(n, KonamiYuGiOh                            , 0x41'34)  /* "A4" */ \
     x(n, MTO                                     , 0x42'4C)  /* "BL" */ \
     x(n, Kodansha                                , 0x44'4B)  /* "DK" */
 
@@ -217,156 +215,158 @@ CREATE_ENUM_WITH_UTILS(DestinationCodeSeq, DestinationCode);
  * 
  * @note There is a special value (0x33) which, if found,
  * means to refer to the new Licensing code to get the correct licensing company.
+ * @note Some licensing codes contain the same company name,
+ * to prevent collisions and underscore with a number is added.
  */
 
 #define OldLicensingCodeSeq(x, n) \
-    x(n, None                    , 0x00)                                                \
-    x(n, Nintendo                , 0x01)                                                \
-    x(n, Capcom                  , 0x08)                                                \
-    x(n, HotB                    , 0x09)                                                \
-    x(n, Jaleco                  , 0x0A)                                                \
-    x(n, Coconuts                , 0x0B)                                                \
-    x(n, EliteSystems            , 0x0C)                                                \
-    x(n, ElectronicArts          , 0x13)                                                \
-    x(n, Hudsonsoft              , 0x18)                                                \
-    x(n, ITCEntertainment        , 0x19)                                                \
-    x(n, Yanoman                 , 0x1A)                                                \
-    x(n, Clary                   , 0x1D)                                                \
-    x(n, Virgin                  , 0x1F)                                                \
-    x(n, PCMComplete             , 0x24)                                                \
-    x(n, SanX                    , 0x25)                                                \
-    x(n, KotobukiSystems         , 0x28)                                                \
-    x(n, Seta                    , 0x29)                                                \
-    x(n, Infogrames              , 0x30)                                                \
-    x(n, Nintendo_2              , 0x31) /* Prevents collision with "Nintendo" */       \
-    x(n, Bandai                  , 0x32)                                                \
-    x(n, UseNewLicenseeCode      , 0x33)                                                \
-    x(n, Konami                  , 0x34)                                                \
-    x(n, Hector                  , 0x35)                                                \
-    x(n, Capcom_2                , 0x38) /* Prevents collision with "Capcom" */         \
-    x(n, Banpresto               , 0x39)                                                \
-    x(n, EntertainmentInteractive, 0x3C)                                                \
-    x(n, Gremlin                 , 0x3E)                                                \
-    x(n, UbiSoft                 , 0x41)                                                \
-    x(n, Atlus                   , 0x42)                                                \
-    x(n, Malibu                  , 0x44)                                                \
-    x(n, Angel                   , 0x46)                                                \
-    x(n, SpectrumHoloby          , 0x47)                                                \
-    x(n, Irem                    , 0x49)                                                \
-    x(n, Virgin_2                , 0x4A) /* Prevents collision with "Virgin" */         \
-    x(n, Malibu_2                , 0x4D) /* Prevents collision with "Malibu" */         \
-    x(n, USGold                  , 0x4F)                                                \
-    x(n, Absolute                , 0x50)                                                \
-    x(n, Acclaim                 , 0x51)                                                \
-    x(n, Activision              , 0x52)                                                \
-    x(n, AmericanSammy           , 0x53)                                                \
-    x(n, Gametek                 , 0x54)                                                \
-    x(n, ParkPlace               , 0x55)                                                \
-    x(n, LJN                     , 0x56)                                                \
-    x(n, Matchbox                , 0x57)                                                \
-    x(n, MiltonBradley           , 0x59)                                                \
-    x(n, Mindscape               , 0x5A)                                                \
-    x(n, Romstar                 , 0x5B)                                                \
-    x(n, NaxatSoft               , 0x5C)                                                \
-    x(n, Tradewest               , 0x5D)                                                \
-    x(n, Titus                   , 0x60)                                                \
-    x(n, Virgin_3                , 0x61) /* Prevents collision with "Virgin" */         \
-    x(n, Ocean                   , 0x67)                                                \
-    x(n, ElectronicArts_2        , 0x69) /* Prevents collision with "ElectronicArts" */ \
-    x(n, EliteSystems_2          , 0x6E) /* Prevents collision with "EliteSystems" */   \
-    x(n, ElectroBrain            , 0x6F)                                                \
-    x(n, Infogrames_2            , 0x70) /* Prevents collision with "Infogrames" */     \
-    x(n, Interplay               , 0x71)                                                \
-    x(n, Broderbund              , 0x72)                                                \
-    x(n, SculpturedSoft          , 0x73)                                                \
-    x(n, TheSalesCurve           , 0x75)                                                \
-    x(n, THQ                     , 0x78)                                                \
-    x(n, Accolade                , 0x79)                                                \
-    x(n, TriffixEntertainment    , 0x7A)                                                \
-    x(n, Microprose              , 0x7C)                                                \
-    x(n, Kemco                   , 0x7F)                                                \
-    x(n, MisawaEntertainment     , 0x80)                                                \
-    x(n, LOZC                    , 0x83)                                                \
-    x(n, TokumaShoten            , 0x86)                                                \
-    x(n, BulletProofSoftware     , 0x8B)                                                \
-    x(n, VicTokai                , 0x8C)                                                \
-    x(n, Ape                     , 0x8E)                                                \
-    x(n, Imax                    , 0x8F)                                                \
-    x(n, ChunSoft                , 0x91)                                                \
-    x(n, VideoSystem             , 0x92)                                                \
-    x(n, Tsuburava               , 0x93)                                                \
-    x(n, Varie                   , 0x95)                                                \
-    x(n, Yonezawa                , 0x96)                                                \
-    x(n, Kaneko                  , 0x97)                                                \
-    x(n, Arc                     , 0x99)                                                \
-    x(n, NihonBussan             , 0x9A)                                                \
-    x(n, Tecmo                   , 0x9B)                                                \
-    x(n, Imagineer               , 0x9C)                                                \
-    x(n, Banpresto_2             , 0x9D) /* Prevents collision with "Banpresto" */      \
-    x(n, Nova                    , 0x9F)                                                \
-    x(n, HoriElectric            , 0xA1)                                                \
-    x(n, Bandai_2                , 0xA2) /* Prevents collision with "Bandai" */         \
-    x(n, Konami_2                , 0xA4) /* Prevents collision with "Konami" */         \
-    x(n, Kawada                  , 0xA6)                                                \
-    x(n, Takara                  , 0xA7)                                                \
-    x(n, TechnosJapan            , 0xA9)                                                \
-    x(n, Broderbund_2            , 0xAA) /* Prevents collision with "Broderbund" */     \
-    x(n, ToeiAnimation           , 0xAC)                                                \
-    x(n, Toho                    , 0xAD)                                                \
-    x(n, Namco                   , 0xAF)                                                \
-    x(n, Acclaim_2               , 0xB0) /* Prevents collision with "Acclaim" */        \
-    x(n, ASCIIOrNexoft           , 0xB1)                                                \
-    x(n, Bandai_3                , 0xB2) /* Prevents collision with "Bandai" */         \
-    x(n, Enix                    , 0xB4)                                                \
-    x(n, Hal                     , 0xB6)                                                \
-    x(n, SNK                     , 0xB7)                                                \
-    x(n, PonyCanyon              , 0xB9)                                                \
-    x(n, CultureBrain            , 0xBA)                                                \
-    x(n, Sunsoft                 , 0xBB)                                                \
-    x(n, SonyImagesoft           , 0xBD)                                                \
-    x(n, Sammy                   , 0xBF)                                                \
-    x(n, Taito_2                 , 0xC0) /* Prevents collision with "Taito" */          \
-    x(n, Kemco_2                 , 0xC2) /* Prevents collision with "Kemco" */          \
-    x(n, Squaresoft              , 0xC3)                                                \
-    x(n, TokumaShoten_2          , 0xC4) /* Prevents collision with "TokumaShoten" */   \
-    x(n, DataEast                , 0xC5)                                                \
-    x(n, TonkinHouse             , 0xC6)                                                \
-    x(n, Koei                    , 0xC8)                                                \
-    x(n, UFL                     , 0xC9)                                                \
-    x(n, Ultra                   , 0xCA)                                                \
-    x(n, Vap                     , 0xCB)                                                \
-    x(n, USE                     , 0xCC)                                                \
-    x(n, Meldac                  , 0xCD)                                                \
-    x(n, PonyCanyon_2            , 0xCE) /* Prevents collision with "PonyCanyon" */     \
-    x(n, Angel_2                 , 0xCF) /* Prevents collision with "Angel" */          \
-    x(n, Taito_3                 , 0xD0) /* Prevents collision with "Taito" */          \
-    x(n, Sofel                   , 0xD1)                                                \
-    x(n, Quest                   , 0xD2)                                                \
-    x(n, SigmaEnterprises        , 0xD3)                                                \
-    x(n, AskKodansha             , 0xD4)                                                \
-    x(n, NaxatSoft_2             , 0xD6) /* Prevents collision with "NaxatSoft" */      \
-    x(n, CopyaSystems            , 0xD7)                                                \
-    x(n, Banpresto_3             , 0xD9) /* Prevents collision with "Banpresto" */      \
-    x(n, Tomy                    , 0xDA)                                                \
-    x(n, LJN_2                   , 0xDB) /* Prevents collision with "LJN" */            \
-    x(n, NCS                     , 0xDD)                                                \
-    x(n, Human                   , 0xDE)                                                \
-    x(n, Altron                  , 0xDF)                                                \
-    x(n, Jaleco_2                , 0xE0) /* Prevents collision with "Jaleco" */         \
-    x(n, Towachiki               , 0xE1)                                                \
-    x(n, Uutaka                  , 0xE2)                                                \
-    x(n, Varie_2                 , 0xE3) /* Prevents collision with "Varie" */          \
-    x(n, Epoch                   , 0xE5)                                                \
-    x(n, Athena                  , 0xE7)                                                \
-    x(n, Asmik                   , 0xE8)                                                \
-    x(n, Natsume                 , 0xE9)                                                \
-    x(n, KingRecords             , 0xEA)                                                \
-    x(n, Atlus_2                 , 0xEB) /* Prevents collision with "Atlus" */          \
-    x(n, EpicRecords             , 0xEC)                                                \
-    x(n, IGS                     , 0xEE)                                                \
-    x(n, AWave                   , 0xF0)                                                \
-    x(n, ExtremeEntertainment    , 0xF3)                                                \
-    x(n, LJN_3                   , 0xFF) /* Prevents collision with "LJN" */            \
+    x(n, None                    , 0x00) \
+    x(n, Nintendo                , 0x01) \
+    x(n, Capcom                  , 0x08) \
+    x(n, HotB                    , 0x09) \
+    x(n, Jaleco                  , 0x0A) \
+    x(n, Coconuts                , 0x0B) \
+    x(n, EliteSystems            , 0x0C) \
+    x(n, ElectronicArts          , 0x13) \
+    x(n, Hudsonsoft              , 0x18) \
+    x(n, ITCEntertainment        , 0x19) \
+    x(n, Yanoman                 , 0x1A) \
+    x(n, Clary                   , 0x1D) \
+    x(n, Virgin                  , 0x1F) \
+    x(n, PCMComplete             , 0x24) \
+    x(n, SanX                    , 0x25) \
+    x(n, KotobukiSystems         , 0x28) \
+    x(n, Seta                    , 0x29) \
+    x(n, Infogrames              , 0x30) \
+    x(n, Nintendo_2              , 0x31) \
+    x(n, Bandai                  , 0x32) \
+    x(n, UseNewLicenseeCode      , 0x33) \
+    x(n, Konami                  , 0x34) \
+    x(n, Hector                  , 0x35) \
+    x(n, Capcom_2                , 0x38) \
+    x(n, Banpresto               , 0x39) \
+    x(n, EntertainmentInteractive, 0x3C) \
+    x(n, Gremlin                 , 0x3E) \
+    x(n, UbiSoft                 , 0x41) \
+    x(n, Atlus                   , 0x42) \
+    x(n, Malibu                  , 0x44) \
+    x(n, Angel                   , 0x46) \
+    x(n, SpectrumHoloby          , 0x47) \
+    x(n, Irem                    , 0x49) \
+    x(n, Virgin_2                , 0x4A) \
+    x(n, Malibu_2                , 0x4D) \
+    x(n, USGold                  , 0x4F) \
+    x(n, Absolute                , 0x50) \
+    x(n, Acclaim                 , 0x51) \
+    x(n, Activision              , 0x52) \
+    x(n, AmericanSammy           , 0x53) \
+    x(n, Gametek                 , 0x54) \
+    x(n, ParkPlace               , 0x55) \
+    x(n, LJN                     , 0x56) \
+    x(n, Matchbox                , 0x57) \
+    x(n, MiltonBradley           , 0x59) \
+    x(n, Mindscape               , 0x5A) \
+    x(n, Romstar                 , 0x5B) \
+    x(n, NaxatSoft               , 0x5C) \
+    x(n, Tradewest               , 0x5D) \
+    x(n, Titus                   , 0x60) \
+    x(n, Virgin_3                , 0x61) \
+    x(n, Ocean                   , 0x67) \
+    x(n, ElectronicArts_2        , 0x69) \
+    x(n, EliteSystems_2          , 0x6E) \
+    x(n, ElectroBrain            , 0x6F) \
+    x(n, Infogrames_2            , 0x70) \
+    x(n, Interplay               , 0x71) \
+    x(n, Broderbund              , 0x72) \
+    x(n, SculpturedSoft          , 0x73) \
+    x(n, TheSalesCurve           , 0x75) \
+    x(n, THQ                     , 0x78) \
+    x(n, Accolade                , 0x79) \
+    x(n, TriffixEntertainment    , 0x7A) \
+    x(n, Microprose              , 0x7C) \
+    x(n, Kemco                   , 0x7F) \
+    x(n, MisawaEntertainment     , 0x80) \
+    x(n, LOZC                    , 0x83) \
+    x(n, TokumaShoten            , 0x86) \
+    x(n, BulletProofSoftware     , 0x8B) \
+    x(n, VicTokai                , 0x8C) \
+    x(n, Ape                     , 0x8E) \
+    x(n, Imax                    , 0x8F) \
+    x(n, ChunSoft                , 0x91) \
+    x(n, VideoSystem             , 0x92) \
+    x(n, Tsuburava               , 0x93) \
+    x(n, Varie                   , 0x95) \
+    x(n, Yonezawa                , 0x96) \
+    x(n, Kaneko                  , 0x97) \
+    x(n, Arc                     , 0x99) \
+    x(n, NihonBussan             , 0x9A) \
+    x(n, Tecmo                   , 0x9B) \
+    x(n, Imagineer               , 0x9C) \
+    x(n, Banpresto_2             , 0x9D) \
+    x(n, Nova                    , 0x9F) \
+    x(n, HoriElectric            , 0xA1) \
+    x(n, Bandai_2                , 0xA2) \
+    x(n, Konami_2                , 0xA4) \
+    x(n, Kawada                  , 0xA6) \
+    x(n, Takara                  , 0xA7) \
+    x(n, TechnosJapan            , 0xA9) \
+    x(n, Broderbund_2            , 0xAA) \
+    x(n, ToeiAnimation           , 0xAC) \
+    x(n, Toho                    , 0xAD) \
+    x(n, Namco                   , 0xAF) \
+    x(n, Acclaim_2               , 0xB0) \
+    x(n, ASCIIOrNexoft           , 0xB1) \
+    x(n, Bandai_3                , 0xB2) \
+    x(n, Enix                    , 0xB4) \
+    x(n, Hal                     , 0xB6) \
+    x(n, SNK                     , 0xB7) \
+    x(n, PonyCanyon              , 0xB9) \
+    x(n, CultureBrain            , 0xBA) \
+    x(n, Sunsoft                 , 0xBB) \
+    x(n, SonyImagesoft           , 0xBD) \
+    x(n, Sammy                   , 0xBF) \
+    x(n, Taito_2                 , 0xC0) \
+    x(n, Kemco_2                 , 0xC2) \
+    x(n, Squaresoft              , 0xC3) \
+    x(n, TokumaShoten_2          , 0xC4) \
+    x(n, DataEast                , 0xC5) \
+    x(n, TonkinHouse             , 0xC6) \
+    x(n, Koei                    , 0xC8) \
+    x(n, UFL                     , 0xC9) \
+    x(n, Ultra                   , 0xCA) \
+    x(n, Vap                     , 0xCB) \
+    x(n, USE                     , 0xCC) \
+    x(n, Meldac                  , 0xCD) \
+    x(n, PonyCanyon_2            , 0xCE) \
+    x(n, Angel_2                 , 0xCF) \
+    x(n, Taito_3                 , 0xD0) \
+    x(n, Sofel                   , 0xD1) \
+    x(n, Quest                   , 0xD2) \
+    x(n, SigmaEnterprises        , 0xD3) \
+    x(n, AskKodansha             , 0xD4) \
+    x(n, NaxatSoft_2             , 0xD6) \
+    x(n, CopyaSystems            , 0xD7) \
+    x(n, Banpresto_3             , 0xD9) \
+    x(n, Tomy                    , 0xDA) \
+    x(n, LJN_2                   , 0xDB) \
+    x(n, NCS                     , 0xDD) \
+    x(n, Human                   , 0xDE) \
+    x(n, Altron                  , 0xDF) \
+    x(n, Jaleco_2                , 0xE0) \
+    x(n, Towachiki               , 0xE1) \
+    x(n, Uutaka                  , 0xE2) \
+    x(n, Varie_2                 , 0xE3) \
+    x(n, Epoch                   , 0xE5) \
+    x(n, Athena                  , 0xE7) \
+    x(n, Asmik                   , 0xE8) \
+    x(n, Natsume                 , 0xE9) \
+    x(n, KingRecords             , 0xEA) \
+    x(n, Atlus_2                 , 0xEB) \
+    x(n, EpicRecords             , 0xEC) \
+    x(n, IGS                     , 0xEE) \
+    x(n, AWave                   , 0xF0) \
+    x(n, ExtremeEntertainment    , 0xF3) \
+    x(n, LJN_3                   , 0xFF) \
 
 CREATE_ENUM_WITH_UTILS(OldLicensingCodeSeq, OldLicensingCode);
 
