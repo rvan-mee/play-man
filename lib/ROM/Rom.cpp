@@ -103,6 +103,13 @@ namespace GameBoy {
         return _filePath;
     }
 
+    int8_t  Rom::ReadRomByte(const int16_t address)
+    {
+        // TODO: Check how bank switching works
+        assert(static_cast<size_t>(address) < _romData.size());
+        return (_romData[address]);
+    }
+
     std::ostream& operator << (std::ostream& lhs, const RomHeader& header)
     {
         std::cout << "/**************************************************\\" << "\n";

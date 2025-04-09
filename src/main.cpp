@@ -30,65 +30,25 @@ int main(int argc, char** argv)
     if (argc > 1)
     {
         GameBoy::Rom rom(argv[1]);
+        GameBoy::Cpu cpu;
 
         std::cout << rom << std::endl;
+
+        while (true)
+        {
+            cpu.FetchInstruction();
+            cpu.ExecuteInstruction();
+        }
+
+        return 0;
     }
     else
     {
-        GameBoy::RomHeader header;
-
-        header.title = {"Pokemon Blue"};
-        header.manufacturerCode = {"NINT"};
-        header.cgbFlag = static_cast<int8_t>(0x01);
-        header.newLicensingCode = NewLicensingCode::Nintendo;
-        header.sgbFlag = 0x00;
-        header.cartridgeType = CartridgeType::MBC1;
-        header.romSize = RomSize::MiB8;
-        header.ramSize = RamSize::KiB128;
-        header.destinationCode = DestinationCode::Overseas;
-        header.oldLicensingCode = OldLicensingCode::UseNewLicenseeCode;
-        header.romVersion = 0x01;
-        header.headerChecksum = 0x16;
-        header.globalChecksum = 0;
-
-        std::cout << "Hard-coded header:" << std::endl;
-        std::cout << header << std::endl;
+        std::cout << "No ROM provided!" << std::endl;
     }
 
-	std::shared_ptr<PlayManSettings> settings = PlayManSettings::ReadFromFile("settings.json");
-	Logger::LogInterface::Initialize(settings->logDirectory, settings->logLevel);
-	
-	LOG_INFO("Settings being used:\n" + settings->ToString());
-
-	Gameboy::Cpu t;
-	t.ExecuteInstruction(Gameboy::PrefixedOpCode::BIT_0_A);
-	const auto opcodeJson = Utility::Json::ReadJsonFromFile("opcodes.json");
-	const auto unprefixedOpcodes = opcodeJson.find("unprefixed");
-
-	for (const auto& [key, value] : unprefixedOpcodes.value().items())
-	{
-		(void)key;
-		(void)value;
-		// std::cout << value["operands"];
-		std::string enumName = value.find("mnemonic").value();
-		for (const auto& op : value["operands"])
-		{
-			enumName += "_" + op.value<std::string>("name", "");
-			if (op.contains("increment"))
-			{
-				enumName += "_INC";
-			}
-			else if (op.contains("decrement"))
-			{
-				enumName += "_DEC";
-			}
-			enumName += (op.value<bool>("immediate", true) ? "" : "_NI");
-		}
-		// std::cout << "X(n, " << enumName << ", " << key << ")\t\t\t\\" << std::endl;
-		std::cout << "case OpCode::" << enumName << ": \n{\n\n\tbreak;\n}\n";
-	}
-
-	// std::cout << unprefixedOpcodes.value() << std::endl;
+	GameBoy::Cpu cpu;
+	cpu.ExecuteInstruction(GameBoy::PrefixedOpCode::BIT_0_A);
 
 	return 0;
 }

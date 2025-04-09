@@ -58,6 +58,7 @@ class Rom
         RomHeader           _header;
         std::vector<int8_t> _romData;
         const char*         _filePath;
+        // TODO: internal RAM
 
         void ParseRomFile(const char* filePath);
 
@@ -68,6 +69,8 @@ class Rom
         RomHeader&              GetHeader();
         std::vector<int8_t>&    GetData();
         const char*             GetFilePath();
+        int8_t                  ReadRomByte(const int16_t address);
+        // int8_t                  ReadRamByte(const int16_t address);
 
 };
 

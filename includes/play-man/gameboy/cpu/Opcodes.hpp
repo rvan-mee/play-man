@@ -1,11 +1,28 @@
+// ****************************************************************************** //
+//   _______   __                              __       __                        //
+//  /       \ /  |                            /  \     /  |                       //
+//  $$$$$$$  |$$ |  ______   __    __         $$  \   /$$ |  ______   _______     //
+//  $$ |__$$ |$$ | /      \ /  |  /  | ______ $$$  \ /$$$ | /      \ /       \    //
+//  $$    $$/ $$ | $$$$$$  |$$ |  $$ |/      |$$$$  /$$$$ | $$$$$$  |$$$$$$$  |   //
+//  $$$$$$$/  $$ | /    $$ |$$ |  $$ |$$$$$$/ $$ $$ $$/$$ | /    $$ |$$ |  $$ |   //
+//  $$ |      $$ |/$$$$$$$ |$$ \__$$ |        $$ |$$$/ $$ |/$$$$$$$ |$$ |  $$ |   //
+//  $$ |      $$ |$$    $$ |$$    $$ |        $$ | $/  $$ |$$    $$ |$$ |  $$ |   //
+//  $$/       $$/  $$$$$$$/  $$$$$$$ |        $$/      $$/  $$$$$$$/ $$/   $$/    //
+//                          /  \__$$ |                                            //
+//                          $$    $$/                                             //
+//                           $$$$$$/                                              //
+//                                                                                //
+//                            By: K1ngmar and rvan-mee                            //
+// ****************************************************************************** //
 
 #pragma once
 
 #include <play-man/utility/EnumMacro.hpp>
 
-namespace Gameboy
+namespace GameBoy
 {
 
+constexpr uint8_t opcodePrefix = 0xCB;
 
 #define GAMEBOY_OPCODES_SEQ(X, n) \
 X(n, NOP, 0x00)				\
@@ -207,7 +224,7 @@ X(n, JP_a16, 0xC3)			\
 X(n, CALL_NZ_a16, 0xC4)		\
 X(n, PUSH_BC, 0xC5)			\
 X(n, ADD_A_n8, 0xC6)		\
-X(n, RST_$00, 0xC7)			\
+X(n, RST_00, 0xC7)			\
 X(n, RET_Z, 0xC8)			\
 X(n, RET, 0xC9)				\
 X(n, JP_Z_a16, 0xCA)		\
@@ -215,7 +232,7 @@ X(n, PREFIX, 0xCB)			\
 X(n, CALL_Z_a16, 0xCC)		\
 X(n, CALL_a16, 0xCD)		\
 X(n, ADC_A_n8, 0xCE)		\
-X(n, RST_$08, 0xCF)			\
+X(n, RST_08, 0xCF)			\
 X(n, RET_NC, 0xD0)			\
 X(n, POP_DE, 0xD1)			\
 X(n, JP_NC_a16, 0xD2)		\
@@ -223,7 +240,7 @@ X(n, ILLEGAL_D3, 0xD3)		\
 X(n, CALL_NC_a16, 0xD4)		\
 X(n, PUSH_DE, 0xD5)			\
 X(n, SUB_A_n8, 0xD6)		\
-X(n, RST_$10, 0xD7)			\
+X(n, RST_10, 0xD7)			\
 X(n, RET_C, 0xD8)			\
 X(n, RETI, 0xD9)			\
 X(n, JP_C_a16, 0xDA)		\
@@ -231,7 +248,7 @@ X(n, ILLEGAL_DB, 0xDB)		\
 X(n, CALL_C_a16, 0xDC)		\
 X(n, ILLEGAL_DD, 0xDD)		\
 X(n, SBC_A_n8, 0xDE)		\
-X(n, RST_$18, 0xDF)			\
+X(n, RST_18, 0xDF)			\
 X(n, LDH_a8_NI_A, 0xE0)		\
 X(n, POP_HL, 0xE1)			\
 X(n, LDH_C_NI_A, 0xE2)		\
@@ -239,7 +256,7 @@ X(n, ILLEGAL_E3, 0xE3)		\
 X(n, ILLEGAL_E4, 0xE4)		\
 X(n, PUSH_HL, 0xE5)			\
 X(n, AND_A_n8, 0xE6)		\
-X(n, RST_$20, 0xE7)			\
+X(n, RST_20, 0xE7)			\
 X(n, ADD_SP_e8, 0xE8)		\
 X(n, JP_HL, 0xE9)			\
 X(n, LD_a16_NI_A, 0xEA)		\
@@ -247,7 +264,7 @@ X(n, ILLEGAL_EB, 0xEB)		\
 X(n, ILLEGAL_EC, 0xEC)		\
 X(n, ILLEGAL_ED, 0xED)		\
 X(n, XOR_A_n8, 0xEE)		\
-X(n, RST_$28, 0xEF)			\
+X(n, RST_28, 0xEF)			\
 X(n, LDH_A_a8_NI, 0xF0)		\
 X(n, POP_AF, 0xF1)			\
 X(n, LDH_A_C_NI, 0xF2)		\
@@ -255,7 +272,7 @@ X(n, DI, 0xF3)				\
 X(n, ILLEGAL_F4, 0xF4)		\
 X(n, PUSH_AF, 0xF5)			\
 X(n, OR_A_n8, 0xF6)			\
-X(n, RST_$30, 0xF7)			\
+X(n, RST_30, 0xF7)			\
 X(n, LD_HL_SP_INC_e8, 0xF8)	\
 X(n, LD_SP_HL, 0xF9)		\
 X(n, LD_A_a16_NI, 0xFA)		\
@@ -263,7 +280,7 @@ X(n, EI, 0xFB)				\
 X(n, ILLEGAL_FC, 0xFC)		\
 X(n, ILLEGAL_FD, 0xFD)		\
 X(n, CP_A_n8, 0xFE)			\
-X(n, RST_$38, 0xFF)
+X(n, RST_38, 0xFF)
 
 /**
  * @brief

@@ -19,7 +19,7 @@
 
 #include <inttypes.h>
 
-namespace Gameboy
+namespace GameBoy
 {
 	/**
 	 * @brief A gameboy register :)
@@ -30,8 +30,8 @@ namespace Gameboy
 	{
 
 		/**
-		 * @brief Internal layout of the resgisters, all registers are basically 16 bits,
-		 *        but some operations can be done on either the low or high byte of a regisers.
+		 * @brief Internal layout of the registers, all registers are basically 16 bits,
+		 *        but some operations can be done on either the low or high byte of a register.
 		 *        By having a union with an unnamed struct makes us able to share the memory and
 		 *        easily access the high and low byte of the register without any bitshift shenanigans.
 		 */
@@ -89,6 +89,14 @@ namespace Gameboy
 		 * @return uint16_t 
 		 */
 		uint16_t Value() const;
+
+		// Postfix increment 
+		Register operator++(int)
+		{
+			Register temp = *this;
+			internalRegister.value++;
+			return (temp);
+		}
 
 	};
 

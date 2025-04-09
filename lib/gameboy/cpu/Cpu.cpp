@@ -17,7 +17,7 @@
 
 #include <play-man/gameboy/cpu/Cpu.hpp>
 
-namespace Gameboy
+namespace GameBoy
 {
 	void Cpu::ExecuteInstruction(OpCode opCode)
 	{
@@ -36,8 +36,8 @@ namespace Gameboy
 				// 
 				// The first byte of immediate data is the lower byte (i.e., bits 0-7),
 				// and the second byte of immediate data is the higher byte (i.e., bits 8-15).
-				BC.SetLowByte();
-				BC.SetHighByte();
+				// BC.SetLowByte();
+				// BC.SetHighByte();
 				cyclesPassed += 3;
 				break;
 			}
@@ -1026,7 +1026,7 @@ namespace Gameboy
 
 				break;
 			}
-			case OpCode::RST_$00: 
+			case OpCode::RST_00: 
 			{
 
 				break;
@@ -1066,7 +1066,7 @@ namespace Gameboy
 
 				break;
 			}
-			case OpCode::RST_$08: 
+			case OpCode::RST_08: 
 			{
 
 				break;
@@ -1106,7 +1106,7 @@ namespace Gameboy
 
 				break;
 			}
-			case OpCode::RST_$10: 
+			case OpCode::RST_10: 
 			{
 
 				break;
@@ -1146,7 +1146,7 @@ namespace Gameboy
 
 				break;
 			}
-			case OpCode::RST_$18: 
+			case OpCode::RST_18: 
 			{
 
 				break;
@@ -1186,7 +1186,7 @@ namespace Gameboy
 
 				break;
 			}
-			case OpCode::RST_$20: 
+			case OpCode::RST_20: 
 			{
 
 				break;
@@ -1226,7 +1226,7 @@ namespace Gameboy
 
 				break;
 			}
-			case OpCode::RST_$28: 
+			case OpCode::RST_28: 
 			{
 
 				break;
@@ -1266,7 +1266,7 @@ namespace Gameboy
 
 				break;
 			}
-			case OpCode::RST_$30: 
+			case OpCode::RST_30: 
 			{
 
 				break;
@@ -1306,7 +1306,7 @@ namespace Gameboy
 
 				break;
 			}
-			case OpCode::RST_$38: 
+			case OpCode::RST_38: 
 			{
 
 				break;
@@ -2609,6 +2609,38 @@ namespace Gameboy
 				abort();
 			}
 		}
+	}
+
+	void Cpu::ExecuteInstruction()
+	{
+		if (opcodeIsPrefixed)
+		{
+			ExecuteInstruction(static_cast<PrefixedOpCode>(currentOpcode));
+		}
+		else
+		{
+			ExecuteInstruction(static_cast<OpCode>(currentOpcode));
+		}
+		// TODO: handle instruction timing
+	}
+
+	void Cpu::FetchInstruction()
+	{
+		currentOpcode = memoryBus.ReadByte(PC++);
+		if (currentOpcode == opcodePrefix)
+		{
+			opcodeIsPrefixed = true;
+			currentOpcode = memoryBus.ReadByte(PC++);
+		}
+		else
+		{
+			opcodeIsPrefixed = false;
+		}
+	}
+
+	uint8_t	Cpu::GetInterruptRegister()
+	{
+		return (IE);
 	}
 
 } /* namespace Gameboy */

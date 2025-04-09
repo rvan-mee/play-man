@@ -17,7 +17,7 @@
 
 #include <play-man/gameboy/cpu/Register.hpp>
 
-namespace Gameboy
+namespace GameBoy
 {
 	Register::Register(uint16_t initialValue)
 	{
