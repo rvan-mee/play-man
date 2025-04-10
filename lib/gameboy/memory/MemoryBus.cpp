@@ -15,10 +15,10 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <play-man/gameboy/cpu/Cpu.hpp>
 #include <play-man/gameboy/memory/MemoryBus.hpp>
 #include <play-man/gameboy/memory/MemoryDefines.hpp>
 #include <play-man/logger/Logger.hpp>
+#include <assert.h>
 
 namespace GameBoy {
 
@@ -31,15 +31,13 @@ uint8_t MemoryBus::ReadByte(const uint16_t address)
 {
     if (address >= romAddressStart && address <= romAddressEnd)
     {
-        assert(rom != NULL);
-        return (rom->ReadRomByte(address));
+        return (rom.ReadRomByte(address));
     }
     else if (address >= romBankAddressStart && address <= romBankAddressEnd)
     {
-        assert(rom != NULL);
         // TODO: check how bank switching works
         assert(false && "Rom bank switching is currently not supported");
-        return (rom->ReadRomByte(address));
+        return (rom.ReadRomByte(address));
     }
     else if (address >= vRamAddressStart && address <= vRamAddressEnd)
     {
@@ -83,8 +81,7 @@ uint8_t MemoryBus::ReadByte(const uint16_t address)
     }
     else if (address == interruptAddress)
     {
-        assert(cpu != NULL);
-        return (cpu->GetInterruptRegister());
+        return (core.GetInterruptRegister());
         assert(false && "Fetching from this memory address is not supported yet!");
     }
     else

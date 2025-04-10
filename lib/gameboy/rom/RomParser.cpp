@@ -15,7 +15,7 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <play-man/ROM/Rom.hpp>
+#include <play-man/gameboy/rom/Rom.hpp>
 #include <play-man/utility/UtilFunc.hpp>
 #include <filesystem>
 #include <fstream>

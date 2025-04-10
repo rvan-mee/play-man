@@ -17,59 +17,53 @@
 
 #pragma once
 
+#include <play-man/gameboy/cpu/CpuCore.hpp>
 #include <play-man/gameboy/memory/MemoryBus.hpp>
-#include <play-man/gameboy/cpu/Register.hpp>
-#include <play-man/gameboy/cpu/Opcodes.hpp>
-#include <inttypes.h>
+#include <play-man/gameboy/opcodes/Opcodes.hpp>
+#include <functional>
+#include <array>
+#include <stdint.h>
 
 namespace GameBoy
 {
-	class Cpu
-	{
-		Register	AF; /* Accumulator & flags */
-		Register	BC; /* */
-		Register	DE; /* */
-		Register	HL; /* */
-		Register	SP; /* Stack pointer */
-		Register	PC; /* Program counter */
-		uint8_t		IE; /* Interrupt Enable Register*/
 
-		uint16_t	cyclesPassed = 0; /* */
+    class Cpu
+    {
+    private:
+        Rom         rom;
+        CpuCore     core;
+        MemoryBus   memoryBus;
 
-		bool		opcodeIsPrefixed = false;
-		uint8_t		currentOpcode;
+        bool    opcodeIsPrefixed;
+        uint8_t currentOpcode;
 
-		MemoryBus	memoryBus;
+        std::array<std::array<std::function<void()>, 255>, 2> instructions;
+    public:
 
-	public:
+        Cpu() = delete;
+        Cpu(const char* romFilePath) : rom(romFilePath), memoryBus(rom, core) {};
 
-		/**
-		 * @brief -.
-		 * @param opCode 
-		 */
-		void ExecuteInstruction(OpCode opCode);
+        /**
+         * @brief -.
+         * @param opCode 
+         */
+        void ExecuteInstruction(OpCode opCode);
 
-		/**
-		 * @brief -.
-		 * @param opCode 
-		 */
-		void ExecuteInstruction(PrefixedOpCode opCode);
+        /**
+         * @brief -.
+         * @param opCode 
+         */
+        void ExecuteInstruction(PrefixedOpCode opCode);
 
-		/**
-		 * @brief Executes the current instruction.
-		 */
-		void ExecuteInstruction();
+        /**
+         * @brief Executes the current instruction.
+         */
+        void ExecuteInstruction();
 
-		/**
-		 * @brief Fetches the instruction located on the address stored inside the PC register.
-		 */
-		void FetchInstruction();
+        /**
+         * @brief Fetches the instruction located on the address stored inside the PC register.
+         */
+        void FetchInstruction();
+    };
 
-		/**
-		 * @brief -.
-		 */
-		uint8_t GetInterruptRegister();
-
-	};
-
-} /* namespace Gameboy */
+}

@@ -17,14 +17,53 @@
 
 #pragma once
 
-#include <cstddef>
-#include <string>
-#include <play-man/ROM/Rom.hpp>
+#include <play-man/gameboy/cpu/Register.hpp>
+#include <play-man/utility/EnumMacro.hpp>
+#include <stdint.h>
 
-namespace GameBoy {
+namespace GameBoy
+{
 
-constexpr size_t headerOffset = 0x0134;
+/**
+ * @brief the flags to set the bits inside the F register
+ */
+#define F_REGISTER_FLAGS_SEQ(x, n) \
+    x(n, ZERO,       0b10000000)   \
+    x(n, ADD_SUB,    0b01000000)   \
+    x(n, HALF_CARRY, 0b00100000)   \
+    x(n, CARRY,      0b00010000)
 
-RomHeader   ParseRomHeader(std::string fileName);
+CREATE_ENUM_WITH_UTILS(F_REGISTER_FLAGS_SEQ, FlagRegisterFlag)
+#undef F_REGISTER_FLAGS_SEQ
 
-};
+
+    class CpuCore
+    {
+        friend class Cpu;
+
+        // TODO: Set default values on construction
+        Register	AF; /* Accumulator & flags */
+        Register	BC; /* */
+        Register	DE; /* */
+        Register	HL; /* */
+        Register	SP; /* Stack pointer */
+        Register	PC; /* Program counter */
+        uint8_t		IE; /* Interrupt Enable Register*/
+
+        // uint16_t	cyclesPassed = 0; /* */
+
+    public:
+        /**
+         * @brief -.
+         */
+        uint8_t GetInterruptRegister();
+
+        /**
+         * @brief Used to set a bit inside the flag register
+         * @param flag The flag to be changed
+         * @param enable Enable or disable the targeted flag
+         */
+        void SetFlag(FlagRegisterFlag flag, bool enable);
+    };
+
+} /* namespace Gameboy */

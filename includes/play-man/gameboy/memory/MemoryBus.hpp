@@ -18,25 +18,24 @@
 #pragma once
 
 #include <play-man/gameboy/cpu/Register.hpp>
-#include <play-man/ROM/Rom.hpp> // TODO: move ROM to /play-man/gameboy/ROM/?
+#include <play-man/gameboy/cpu/CpuCore.hpp>
+#include <play-man/gameboy/rom/Rom.hpp>
 #include <stdint.h>
 
 namespace GameBoy {
 
-    class Cpu; // pre-declare the CPU class
-
     class MemoryBus {
         private:
-            Rom* rom;
-            Cpu* cpu;
+            Rom&        rom;
+            CpuCore&    core;
             // TODO:
             // video module
             // io module
             // other modules
 
         public:
-            // TODO:
-            // void   init(Rom* rom, Cpu* cpu);
+            MemoryBus() = delete;
+            MemoryBus(Rom& _rom, CpuCore& _core) : rom(_rom), core(_core) {};
 
             /**
              * @brief Passthrough function to call the regular Readbyte,

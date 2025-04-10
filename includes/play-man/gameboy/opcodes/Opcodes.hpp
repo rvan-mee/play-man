@@ -24,6 +24,13 @@ namespace GameBoy
 
 constexpr uint8_t opcodePrefix = 0xCB;
 
+#define OPCODE_PREFIXED_SEQ(X, n) \
+X(n, NO_PREFIX, 0) \
+X(n, PREFIXED, 1)
+
+CREATE_ENUM_WITH_UTILS(OPCODE_PREFIXED_SEQ, OpCodePrefix)
+#undef OPCODE_PREFIXED_SEQ
+
 #define GAMEBOY_OPCODES_SEQ(X, n) \
 X(n, NOP, 0x00)				\
 X(n, LD_BC_n16, 0x01)		\

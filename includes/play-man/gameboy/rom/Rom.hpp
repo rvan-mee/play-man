@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <play-man/ROM/RomHeaderDefines.hpp>
+#include <play-man/gameboy/rom/RomHeaderDefines.hpp>
 #include <array>
 #include <vector>
 #include <stdint.h>

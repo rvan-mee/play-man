@@ -15,34 +15,16 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <iostream>
-#include <play-man/gameboy/rom/RomParser.hpp>
-#include <play-man/settings/PlayManSettings.hpp>
-#include <play-man/gameboy/opcodes/Opcodes.hpp>
-#include <play-man/gameboy/cpu/Cpu.hpp>
+#pragma once
 
-int main(int argc, char** argv)
-{
-	(void)argc;
-	(void)argv;
-	std::cout << "Welcome to play-man!" << std::endl;
+#include <cstddef>
+#include <string>
+#include <play-man/gameboy/rom/Rom.hpp>
 
-    if (argc > 1)
-    {
-        GameBoy::Cpu cpu(argv[1]);
+namespace GameBoy {
 
-        while (true)
-        {
-            cpu.FetchInstruction();
-            cpu.ExecuteInstruction();
-        }
+constexpr size_t headerOffset = 0x0134;
 
-        return 0;
-    }
-    else
-    {
-        std::cout << "No ROM provided!" << std::endl;
-    }
+RomHeader   ParseRomHeader(std::string fileName);
 
-	return 0;
-}
+};

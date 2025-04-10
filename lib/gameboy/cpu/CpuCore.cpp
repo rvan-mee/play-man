@@ -15,34 +15,24 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <iostream>
-#include <play-man/gameboy/rom/RomParser.hpp>
-#include <play-man/settings/PlayManSettings.hpp>
-#include <play-man/gameboy/opcodes/Opcodes.hpp>
-#include <play-man/gameboy/cpu/Cpu.hpp>
+#include <play-man/gameboy/cpu/CpuCore.hpp>
 
-int main(int argc, char** argv)
+namespace GameBoy
 {
-	(void)argc;
-	(void)argv;
-	std::cout << "Welcome to play-man!" << std::endl;
-
-    if (argc > 1)
+    uint8_t	CpuCore::GetInterruptRegister()
     {
-        GameBoy::Cpu cpu(argv[1]);
+        return (IE);
+    }
 
-        while (true)
+    void CpuCore::SetFlag(FlagRegisterFlag flag, bool enable)
+    {
+        if (enable)
         {
-            cpu.FetchInstruction();
-            cpu.ExecuteInstruction();
+            AF.SetHighByte(AF.HighByte() | static_cast<uint8_t>(flag));
         }
-
-        return 0;
+        else
+        {
+            AF.SetHighByte(AF.HighByte() & ~(static_cast<uint8_t>(flag)));
+        }
     }
-    else
-    {
-        std::cout << "No ROM provided!" << std::endl;
-    }
-
-	return 0;
-}
+} /* namespace Gameboy */
