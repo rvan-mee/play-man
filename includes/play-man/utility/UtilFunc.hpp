@@ -24,6 +24,16 @@
 namespace Utility
 {
 	/**
+	 * @brief
+	 */
+	std::string Uint8AsHexString(const uint8_t value);
+
+	/**
+	 * @brief
+	 */
+	std::string Uint16AsHexString(const uint16_t value);
+
+	/**
 	 * @brief 
 	 * @return
 	 */

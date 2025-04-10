@@ -29,6 +29,21 @@
 
 namespace Utility
 {
+	std::string Uint8AsHexString(const uint8_t value)
+	{
+		std::stringstream stream;
+
+		stream << "0x" << std::setfill ('0') << std::setw(2) << std::hex << std::uppercase << +value;
+		return (stream.str());
+	}
+
+	std::string Uint16AsHexString(const uint16_t value)
+	{
+		std::stringstream stream;
+
+		stream << "0x" << std::setfill ('0') << std::setw(4) << std::hex << std::uppercase << +value;
+		return (stream.str());
+	}
 
 	std::string CurrentTimeAsString(const std::string& format)
 	{

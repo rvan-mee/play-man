@@ -20,12 +20,14 @@
 #include <play-man/settings/PlayManSettings.hpp>
 #include <play-man/gameboy/opcodes/Opcodes.hpp>
 #include <play-man/gameboy/cpu/Cpu.hpp>
+#include <play-man/logger/Logger.hpp>
 
 int main(int argc, char** argv)
 {
 	(void)argc;
 	(void)argv;
 	std::cout << "Welcome to play-man!" << std::endl;
+    Logger::LogInterface::Initialize("Logging", Logger::LogLevel::Debug);
 
     if (argc > 1)
     {

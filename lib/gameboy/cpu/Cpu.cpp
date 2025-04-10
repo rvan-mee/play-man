@@ -16,6 +16,8 @@
 // ****************************************************************************** //
 
 #include <play-man/gameboy/cpu/Cpu.hpp>
+#include <play-man/logger/Logger.hpp>
+#include <play-man/utility/UtilFunc.hpp>
 
 namespace GameBoy
 {
@@ -31,7 +33,23 @@ namespace GameBoy
 
     void Cpu::ExecuteInstruction()
     {
-        instructions[opcodeIsPrefixed][currentOpcode]();
+        try
+        {
+            instructions[opcodeIsPrefixed].at(currentOpcode)();
+            /* code */
+        }
+        catch(const std::exception& e)
+        {
+            std::string logMessage;
+
+            logMessage = "Illegal instruction call for";
+            logMessage += (opcodeIsPrefixed ? " prefixed " : " ") ;
+            logMessage += "opcode: ";
+            logMessage += Utility::Uint8AsHexString(currentOpcode);
+            LOG_FATAL(logMessage);
+            assert(false);
+        }
+
         // TODO: handle instruction timing
     }
 
