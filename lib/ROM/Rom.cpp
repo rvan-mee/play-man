@@ -63,9 +63,9 @@ static void PrintIntegralLine(const std::string_view name, T var, int32_t bytesI
     std::cout << std::setfill(' ');
 }
 
-static int32_t ConvertInt8(int8_t val)
+static uint32_t ConvertInt8(uint8_t val)
 {
-    return (static_cast<int32_t>(val) & 0xFF);
+    return (static_cast<uint32_t>(val));
 }
 
 template<class T>
@@ -76,14 +76,14 @@ static void PrintHeaderLine(const std::string_view name, T var)
     std::cout << "/     " << name << ": " << std::setw(padding) << var << "     \\" << std::endl;
 }
 
-static void PrintHeaderLine(const std::string_view name, int8_t var)
+static void PrintHeaderLine(const std::string_view name, uint8_t var)
 {
-    PrintIntegralLine(name, ConvertInt8(var), sizeof(int8_t));
+    PrintIntegralLine(name, ConvertInt8(var), sizeof(uint8_t));
 }
 
-static void PrintHeaderLine(const std::string_view name, int16_t var)
+static void PrintHeaderLine(const std::string_view name, uint16_t var)
 {
-    PrintIntegralLine(name, var, sizeof(int16_t));
+    PrintIntegralLine(name, var, sizeof(uint16_t));
 }
 
 namespace GameBoy {
