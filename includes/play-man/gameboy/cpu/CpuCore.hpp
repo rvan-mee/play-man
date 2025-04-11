@@ -19,6 +19,7 @@
 
 #include <play-man/gameboy/cpu/Register.hpp>
 #include <play-man/utility/EnumMacro.hpp>
+#include <iostream>
 #include <stdint.h>
 
 namespace GameBoy
@@ -36,6 +37,7 @@ namespace GameBoy
 CREATE_ENUM_WITH_UTILS(F_REGISTER_FLAGS_SEQ, FlagRegisterFlag)
 #undef F_REGISTER_FLAGS_SEQ
 
+constexpr uint16_t programCounterAfterBootRom = 0x0100;
 
     class CpuCore
     {
@@ -47,7 +49,7 @@ CREATE_ENUM_WITH_UTILS(F_REGISTER_FLAGS_SEQ, FlagRegisterFlag)
         Register	DE; /* */
         Register	HL; /* */
         Register	SP; /* Stack pointer */
-        Register	PC; /* Program counter */
+        Register	PC = programCounterAfterBootRom; /* Program counter */
         uint8_t		IE; /* Interrupt Enable Register*/
 
         // uint16_t	cyclesPassed = 0; /* */
@@ -64,6 +66,8 @@ CREATE_ENUM_WITH_UTILS(F_REGISTER_FLAGS_SEQ, FlagRegisterFlag)
          * @param enable Enable or disable the targeted flag
          */
         void SetFlag(FlagRegisterFlag flag, bool enable);
+
+        friend std::ostream& operator << (std::ostream& lhs, const CpuCore& rom);
     };
 
 } /* namespace Gameboy */

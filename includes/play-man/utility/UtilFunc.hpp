@@ -24,14 +24,16 @@
 namespace Utility
 {
 	/**
-	 * @brief
+	 * @brief Converts any size unsigned integer into a hex string.
 	 */
-	std::string Uint8AsHexString(const uint8_t value);
+	template<typename T>
+	std::string IntAsHexString(const T value)
+	{
+		std::stringstream stream;
 
-	/**
-	 * @brief
-	 */
-	std::string Uint16AsHexString(const uint16_t value);
+		stream << "0x" << std::setfill ('0') << std::setw(sizeof(T) * 2) << std::hex << std::uppercase << +value;
+		return (stream.str());
+	}
 
 	/**
 	 * @brief 

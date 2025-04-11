@@ -38,10 +38,17 @@ namespace GameBoy
         uint8_t currentOpcode;
 
         std::array<std::array<std::function<void()>, 255>, 2> instructions;
+
+        /* GameBoy CPU instructions */
+        void    NOP();
+
     public:
 
         Cpu() = delete;
-        Cpu(const char* romFilePath) : rom(romFilePath), memoryBus(rom, core) {};
+        Cpu(const char* romFilePath) : rom(romFilePath), memoryBus(rom, core)
+        {
+            InitInstructionTable();
+        };
 
         /**
          * @brief -.
@@ -56,6 +63,11 @@ namespace GameBoy
         void ExecuteInstruction(PrefixedOpCode opCode);
 
         /**
+         * @brief Logs the current instruction being executed in debug mode.
+         */
+        void LogInstruction();
+
+        /**
          * @brief Executes the current instruction.
          */
         void ExecuteInstruction();
@@ -64,6 +76,12 @@ namespace GameBoy
          * @brief Fetches the instruction located on the address stored inside the PC register.
          */
         void FetchInstruction();
+
+        /**
+         * @brief Initializes the instruction array.
+         */
+        void InitInstructionTable();
+
     };
 
 }
