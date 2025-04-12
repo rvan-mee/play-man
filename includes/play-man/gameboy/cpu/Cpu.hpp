@@ -24,9 +24,12 @@
 #include <play-man/containers/EnumIndexableArray.hpp>
 
 #include <functional>
->>>>>>> 1edae86 (chore!: enumindexablearray)
 #include <stdint.h>
 
+namespace TestFixtures
+{
+	struct GameBoyCpuFixture;
+}
 
 namespace GameBoy
 {
