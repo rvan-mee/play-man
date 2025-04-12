@@ -20,24 +20,42 @@
 #include <play-man/gameboy/cpu/CpuCore.hpp>
 #include <play-man/gameboy/memory/MemoryBus.hpp>
 #include <play-man/gameboy/opcodes/Opcodes.hpp>
+#include <play-man/containers/EnumIndexableArray.hpp>
 #include <functional>
-#include <array>
 #include <stdint.h>
+
 
 namespace GameBoy
 {
-
-    class Cpu
+	
+	class Cpu
     {
-    private:
-        Rom         rom;
+	private:
+	
+		struct Instruction
+		{
+			OpCode opCode;
+			std::optional<PrefixedOpCode> prefixedOpCode;
+			std::function<void()> instructionToExecute;
+	
+			void Execute();
+		};
+        
+		Rom         rom;
         CpuCore     core;
         MemoryBus   memoryBus;
 
         bool    opcodeIsPrefixed;
         uint8_t currentOpcode;
 
-        std::array<std::array<std::function<void()>, 255>, 2> instructions;
+		Instruction currentInstruction;
+
+		static constexpr size_t numberOfInstructions = 256;
+		static constexpr size_t numberOfPrefixedInstructions = 256;
+		using InstructionPrototype = std::function<void()>;
+
+		EnumIndexableArray<OpCode, InstructionPrototype, numberOfInstructions> instructions;
+		EnumIndexableArray<PrefixedOpCode, InstructionPrototype, numberOfPrefixedInstructions> prefixedInstructions;
 
         /* GameBoy CPU instructions */
         void    NOP();

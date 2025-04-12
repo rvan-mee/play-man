@@ -35,7 +35,7 @@ namespace GameBoy
 		 *        By having a union with an unnamed struct makes us able to share the memory and
 		 *        easily access the high and low byte of the register without any bitshift shenanigans.
 		 */
-		union __attribute__((packed)) InternalRegisterLayout
+		union InternalRegisterLayout
 		{
 			struct {
 				uint8_t low;
