@@ -23,8 +23,6 @@
 
 namespace GameBoy {
 
-constexpr size_t headerOffset = 0x0134;
-
 RomHeader   ParseRomHeader(std::string fileName);
 
 };

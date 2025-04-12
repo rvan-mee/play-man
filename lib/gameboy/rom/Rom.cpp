@@ -43,47 +43,47 @@ static int32_t GetPaddingAfterName(const std::string_view name)
 }
 
 template<class T>
-static void PrintIntegralLine(const std::string_view name, T var, int32_t bytesInHexValue)
+static void PrintIntegralLine(std::ostream& stream, const std::string_view name, T var, int32_t bytesInHexValue)
 {
     int32_t padding = GetPaddingAfterName(name) - (bytesInHexValue * 2);
-    auto resetFlags = std::cout.flags();
-    std::cout << std::hex << std::uppercase;
+    auto resetFlags = stream.flags();
+    stream << std::hex << std::uppercase;
 
     // print the starting decoration and the name
-    std::cout << "/     " << name << ": ";
+    stream << "/     " << name << ": ";
     // offset the start of the hex by as many bytes needed for proper formatting
-    std::cout << std::setw(padding) << "0x";
+    stream << std::setw(padding) << "0x";
     // print the value as a hex, padded by 0's
-    std::cout << std::setfill('0') << std::setw(bytesInHexValue * 2) << var;
+    stream << std::setfill('0') << std::setw(bytesInHexValue * 2) << var;
     // print the trailing decoration
-    std::cout << "     \\" << std::endl;
+    stream << "     \\" << std::endl;
 
-    // reset the cout formatting
-    std::cout.flags(resetFlags);
-    std::cout << std::setfill(' ');
+    // reset the stream formatting
+    stream.flags(resetFlags);
+    stream << std::setfill(' ');
 }
 
-static int32_t ConvertInt8(int8_t val)
+static uint32_t ConvertInt8(uint8_t val)
 {
-    return (static_cast<int32_t>(val) & 0xFF);
+    return (static_cast<uint32_t>(val));
 }
 
 template<class T>
-static void PrintHeaderLine(const std::string_view name, T var)
+static void PrintHeaderLine(std::ostream& stream, const std::string_view name, T var)
 {
     int32_t padding = GetPaddingAfterName(name);
 
-    std::cout << "/     " << name << ": " << std::setw(padding) << var << "     \\" << std::endl;
+    stream << "/     " << name << ": " << std::setw(padding) << var << "     \\" << std::endl;
 }
 
-static void PrintHeaderLine(const std::string_view name, int8_t var)
+static void PrintHeaderLine(std::ostream& stream, const std::string_view name, uint8_t var)
 {
-    PrintIntegralLine(name, ConvertInt8(var), sizeof(int8_t));
+    PrintIntegralLine(stream, name, ConvertInt8(var), sizeof(uint8_t));
 }
 
-static void PrintHeaderLine(const std::string_view name, int16_t var)
+static void PrintHeaderLine(std::ostream& stream, const std::string_view name, uint16_t var)
 {
-    PrintIntegralLine(name, var, sizeof(int16_t));
+    PrintIntegralLine(stream, name, var, sizeof(uint16_t));
 }
 
 namespace GameBoy {
@@ -112,31 +112,31 @@ namespace GameBoy {
 
     std::ostream& operator << (std::ostream& lhs, const RomHeader& header)
     {
-        std::cout << "/**************************************************\\" << "\n";
-        std::cout << "/                    Rom Header:                   \\" << "\n";
-        std::cout << "/                                                  \\" << "\n";
-        PrintHeaderLine("Title",              header.title.data());
-        PrintHeaderLine("Manufacturer code",  header.manufacturerCode.data());
-        PrintHeaderLine("CGB flag",           header.cgbFlag);
-        PrintHeaderLine("New licensing code", header.newLicensingCode);
-        PrintHeaderLine("SGB flag",           header.sgbFlag);
-        PrintHeaderLine("Cartridge type",     header.cartridgeType);
-        PrintHeaderLine("Rom size",           header.romSize);
-        PrintHeaderLine("Ram size",           header.ramSize);
-        PrintHeaderLine("Destination code",   header.destinationCode);
-        PrintHeaderLine("Old licensing code", header.oldLicensingCode);
-        PrintHeaderLine("Rom version",        header.romVersion);
-        PrintHeaderLine("Header checksum",    header.headerChecksum);
-        PrintHeaderLine("Global checksum",    header.globalChecksum);
-        std::cout << "/                                                  \\" << "\n";
-        std::cout << "/**************************************************\\" << "\n";
+        lhs << "/**************************************************\\" << "\n";
+        lhs << "/                    Rom Header:                   \\" << "\n";
+        lhs << "/                                                  \\" << "\n";
+        PrintHeaderLine(lhs, "Title",              header.title.data());
+        PrintHeaderLine(lhs, "Manufacturer code",  header.manufacturerCode.data());
+        PrintHeaderLine(lhs, "CGB flag",           header.cgbFlag);
+        PrintHeaderLine(lhs, "New licensing code", header.newLicensingCode);
+        PrintHeaderLine(lhs, "SGB flag",           header.sgbFlag);
+        PrintHeaderLine(lhs, "Cartridge type",     header.cartridgeType);
+        PrintHeaderLine(lhs, "Rom size",           header.romSize);
+        PrintHeaderLine(lhs, "Ram size",           header.ramSize);
+        PrintHeaderLine(lhs, "Destination code",   header.destinationCode);
+        PrintHeaderLine(lhs, "Old licensing code", header.oldLicensingCode);
+        PrintHeaderLine(lhs, "Rom version",        header.romVersion);
+        PrintHeaderLine(lhs, "Header checksum",    header.headerChecksum);
+        PrintHeaderLine(lhs, "Global checksum",    header.globalChecksum);
+        lhs << "/                                                  \\" << "\n";
+        lhs << "/**************************************************\\" << "\n";
         return (lhs);
     }
 
     std::ostream& operator << (std::ostream& lhs, Rom& rom)
     {
-        std::cout << "Info for ROM located on: " << rom.GetFilePath() << std::endl;
-        std::cout << rom.GetHeader();
+        lhs << "Info for ROM located on: " << rom.GetFilePath() << std::endl;
+        lhs << rom.GetHeader();
         return (lhs);
     }
 }

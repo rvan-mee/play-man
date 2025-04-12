@@ -40,6 +40,14 @@ constexpr size_t oldLicensingCodeindex = 0x014B;
 constexpr size_t romVersionIndex =  0x014C;
 constexpr size_t headerChecksumIndex = 0x014D;
 constexpr size_t globalChecksumIndex = 0x014E; 
+constexpr size_t romHeaderSize = 0x14F;
+
+#define CgbFlagSeq(x, n) \
+    x(n, BackwardsCompatible, 0x80) \
+    x(n, CgbOnly, 0xC0)
+
+CREATE_ENUM_WITH_UTILS(CgbFlagSeq, CgbFlag);
+#undef CgbFlagSeq
 
 /**
  * @brief These are the new licensing codes inside the header of a ROM.
