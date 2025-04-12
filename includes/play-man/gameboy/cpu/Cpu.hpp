@@ -26,12 +26,18 @@
 #include <functional>
 #include <stdint.h>
 
+namespace TestFixtures
+{
+	struct GameBoyCpuFixture;
+}
 
 namespace GameBoy
 {
 	
 	class Cpu
     {
+		friend struct TestFixtures::GameBoyCpuFixture;
+
 	private:
 		Rom         rom;
         CpuCore     core;

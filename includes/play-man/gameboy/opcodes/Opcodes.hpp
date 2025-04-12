@@ -22,8 +22,6 @@
 namespace GameBoy
 {
 
-constexpr uint8_t opcodePrefix = 0xCB;
-
 #define OPCODE_PREFIXED_SEQ(X, n) \
 X(n, NO_PREFIX, 0) \
 X(n, PREFIXED, 1)

@@ -70,10 +70,9 @@ namespace GameBoy
     void Cpu::FetchInstruction()
     {
         currentOpcode = memoryBus.ReadByte(core.PC++);
-        if (currentOpcode == opcodePrefix)
+        if (currentOpcode != GetEnumAsValue(OpCode::PREFIX))
         {
             currentOpcode = memoryBus.ReadByte(core.PC++);
-
 			currentInstruction = Instruction(static_cast<PrefixedOpCode>(currentOpcode), prefixedInstructions.at(currentOpcode));
         }
         else
