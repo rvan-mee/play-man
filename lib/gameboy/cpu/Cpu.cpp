@@ -74,10 +74,13 @@ namespace GameBoy
         {
             opcodeIsPrefixed = true;
             currentOpcode = memoryBus.ReadByte(core.PC++);
+
+			nextInstructionToExecute = Instruction(OpCode::PREFIX, static_cast<PrefixedOpCode>(currentOpcode), prefixedInstructions.at(currentOpcode));
         }
         else
         {
             opcodeIsPrefixed = false;
+			nextInstructionToExecute = Instruction(static_cast<OpCode>(currentOpcode), std::nullopt, instructions.at(currentOpcode));
         }
     }
 }

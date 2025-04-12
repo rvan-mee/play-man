@@ -33,6 +33,7 @@ add_executable(${UTILITY_UNIT_TEST_EXECUTABLE}
 	logger/LoggerTests.cpp
 	signal/SignalTests.cpp
 	issueHandler/IssueHandlerTests.cpp
+	containers/EnumIndexableArrayTests.cpp
 )
 target_link_libraries(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE ${LIBRARY_NAME})
 target_link_libraries(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::Catch2WithMain)

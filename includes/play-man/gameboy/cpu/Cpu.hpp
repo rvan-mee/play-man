@@ -20,15 +20,21 @@
 #include <play-man/gameboy/cartridge/Cartridge.hpp>
 #include <play-man/gameboy/memory/MemoryBus.hpp>
 #include <play-man/gameboy/opcodes/Opcodes.hpp>
+<<<<<<< HEAD
 #include <play-man/gameboy/cpu/CpuCore.hpp>
 #include <memory>
 #include <array>
+=======
+#include <play-man/containers/EnumIndexableArray.hpp>
+#include <functional>
+>>>>>>> 1edae86 (chore!: enumindexablearray)
 #include <stdint.h>
+
 
 namespace GameBoy
 {
-
-    class Cpu
+	
+	class Cpu
     {
     private:
         std::shared_ptr<ACartridge>     cartridge;
@@ -38,7 +44,14 @@ namespace GameBoy
         bool    opcodeIsPrefixed;
         uint8_t currentOpcode;
 
-        std::array<std::array<std::function<void()>, 255>, 2> instructions;
+		Instruction currentInstruction;
+
+		static constexpr size_t numberOfInstructions = 256;
+		static constexpr size_t numberOfPrefixedInstructions = 256;
+		using InstructionPrototype = std::function<void()>;
+
+		EnumIndexableArray<OpCode, InstructionPrototype, numberOfInstructions> instructions;
+		EnumIndexableArray<PrefixedOpCode, InstructionPrototype, numberOfPrefixedInstructions> prefixedInstructions;
 
         /* GameBoy CPU instructions */
         void    NOP();
