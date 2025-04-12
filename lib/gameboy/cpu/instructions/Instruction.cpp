@@ -15,35 +15,54 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <play-man/settings/PlayManSettings.hpp>
+#include <play-man/gameboy/cpu/Instruction.hpp>
+#include <play-man/utility/JsonUtility.hpp>
 
-PlayManSettings::PlayManSettings()
-	: logLevel(defaultLogLevel)
-	, logDirectory(defaultLogDirectory)
-{}
-
-PlayManSettings::PlayManSettings(const PlayManSettings& rhs)
+namespace GameBoy
 {
-	*this = rhs;
-}
 
-PlayManSettings& PlayManSettings::operator = (const PlayManSettings& rhs)
-{
-	logLevel = rhs.logLevel;
-	logDirectory = rhs.logDirectory;
-	return *this;
-}
+	Instruction::Instruction(OpCode opCode_, InstructionPrototype instruction_)
+		: opCode(opCode_)
+		, prefixedOpCode(std::nullopt)
+		, instructionToExecute(instruction_)
+	{
+		
+	}
 
-void to_json(nlohmann::json& j, const PlayManSettings& p)
-{
-	j = nlohmann::json {
-		{"logLevel", p.logLevel},
-		{"logDirectory", p.logDirectory}
-	};
-}
+	Instruction::Instruction(PrefixedOpCode opCode_, InstructionPrototype instruction_)
+		: opCode(OpCode::PREFIX)
+		, prefixedOpCode(opCode_)
+		, instructionToExecute(instruction_)
+	{
 
-void from_json(const nlohmann::json& j, PlayManSettings& p)
-{
-	p.logLevel = j.value<Logger::LogLevel>("logLevel", PlayManSettings::defaultLogLevel);
-	p.logDirectory = j.value<std::filesystem::path>("logDirectory", PlayManSettings::defaultLogDirectory);
-}
+	}
+
+	size_t Instruction::Execute()
+	{
+		return instructionToExecute();
+	}
+
+	bool Instruction::IsPrefixed()
+	{
+		return opCode == OpCode::PREFIX;
+	}
+
+	std::ostream& operator << (std::ostream& os, Instruction& i)
+	{
+		nlohmann::json j;
+		to_json(j, i);
+		os << j;
+		return os;
+	}
+
+	void to_json(nlohmann::json& j, const Instruction& instruction)
+	{
+		j = Utility::Json::CreateEmptyJson();
+		j.emplace("opCode", instruction.opCode);
+		if (instruction.prefixedOpCode.has_value())
+		{
+			j.emplace("prefixedOpCode", instruction.prefixedOpCode.value());
+		}
+	}
+	
+} /* namespace GameBoy */
