@@ -19,7 +19,9 @@
 
 namespace GameBoy
 {
-    void Cpu::NOP()
+    size_t Cpu::NOP()
     {
+		constexpr auto numberOfCycles = 1;
+		return numberOfCycles;
     }
 }

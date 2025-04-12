@@ -26,23 +26,23 @@
  */
 struct PlayManSettings : public ISettings<PlayManSettings>
 {
+	Logger::LogLevel logLevel;
+	static constexpr Logger::LogLevel defaultLogLevel = Logger::LogLevel::Normal;
+
+	std::filesystem::path logDirectory;
+	static constexpr std::string_view defaultLogDirectory = "Logging";
+
 	/**
 	 * @brief -.
 	 */
-	PlayManSettings()
-		: logLevel(defaultLogLevel)
-		, logDirectory(defaultLogDirectory)
-	{}
+	PlayManSettings();
 
 	/**
 	 * @brief -.
 	 * 
 	 * @param rhs 
 	 */
-	PlayManSettings(const PlayManSettings& rhs)
-	{
-		*this = rhs;
-	}
+	PlayManSettings(const PlayManSettings& rhs);
 
 	/**
 	 * @brief -.
@@ -50,18 +50,7 @@ struct PlayManSettings : public ISettings<PlayManSettings>
 	 * @param rhs 
 	 * @return
 	 */
-	PlayManSettings& operator = (const PlayManSettings& rhs)
-	{
-		logLevel = rhs.logLevel;
-		logDirectory = rhs.logDirectory;
-		return *this;
-	}
-	
-	Logger::LogLevel logLevel;
-	static constexpr Logger::LogLevel defaultLogLevel = Logger::LogLevel::Normal;
-
-	std::filesystem::path logDirectory;
-	static constexpr std::string_view defaultLogDirectory = "Logging";
+	PlayManSettings& operator = (const PlayManSettings& rhs);
 };
 
 /**

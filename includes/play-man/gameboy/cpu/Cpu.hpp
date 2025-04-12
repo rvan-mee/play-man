@@ -20,12 +20,9 @@
 #include <play-man/gameboy/cartridge/Cartridge.hpp>
 #include <play-man/gameboy/memory/MemoryBus.hpp>
 #include <play-man/gameboy/opcodes/Opcodes.hpp>
-<<<<<<< HEAD
-#include <play-man/gameboy/cpu/CpuCore.hpp>
-#include <memory>
-#include <array>
-=======
+#include <play-man/gameboy/cpu/Instruction.hpp>
 #include <play-man/containers/EnumIndexableArray.hpp>
+
 #include <functional>
 >>>>>>> 1edae86 (chore!: enumindexablearray)
 #include <stdint.h>
@@ -41,20 +38,17 @@ namespace GameBoy
         CpuCore                         core;
         MemoryBus                       memoryBus;
 
-        bool    opcodeIsPrefixed;
         uint8_t currentOpcode;
 
-		Instruction currentInstruction;
+		size_t cycles = 0;
+		Instruction currentInstruction; /*< The current instruction to execute/is being executed. */
 
 		static constexpr size_t numberOfInstructions = 256;
 		static constexpr size_t numberOfPrefixedInstructions = 256;
-		using InstructionPrototype = std::function<void()>;
+		using InstructionPrototype = std::function<size_t()>; /* Prototype of instrution, returns number of cycles it took. */
 
 		EnumIndexableArray<OpCode, InstructionPrototype, numberOfInstructions> instructions;
 		EnumIndexableArray<PrefixedOpCode, InstructionPrototype, numberOfPrefixedInstructions> prefixedInstructions;
-
-        /* GameBoy CPU instructions */
-        void    NOP();
 
     public:
 
@@ -95,6 +89,17 @@ namespace GameBoy
          * @brief Initializes the instruction array.
          */
         void InitInstructionTable();
+
+//////////////////
+// Instructions //
+//////////////////
+private:
+
+		/**
+		 * @brief
+		 * @return number of cycles.
+		 */
+        size_t NOP();
 
     };
 

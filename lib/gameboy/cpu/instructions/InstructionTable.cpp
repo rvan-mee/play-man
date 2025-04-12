@@ -19,15 +19,8 @@
 
 namespace GameBoy
 {
-    template<typename T>
-    static constexpr uint8_t u8(T type)
-    {
-        return (static_cast<uint8_t>(type));
-    }
-
     void    Cpu::InitInstructionTable()
     {
-        auto& arr = instructions[u8(OpCodePrefix::NO_PREFIX)];
-        arr[u8(OpCode::NOP)] = std::bind(&Cpu::NOP, this);
+        instructions[OpCode::NOP] = std::bind(&Cpu::NOP, this);
     }
 }

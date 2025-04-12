@@ -23,12 +23,12 @@ namespace GameBoy
 {
     void Cpu::ExecuteInstruction(OpCode opCode)
     {
-        instructions[0][static_cast<uint8_t>(opCode)]();
+        instructions[opCode]();
     }
 
     void Cpu::ExecuteInstruction(PrefixedOpCode opCode)
     {
-        instructions[1][static_cast<uint8_t>(opCode)]();
+        prefixedInstructions[opCode]();
     }
 
     void Cpu::LogInstruction()
@@ -36,7 +36,7 @@ namespace GameBoy
         std::stringstream ss;
 
         ss << "Executing instruction: ";
-        ss << (opcodeIsPrefixed ? GetEnumAsString(static_cast<PrefixedOpCode>(currentOpcode)) : GetEnumAsString(static_cast<OpCode>(currentOpcode)));
+        ss << currentInstruction;
         ss << " - Opcode: " << Utility::IntAsHexString(currentOpcode);
         LOG_DEBUG(ss.str());
     }
@@ -46,7 +46,7 @@ namespace GameBoy
         try
         {
             std::cout << "\nCore before instruction:\n" << core;
-            instructions[opcodeIsPrefixed].at(currentOpcode)();
+            cycles += currentInstruction.Execute();
             LogInstruction();
             std::cout << "Core after instruction:\n" << core;
         }
@@ -55,11 +55,11 @@ namespace GameBoy
             std::string logMessage;
             
             logMessage = "Illegal instruction call for";
-            logMessage += (opcodeIsPrefixed ? " prefixed " : " ") ;
+            logMessage += (currentInstruction.IsPrefixed() ? " prefixed " : " ") ;
             logMessage += "opcode: ";
             logMessage += Utility::IntAsHexString(currentOpcode);
             LOG_FATAL(logMessage);
-            assert(false);
+            abort();
         }
 
         // TODO: handle instruction timing
@@ -72,15 +72,13 @@ namespace GameBoy
         currentOpcode = memoryBus.ReadByte(core.PC++);
         if (currentOpcode == opcodePrefix)
         {
-            opcodeIsPrefixed = true;
             currentOpcode = memoryBus.ReadByte(core.PC++);
 
-			nextInstructionToExecute = Instruction(OpCode::PREFIX, static_cast<PrefixedOpCode>(currentOpcode), prefixedInstructions.at(currentOpcode));
+			currentInstruction = Instruction(static_cast<PrefixedOpCode>(currentOpcode), prefixedInstructions.at(currentOpcode));
         }
         else
         {
-            opcodeIsPrefixed = false;
-			nextInstructionToExecute = Instruction(static_cast<OpCode>(currentOpcode), std::nullopt, instructions.at(currentOpcode));
+			currentInstruction = Instruction(static_cast<OpCode>(currentOpcode), instructions.at(currentOpcode));
         }
     }
 }

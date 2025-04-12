@@ -15,40 +15,74 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <play-man/gameboy/cartridge/Cartridge.hpp>
-#include <play-man/settings/PlayManSettings.hpp>
+#pragma once
+
 #include <play-man/gameboy/opcodes/Opcodes.hpp>
-#include <play-man/gameboy/cpu/Cpu.hpp>
-#include <play-man/logger/Logger.hpp>
+
+#include <optional>
+#include <functional>
 #include <iostream>
 
-int main(int argc, char** argv)
-{
-	(void)argc;
-	(void)argv;
-    Logger::LogInterface::Initialize("Logging", Logger::LogLevel::Debug);
-	LOG_INFO("Welcome to play-man!");
+namespace GameBoy
+{	
+	/*!
+	 * @brief Holds information about a instruction.
+	*/
+	struct Instruction
+	{
+		friend void to_json(nlohmann::json& j, const Instruction& instruction);
+		friend std::ostream& operator << (std::ostream& os, Instruction& i);
 
-    if (argc > 1)
-    {
-        std::shared_ptr<GameBoy::ACartridge> cartridge = GameBoy::MakeCartridge(argv[1]);
+	private:
 
-        std::cout << *cartridge << std::endl;
+		using InstructionPrototype = std::function<size_t()>;
 
-        GameBoy::Cpu cpu(cartridge);
+		OpCode opCode; /*! <-. */
+		std::optional<PrefixedOpCode> prefixedOpCode; /*!< -. */
+		InstructionPrototype instructionToExecute; /*!< Bound function from the InstructionTable. */
 
-        while (true)
-        {
-            cpu.FetchInstruction();
-            cpu.ExecuteInstruction();
-        }
+	public:
 
-        return 0;
-    }
-    else
-    {
-    	LOG_ERROR("No ROM provided!");
-    }
+		/**
+		 * @brief Non prefixed instruction.
+		 * @param opCode 
+		 * @param instruction 
+		 */
+		Instruction(OpCode opCode, InstructionPrototype instruction);
 
-	return 0;
-}
+		/**
+		 * @brief -.
+		 * @param opCode 
+		 * @param instruction 
+		 */
+		Instruction(PrefixedOpCode opCode, InstructionPrototype instruction);
+
+		/**
+		 * @brief -.
+		 * @return the number of cycles the instruction took to execute.
+		 */
+		size_t Execute();
+
+		/**
+		 * @brief -.
+		 * @return
+		 */
+		bool IsPrefixed();
+	};
+
+	/**
+	 * @brief -.
+	 * @param os 
+	 * @param i 
+	 * @return
+	 */
+	std::ostream& operator << (std::ostream& os, Instruction& i);
+
+	/**
+	 * @brief Serializes a instruction to json format.
+	 * @param j 
+	 * @param instruction 
+	 */
+	void to_json(nlohmann::json& j, const Instruction& instruction);
+
+} /* namespace Gameboy */
