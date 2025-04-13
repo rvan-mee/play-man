@@ -86,6 +86,12 @@ namespace GameBoy
 		 * @return OpCode 
 		 */
 		PrefixedOpCode GetPrefixedOpCode() const;
+
+		/**
+		 * @brief -.
+		 * @return
+		 */
+		std::string OpCodeAsHexString() const;
 	};
 
 	/**
