@@ -52,18 +52,7 @@ namespace GameBoy
         }
         catch (const std::exception& e)
         {
-            std::string logMessage;
-
-			auto opCode = GetEnumAsValue(currentInstruction.GetOpCode());
-			if (currentInstruction.IsPrefixed())
-			{
-				const auto prefixedOpCode = GetEnumAsValue(currentInstruction.GetPrefixedOpCode());
-				opCode = (opCode << 8) + prefixedOpCode;
-			}
-
-            logMessage = "Illegal instruction, no instruction found for opcode: ";
-            logMessage += "opcode: " + Utility::IntAsHexString(opCode);
-            LOG_FATAL(logMessage);
+            LOG_FATAL("Failed to exectue instruction " + currentInstruction.OpCodeAsHexString() + ": " + e.what());
             abort();
         }
 
@@ -86,15 +75,23 @@ namespace GameBoy
 
     void Cpu::FetchInstruction()
     {
-        auto currentOpcode = FetchPcAddress();
-        if (currentOpcode == GetEnumAsValue(OpCode::PREFIX))
-        {
-            currentOpcode = FetchPcAddress();
-			currentInstruction = Instruction(static_cast<PrefixedOpCode>(currentOpcode), prefixedInstructions.at(currentOpcode));
-        }
-        else
-        {
-			currentInstruction = Instruction(static_cast<OpCode>(currentOpcode), instructions.at(currentOpcode));
-        }
+		try
+		{
+			auto currentOpcode = FetchPcAddress();
+			if (currentOpcode == GetEnumAsValue(OpCode::PREFIX))
+			{
+				currentOpcode = FetchPcAddress();
+				currentInstruction = Instruction(static_cast<PrefixedOpCode>(currentOpcode), prefixedInstructions.at(currentOpcode));
+			}
+			else
+			{
+				currentInstruction = Instruction(static_cast<OpCode>(currentOpcode), instructions.at(currentOpcode));
+			}
+		}
+		catch (const std::exception& e)
+		{
+			LOG_FATAL(std::string("Unable to fetch instruction: ") + e.what());
+			abort();
+		}
     }
 }

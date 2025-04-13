@@ -17,6 +17,7 @@
 
 #include <play-man/gameboy/cpu/Instruction.hpp>
 #include <play-man/utility/JsonUtility.hpp>
+#include <play-man/utility/UtilFunc.hpp>
 
 namespace GameBoy
 {
@@ -36,7 +37,10 @@ namespace GameBoy
 		, instructionToExecute(instruction_)
 		, hasBeenExecuted(false)
 	{
-		assert(instructionToExecute != nullptr);
+		if (instructionToExecute == nullptr)
+		{
+			throw std::runtime_error("Illegal instruction, no instruction found for opcode: " + OpCodeAsHexString());
+		}
 	}
 
 	Instruction::Instruction(PrefixedOpCode opCode_, InstructionPrototype instruction_)
@@ -45,7 +49,10 @@ namespace GameBoy
 		, instructionToExecute(instruction_)
 		, hasBeenExecuted(false)
 	{
-		assert(instructionToExecute != nullptr);
+		if (instructionToExecute == nullptr)
+		{
+			throw std::runtime_error("Illegal instruction, no instruction found for opcode: " + OpCodeAsHexString());
+		}
 	}
 
 	size_t Instruction::Execute()
@@ -69,6 +76,17 @@ namespace GameBoy
 	PrefixedOpCode Instruction::GetPrefixedOpCode() const
 	{
 		return prefixedOpCode.value();
+	}
+
+	std::string Instruction::OpCodeAsHexString() const
+	{
+		int16_t opcode16bit = GetEnumAsValue(opCode);
+		if (IsPrefixed())
+		{
+			opcode16bit <<= 8;
+			opcode16bit += GetEnumAsValue(GetPrefixedOpCode());
+		}
+		return Utility::IntAsHexString(opcode16bit);
 	}
 
 	std::ostream& operator << (std::ostream& os, Instruction& i)
