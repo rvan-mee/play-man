@@ -53,6 +53,21 @@ namespace Utility { namespace Json {
 		const nlohmann::json& jsonTree,
 		const nlohmann::json::json_pointer& pathToValue);
 
+	/**
+	 * @brief Prints class of type T as formatted json.
+	 * @tparam T 
+	 * @param toPrint 
+	 * @return
+	 */
+	template <class T>
+	std::ostream& PrintFormatted(std::ostream& os, const T& toPrint)
+	{
+		nlohmann::json j;
+		to_json(j, toPrint);
+		os << j.dump(4);
+		return os;
+	}
+
 	#include "JsonUtility.ipp"
 
 } /* namespace Json */

@@ -21,24 +21,38 @@
 namespace GameBoy
 {
 
+	Instruction::Instruction()
+		: opCode(OpCode::NOP)
+		, prefixedOpCode(std::nullopt)
+		, instructionToExecute(nullptr)
+		, hasBeenExecuted(true) // To prevent it from being executed.
+	{
+
+	}
+
 	Instruction::Instruction(OpCode opCode_, InstructionPrototype instruction_)
 		: opCode(opCode_)
 		, prefixedOpCode(std::nullopt)
 		, instructionToExecute(instruction_)
+		, hasBeenExecuted(false)
 	{
-		
+		assert(instructionToExecute != nullptr);
 	}
 
 	Instruction::Instruction(PrefixedOpCode opCode_, InstructionPrototype instruction_)
 		: opCode(OpCode::PREFIX)
 		, prefixedOpCode(opCode_)
 		, instructionToExecute(instruction_)
+		, hasBeenExecuted(false)
 	{
-
+		assert(instructionToExecute != nullptr);
 	}
 
 	size_t Instruction::Execute()
 	{
+		assert(!hasBeenExecuted);
+
+		hasBeenExecuted = true;
 		return instructionToExecute();
 	}
 
@@ -49,10 +63,7 @@ namespace GameBoy
 
 	std::ostream& operator << (std::ostream& os, Instruction& i)
 	{
-		nlohmann::json j;
-		to_json(j, i);
-		os << j;
-		return os;
+		return Utility::Json::PrintFormatted(os, i);
 	}
 
 	void to_json(nlohmann::json& j, const Instruction& instruction)
@@ -63,6 +74,7 @@ namespace GameBoy
 		{
 			j.emplace("prefixedOpCode", instruction.prefixedOpCode.value());
 		}
+		j.emplace("hasBeenExecuted", instruction.hasBeenExecuted);
 	}
 	
 } /* namespace GameBoy */

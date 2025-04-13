@@ -62,7 +62,6 @@ namespace GameBoy
         Cpu(const char* romFilePath)
 			: rom(romFilePath)
 			, memoryBus(rom, core)
-			, currentInstruction(OpCode::NOP, nullptr)
         {
             InitInstructionTable();
         };

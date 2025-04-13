@@ -50,7 +50,7 @@ namespace GameBoy
             LogInstruction();
             std::cout << "Core after instruction:\n" << core;
         }
-        catch(const std::exception& e)
+        catch (const std::exception& e)
         {
             std::string logMessage;
             
@@ -70,9 +70,10 @@ namespace GameBoy
     void Cpu::FetchInstruction()
     {
         currentOpcode = memoryBus.ReadByte(core.PC++);
-        if (currentOpcode != GetEnumAsValue(OpCode::PREFIX))
+        if (currentOpcode == GetEnumAsValue(OpCode::PREFIX))
         {
             currentOpcode = memoryBus.ReadByte(core.PC++);
+			LOG_INFO("here");
 			currentInstruction = Instruction(static_cast<PrefixedOpCode>(currentOpcode), prefixedInstructions.at(currentOpcode));
         }
         else
