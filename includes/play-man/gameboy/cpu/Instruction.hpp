@@ -40,8 +40,14 @@ namespace GameBoy
 		OpCode opCode; /*! <-. */
 		std::optional<PrefixedOpCode> prefixedOpCode; /*!< -. */
 		InstructionPrototype instructionToExecute; /*!< Bound function from the InstructionTable. */
+		bool hasBeenExecuted;
 
 	public:
+
+		/**
+		 * @brief Instantiates a non executable instruction.
+		 */
+		Instruction();
 
 		/**
 		 * @brief Non prefixed instruction.
