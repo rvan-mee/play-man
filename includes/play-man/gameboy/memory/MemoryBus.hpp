@@ -26,8 +26,8 @@ namespace GameBoy {
 
     class MemoryBus {
         private:
-            Rom&        rom;
-            CpuCore&    core;
+            Rom& rom;
+            CpuCore& core;
             // TODO:
             // video module
             // io module
@@ -50,6 +50,13 @@ namespace GameBoy {
              * @param address The address to fetch the data from.
              */
             uint8_t ReadByte(const uint16_t address);
+
+			/**
+			 * @brief -.
+			 * @param address 
+			 * @param dataToWrite 
+			 */
+			void WriteByte(const uint16_t address, uint8_t dataToWrite);
 
     };
 
