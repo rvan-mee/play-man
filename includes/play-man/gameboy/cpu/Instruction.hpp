@@ -73,7 +73,19 @@ namespace GameBoy
 		 * @brief -.
 		 * @return
 		 */
-		bool IsPrefixed();
+		bool IsPrefixed() const;
+
+		/**
+		 * @brief -.
+		 * @return OpCode 
+		 */
+		OpCode GetOpCode() const;
+
+		/**
+		 * @brief -.
+		 * @return OpCode 
+		 */
+		PrefixedOpCode GetPrefixedOpCode() const;
 	};
 
 	/**

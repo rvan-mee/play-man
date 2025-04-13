@@ -21,6 +21,7 @@ target_link_libraries(${GENERAL_PLAY_MAN_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::C
 set(GAMEBOY_UNIT_TEST_EXECUTABLE gameboy-unit-tests)
 add_executable(${GAMEBOY_UNIT_TEST_EXECUTABLE}
 	gameboy/InstructionTests.cpp
+	gameboy/RegisterTests.cpp
 )
 target_link_libraries(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE ${LIBRARY_NAME})
 target_link_libraries(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::Catch2WithMain)

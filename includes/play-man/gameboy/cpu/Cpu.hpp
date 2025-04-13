@@ -41,8 +41,6 @@ namespace GameBoy
         CpuCore                         core;
         MemoryBus                       memoryBus;
 
-        uint8_t currentOpcode;
-
 		size_t cycles = 0;
 		Instruction currentInstruction; /*< The current instruction to execute/is being executed. */
 
@@ -88,6 +86,19 @@ namespace GameBoy
          */
         void FetchInstruction();
 
+		/*!
+		 * @brief Reads byte from memory bus at address.
+		 * @brief address
+		 * @return
+		*/
+		uint8_t Fetch(uint16_t address);
+
+		/**
+		 * @brief Reads byte from memory bus at address contained in PC; increments PC;
+		 * @return 
+		 */
+		uint8_t FetchPcAddress();
+
         /**
          * @brief Initializes the instruction array.
          */
@@ -103,6 +114,14 @@ private:
 		 * @return number of cycles.
 		 */
         size_t NOP();
+
+		/**
+		 * @brief Loads two bytes of immediate data into reg.
+		 * 		  First byte of immediate data is low byte.
+		 * @param reg 
+		 * @return size_t 
+		 */
+		size_t Load_16bit_ImmediateData(Register& reg);
 
     };
 

@@ -56,9 +56,19 @@ namespace GameBoy
 		return instructionToExecute();
 	}
 
-	bool Instruction::IsPrefixed()
+	bool Instruction::IsPrefixed() const
 	{
 		return opCode == OpCode::PREFIX;
+	}
+
+	OpCode Instruction::GetOpCode() const
+	{
+		return opCode;
+	}
+
+	PrefixedOpCode Instruction::GetPrefixedOpCode() const
+	{
+		return prefixedOpCode.value();
 	}
 
 	std::ostream& operator << (std::ostream& os, Instruction& i)

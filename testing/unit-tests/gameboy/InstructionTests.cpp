@@ -10,7 +10,7 @@ namespace TestFixtures
 	 */
 	struct GameBoyCpuFixture
 	{
-		GameBoyCpuFixture() : cpu("someRom")
+		GameBoyCpuFixture() : cpu("/home/king/programming/codam/advanced/play-man/roms/Pokemon_Rouge.gb")
 		{
 
 		}
@@ -24,9 +24,16 @@ namespace TestFixtures
 	};
 }
 
-TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "Nop")
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "Nop, 0x00")
 {
 	const auto numberOfCycles = ExecuteInstruction(GameBoy::OpCode::NOP);
 
 	REQUIRE(numberOfCycles == 1);
+}
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "LD_BC_n16, 0x01")
+{
+	const auto numberOfCycles = ExecuteInstruction(GameBoy::OpCode::LD_BC_n16);
+
+	REQUIRE(numberOfCycles == 3);
 }
