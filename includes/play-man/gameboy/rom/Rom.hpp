@@ -27,20 +27,20 @@ namespace GameBoy {
 
 class RomHeader {
     public:
-        std::array<int8_t, nintendoLogoSize>        nintendoLogo;
+        std::array<uint8_t, nintendoLogoSize>       nintendoLogo;
         std::array<char, romTitleSize + 1>          title;
         std::array<char, manufacturerCodeSize + 1>  manufacturerCode;
-        int8_t                                      cgbFlag;
+        uint8_t                                     cgbFlag;
         NewLicensingCode                            newLicensingCode;
-        int8_t                                      sgbFlag; 
+        uint8_t                                     sgbFlag; 
         CartridgeType                               cartridgeType;
         RomSize                                     romSize;
         RamSize                                     ramSize;
         DestinationCode                             destinationCode;
         OldLicensingCode                            oldLicensingCode;
-        int8_t                                      romVersion;
-        int8_t                                      headerChecksum;
-        int16_t                                     globalChecksum;
+        uint8_t                                     romVersion;
+        uint8_t                                     headerChecksum;
+        uint16_t                                    globalChecksum;
 
         /**
          * @brief Parses the data given and sets all the RomHeader values.

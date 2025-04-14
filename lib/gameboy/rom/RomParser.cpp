@@ -27,7 +27,7 @@ namespace GameBoy {
 
     void RomHeader::ParseRawData(const std::vector<int8_t>& data)
     {
-        assert(data.size() >= 0x14E);
+        assert(data.size() >= romHeaderSize);
         title.fill('\0');
         manufacturerCode.fill('\0');
 
@@ -38,23 +38,32 @@ namespace GameBoy {
         // Cartridge Title
         for (uint32_t i = 0; i < romTitleSize; i++)
         {
-            if (!(data[i + titleIndex] >= 32 && data[i + titleIndex] <= 126))
+            // Newer cartridges possibly used some bytes of the title for the manufacturer code
+            // or the CBG flag. Since the CBG flag is not a printable ASCII value,
+            // we can prevent adding it into the title with this check.
+            if (!(std::isprint(data[i + titleIndex])))
                 break ;
             title[i] = data[i + titleIndex];
         }
 
         // Manufacturer Code
         // Not all cartridges contained a manufacturer code, instead using the space for the title
-        // TODO: figure out if there is a way to separate the title and the manufacturer code 
+        // TODO: figure out if there is a way to separate the title and the manufacturer code
+        // Opened issue #20 to track this TODO.
         for (uint32_t i = 0; i < manufacturerCodeSize; i++)
             manufacturerCode[i] = data[manufacturerCodeIndex + i];
 
         // CGB Flag
         // Not all cartridges contained a CGB Flag, instead using the space for the title
-        if (data[cgbFlagIndex] == static_cast<int8_t>(0xC0) || data[cgbFlagIndex] == static_cast<int8_t>(0x80))
+        if (data[cgbFlagIndex] == static_cast<int8_t>(CgbFlag::BackwardsCompatible) || \
+            data[cgbFlagIndex] == static_cast<int8_t>(CgbFlag::CgbOnly))
+        {
             cgbFlag = data[cgbFlagIndex];
+        }
         else
+        {
             cgbFlag = 0x00;
+        }
 
         // New Licensing Code
         const uint8_t firstByte = data[newLicensingCodeIndex];
@@ -78,9 +87,12 @@ namespace GameBoy {
 
         if (!rom.is_open())
         {
-            std::cerr << "Failed to open ROM: " << filePath << std::endl;
-            std::cerr << "Error: " << Utility::ErrnoToString() << std::endl;
-            throw std::runtime_error("Failed open ROM"); 
+            std::string error;
+
+            error += "Failed to open ROM: ";
+            error += filePath;
+            error += "\nError: " + Utility::ErrnoToString() + "\n";
+            throw std::runtime_error(error); 
         }
 
         std::streamsize romSize = std::filesystem::file_size(filePath);
