@@ -2,11 +2,11 @@
 
 namespace GameBoy
 {
-
-	size_t Cpu::Load_16bit_ImmediateData(Register& reg)
+	size_t Cpu::Load_16bit_ImmediateData(Register CpuCore::* reg)
 	{
-		reg.SetLowByte(FetchPcAddress());
-		reg.SetHighByte(FetchPcAddress());
+		Register& r = core.*reg;
+		r.SetLowByte(FetchPcAddress());
+		r.SetHighByte(FetchPcAddress());
 
 		constexpr auto numberOfCycles = 3;
 		return numberOfCycles;

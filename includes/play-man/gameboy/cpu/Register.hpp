@@ -38,10 +38,10 @@ namespace GameBoy
 		union InternalRegisterLayout
 		{
 			struct {
-				uint8_t low;
-				uint8_t high;
+				uint8_t low : 8;
+				uint8_t high : 8;
 			} byte;
-			uint16_t value;
+			uint16_t value : 16;
 		};
 
 		InternalRegisterLayout internalRegister;

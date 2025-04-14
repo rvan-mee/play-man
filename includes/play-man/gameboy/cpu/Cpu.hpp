@@ -26,30 +26,27 @@
 #include <functional>
 #include <stdint.h>
 
-namespace TestFixtures
-{
-	struct GameBoyCpuFixture;
-}
-
 namespace GameBoy
-{
-	
-	class Cpu
+{	
+    class Cpu
     {
+        friend struct TestFixtures::GameBoyCpuFixture;
+
+        using InstructionPrototype = Instruction::InstructionPrototype; /*!< -. */
+    
     private:
         std::shared_ptr<ACartridge>     cartridge;
         CpuCore                         core;
         MemoryBus                       memoryBus;
 
-		size_t cycles = 0;
-		Instruction currentInstruction; /*< The current instruction to execute/is being executed. */
+        size_t cycles = 0;
+        Instruction currentInstruction; /*< The current instruction to execute/is being executed. */
 
-		static constexpr size_t numberOfInstructions = 256;
-		static constexpr size_t numberOfPrefixedInstructions = 256;
-		using InstructionPrototype = std::function<size_t()>; /* Prototype of instrution, returns number of cycles it took. */
+        static constexpr size_t numberOfInstructions = 256;
+        static constexpr size_t numberOfPrefixedInstructions = 256;
 
-		EnumIndexableArray<OpCode, InstructionPrototype, numberOfInstructions> instructions;
-		EnumIndexableArray<PrefixedOpCode, InstructionPrototype, numberOfPrefixedInstructions> prefixedInstructions;
+        EnumIndexableArray<OpCode, InstructionPrototype, numberOfInstructions> instructions;
+        EnumIndexableArray<PrefixedOpCode, InstructionPrototype, numberOfPrefixedInstructions> prefixedInstructions;
 
     public:
 
@@ -86,18 +83,18 @@ namespace GameBoy
          */
         void FetchInstruction();
 
-		/*!
-		 * @brief Reads byte from memory bus at address.
-		 * @brief address
-		 * @return
-		*/
-		uint8_t Fetch(uint16_t address);
+        /*!
+         * @brief Reads byte from memory bus at address.
+         * @brief address
+         * @return
+        */
+        uint8_t Fetch(uint16_t address);
 
-		/**
-		 * @brief Reads byte from memory bus at address contained in PC; increments PC;
-		 * @return 
-		 */
-		uint8_t FetchPcAddress();
+        /**
+         * @brief Reads byte from memory bus at address contained in PC; increments PC;
+         * @return 
+         */
+        uint8_t FetchPcAddress();
 
         /**
          * @brief Initializes the instruction array.
@@ -109,19 +106,19 @@ namespace GameBoy
 //////////////////
 private:
 
-		/**
-		 * @brief
-		 * @return number of cycles.
-		 */
+        /**
+         * @brief
+         * @return number of cycles.
+         */
         size_t NOP();
 
-		/**
-		 * @brief Loads two bytes of immediate data into reg.
-		 * 		  First byte of immediate data is low byte.
-		 * @param reg 
-		 * @return size_t 
-		 */
-		size_t Load_16bit_ImmediateData(Register& reg);
+        /**
+         * @brief Loads two bytes of immediate data into reg.
+         * 		  First byte of immediate data is low byte.
+         * @param reg 
+         * @return size_t 
+         */
+        size_t Load_16bit_ImmediateData(Register CpuCore::* reg);
 
     };
 
