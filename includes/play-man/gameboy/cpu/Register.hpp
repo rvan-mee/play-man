@@ -38,10 +38,10 @@ namespace GameBoy
 		union InternalRegisterLayout
 		{
 			struct {
-				uint8_t low;
-				uint8_t high;
+				uint8_t low : 8;
+				uint8_t high : 8;
 			} byte;
-			uint16_t value;
+			uint16_t value : 16;
 		};
 
 		InternalRegisterLayout internalRegister;
@@ -89,24 +89,6 @@ namespace GameBoy
 		 * @return uint16_t 
 		 */
 		uint16_t Value() const;
-
-		/**
-		 * @brief -.
-		 * @return uint8_t 
-		 */
-		uint8_t& LowByteRef();
-
-		/**
-		 * @brief -.
-		 * @return uint8_t 
-		 */
-		uint8_t& HighByteRef();
-
-		/**
-		 * @brief -.
-		 * @return uint16_t 
-		 */
-		uint16_t& ValueRef();
 
 		// Postfix increment 
 		Register operator++(int)

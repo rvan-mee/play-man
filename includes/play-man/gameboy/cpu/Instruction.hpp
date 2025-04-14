@@ -25,6 +25,8 @@
 
 namespace GameBoy
 {	
+	class Cpu;
+
 	/*!
 	 * @brief Holds information about a instruction.
 	*/
@@ -33,9 +35,9 @@ namespace GameBoy
 		friend void to_json(nlohmann::json& j, const Instruction& instruction);
 		friend std::ostream& operator << (std::ostream& os, Instruction& i);
 
-	private:
+		using InstructionPrototype = std::function<size_t(Cpu*)>; /* Prototype of instrution, returns number of cycles it took. */
 
-		using InstructionPrototype = std::function<size_t()>;
+	private:
 
 		OpCode opCode; /*! <-. */
 		std::optional<PrefixedOpCode> prefixedOpCode; /*!< -. */
@@ -65,9 +67,10 @@ namespace GameBoy
 
 		/**
 		 * @brief -.
+		 * @param cpu to execute the instruction on.
 		 * @return the number of cycles the instruction took to execute.
 		 */
-		size_t Execute();
+		size_t Execute(Cpu* cpu);
 
 		/**
 		 * @brief -.

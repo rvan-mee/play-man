@@ -54,19 +54,4 @@ namespace GameBoy
 		return internalRegister.value;
 	}
 
-	uint8_t& Register::LowByteRef()
-	{
-		return internalRegister.byte.low;
-	}
-
-	uint8_t& Register::HighByteRef()
-	{
-		return internalRegister.byte.high;
-	}
-
-	uint16_t& Register::ValueRef()
-	{
-		return internalRegister.value;
-	}
-
 }

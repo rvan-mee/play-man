@@ -55,12 +55,12 @@ namespace GameBoy
 		}
 	}
 
-	size_t Instruction::Execute()
+	size_t Instruction::Execute(Cpu* cpu)
 	{
 		assert(!hasBeenExecuted);
 
 		hasBeenExecuted = true;
-		return instructionToExecute();
+		return instructionToExecute(cpu);
 	}
 
 	bool Instruction::IsPrefixed() const

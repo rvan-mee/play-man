@@ -21,7 +21,7 @@ namespace GameBoy
 {
     void Cpu::InitInstructionTable()
     {
-        instructions[OpCode::NOP] = std::bind(&Cpu::NOP, this);
-		instructions[OpCode::LD_BC_n16] = std::bind(&Cpu::Load_16bit_ImmediateData, this, std::reference_wrapper(core.BC));
+        instructions[OpCode::NOP] = std::bind(&Cpu::NOP, std::placeholders::_1);
+		instructions[OpCode::LD_BC_n16] = std::bind(&Cpu::Load_16bit_ImmediateData, std::placeholders::_1, &CpuCore::BC);
     }
 }

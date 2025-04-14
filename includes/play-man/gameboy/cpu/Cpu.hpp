@@ -26,19 +26,16 @@
 #include <functional>
 #include <stdint.h>
 
-namespace TestFixtures
-{
-	struct GameBoyCpuFixture;
-}
-
 namespace GameBoy
-{
-	
+{	
 	class Cpu
     {
 		friend struct TestFixtures::GameBoyCpuFixture;
 
+		using InstructionPrototype = Instruction::InstructionPrototype; /*!< -. */
+	
 	private:
+
 		Rom rom;
         CpuCore core;
         MemoryBus   memoryBus;
@@ -48,7 +45,6 @@ namespace GameBoy
 
 		static constexpr size_t numberOfInstructions = 256;
 		static constexpr size_t numberOfPrefixedInstructions = 256;
-		using InstructionPrototype = std::function<size_t()>; /* Prototype of instrution, returns number of cycles it took. */
 
 		EnumIndexableArray<OpCode, InstructionPrototype, numberOfInstructions> instructions;
 		EnumIndexableArray<PrefixedOpCode, InstructionPrototype, numberOfPrefixedInstructions> prefixedInstructions;
@@ -126,7 +122,7 @@ private:
 		 * @param reg 
 		 * @return size_t 
 		 */
-		size_t Load_16bit_ImmediateData(Register& reg);
+		size_t Load_16bit_ImmediateData(Register CpuCore::* reg);
 
     };
 

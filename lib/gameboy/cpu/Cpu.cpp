@@ -23,12 +23,12 @@ namespace GameBoy
 {
     void Cpu::ExecuteInstruction(OpCode opCode)
     {
-        instructions[opCode]();
+        instructions[opCode](this);
     }
 
     void Cpu::ExecuteInstruction(PrefixedOpCode opCode)
     {
-        prefixedInstructions[opCode]();
+        prefixedInstructions[opCode](this);
     }
 
     void Cpu::LogInstruction()
@@ -46,7 +46,7 @@ namespace GameBoy
         try
         {
             std::cout << "\nCore before instruction:\n" << core;
-            cycles += currentInstruction.Execute();
+            cycles += currentInstruction.Execute(this);
             LogInstruction();
             std::cout << "Core after instruction:\n" << core;
         }
@@ -77,15 +77,15 @@ namespace GameBoy
     {
 		try
 		{
-			auto currentOpcode = FetchPcAddress();
-			if (currentOpcode == GetEnumAsValue(OpCode::PREFIX))
+			const auto opCode = static_cast<OpCode>(FetchPcAddress());
+			if (opCode == OpCode::PREFIX)
 			{
-				currentOpcode = FetchPcAddress();
-				currentInstruction = Instruction(static_cast<PrefixedOpCode>(currentOpcode), prefixedInstructions.at(currentOpcode));
+				const auto prefixedOpCode = static_cast<PrefixedOpCode>(FetchPcAddress());
+				currentInstruction = Instruction(prefixedOpCode, prefixedInstructions.at(prefixedOpCode));
 			}
 			else
 			{
-				currentInstruction = Instruction(static_cast<OpCode>(currentOpcode), instructions.at(currentOpcode));
+				currentInstruction = Instruction(opCode, instructions.at(opCode));
 			}
 		}
 		catch (const std::exception& e)

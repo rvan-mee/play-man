@@ -22,26 +22,33 @@
 #include <iostream>
 #include <stdint.h>
 
+namespace TestFixtures
+{
+	struct GameBoyCpuFixture;
+}
+
 namespace GameBoy
 {
 
-/**
- * @brief the flags to set the bits inside the F register
- */
-#define F_REGISTER_FLAGS_SEQ(x, n) \
-    x(n, ZERO,       0b10000000)   \
-    x(n, ADD_SUB,    0b01000000)   \
-    x(n, HALF_CARRY, 0b00100000)   \
-    x(n, CARRY,      0b00010000)
 
-CREATE_ENUM_WITH_UTILS(F_REGISTER_FLAGS_SEQ, FlagRegisterFlag)
-#undef F_REGISTER_FLAGS_SEQ
+	/**
+	 * @brief the flags to set the bits inside the F register
+	 */
+	#define F_REGISTER_FLAGS_SEQ(x, n) \
+		x(n, ZERO,       0b10000000)   \
+		x(n, ADD_SUB,    0b01000000)   \
+		x(n, HALF_CARRY, 0b00100000)   \
+		x(n, CARRY,      0b00010000)
 
-constexpr uint16_t programCounterAfterBootRom = 0x0100;
+	CREATE_ENUM_WITH_UTILS(F_REGISTER_FLAGS_SEQ, FlagRegisterFlag)
+	#undef F_REGISTER_FLAGS_SEQ
+
+	constexpr uint16_t programCounterAfterBootRom = 0x0100;
 
     class CpuCore
     {
         friend class Cpu;
+		friend struct TestFixtures::GameBoyCpuFixture;
 
         // TODO: Set default values on construction
         Register	AF; /* Accumulator & flags */
