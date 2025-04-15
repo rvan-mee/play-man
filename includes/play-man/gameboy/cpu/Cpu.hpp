@@ -17,10 +17,11 @@
 
 #pragma once
 
-#include <play-man/gameboy/cpu/CpuCore.hpp>
+#include <play-man/gameboy/cartridge/Cartridge.hpp>
 #include <play-man/gameboy/memory/MemoryBus.hpp>
 #include <play-man/gameboy/opcodes/Opcodes.hpp>
-#include <functional>
+#include <play-man/gameboy/cpu/CpuCore.hpp>
+#include <memory>
 #include <array>
 #include <stdint.h>
 
@@ -30,9 +31,9 @@ namespace GameBoy
     class Cpu
     {
     private:
-        Rom         rom;
-        CpuCore     core;
-        MemoryBus   memoryBus;
+        std::unique_ptr<ACartridge>     cartridge;
+        CpuCore                         core;
+        MemoryBus                       memoryBus;
 
         bool    opcodeIsPrefixed;
         uint8_t currentOpcode;
@@ -45,8 +46,9 @@ namespace GameBoy
     public:
 
         Cpu() = delete;
-        Cpu(const char* romFilePath) : rom(romFilePath), memoryBus(rom, core)
+        Cpu(const char* romFilePath) : memoryBus(cartridge, core)
         {
+            cartridge = MakeCartridge(romFilePath);
             InitInstructionTable();
         };
 

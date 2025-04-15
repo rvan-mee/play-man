@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <play-man/gameboy/rom/RomHeaderDefines.hpp>
+#include <play-man/gameboy/cartridge/RomHeaderDefines.hpp>
 #include <array>
 #include <vector>
 #include <stdint.h>
@@ -30,7 +30,7 @@ class RomHeader {
         std::array<uint8_t, nintendoLogoSize>       nintendoLogo;
         std::array<char, romTitleSize + 1>          title;
         std::array<char, manufacturerCodeSize + 1>  manufacturerCode;
-        uint8_t                                     cgbFlag;
+        CgbFlag                                     cgbFlag;
         NewLicensingCode                            newLicensingCode;
         uint8_t                                     sgbFlag; 
         CartridgeType                               cartridgeType;
@@ -47,7 +47,7 @@ class RomHeader {
          * 
          * @param data A vector that contains the raw data from a ROM. 
          */
-        void ParseRawData(const std::vector<int8_t>& data);
+        void ParseRawData(const std::vector<uint8_t>& data);
 };
 
 std::ostream& operator << (std::ostream& lhs, const RomHeader& header);
@@ -55,22 +55,22 @@ std::ostream& operator << (std::ostream& lhs, const RomHeader& header);
 class Rom
 {
     private:
-        RomHeader           _header;
-        std::vector<int8_t> _romData;
-        const char*         _filePath;
-        // TODO: internal RAM
+        RomHeader            header;
+        std::vector<uint8_t> romData;
+        const char*          filePath;
+        // TODO: Bank switching
 
-        void ParseRomFile(const char* filePath);
+        void ParseRomFile(const char* filePath) noexcept(false);
 
     public:
         Rom() = delete;
-        Rom(const char* filePath);
+        Rom(const char* romFilePath) noexcept(false);
 
-        RomHeader&              GetHeader();
-        std::vector<int8_t>&    GetData();
-        const char*             GetFilePath();
-        int8_t                  ReadRomByte(const int16_t address);
-        // int8_t                  ReadRamByte(const int16_t address);
+        const RomHeader&                GetHeader() const;
+        const std::vector<uint8_t>&     GetData() const;
+        const char*                     GetFilePath();
+        uint8_t                         ReadByte(const uint16_t address);
+        CartridgeType                   GetCartridgeType() const;
 
 };
 

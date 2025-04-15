@@ -15,23 +15,12 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <play-man/gameboy/rom/Rom.hpp>
+#include <play-man/gameboy/cartridge/Rom.hpp>
+#include <play-man/utility/UtilFunc.hpp>
 #include <iostream>
 #include <iomanip>
 #include <string_view>
-#include <type_traits>
-#include <optional>
 #include <ios>
-
-namespace GameBoy {
-
-    Rom::Rom(const char* filePath)
-    {
-        _filePath = filePath;
-        ParseRomFile(filePath);
-    }
-}
-
 
 static int32_t GetPaddingAfterName(const std::string_view name)
 {
@@ -88,26 +77,63 @@ static void PrintHeaderLine(std::ostream& stream, const std::string_view name, u
 
 namespace GameBoy {
 
-    RomHeader& Rom::GetHeader()
-    {
-        return _header;
-    }
+    /*     RomHeader     */
 
-    std::vector<int8_t>& Rom::GetData()
+    void RomHeader::ParseRawData(const std::vector<uint8_t>& data)
     {
-        return _romData;
-    }
+        assert(data.size() >= romHeaderSize);
+        title.fill('\0');
+        manufacturerCode.fill('\0');
 
-    const char* Rom::GetFilePath()
-    {
-        return _filePath;
-    }
+        // Nintendo Logo
+        for (uint32_t i = 0; i < nintendoLogoSize; i++)
+            nintendoLogo[i] = data[i + nintendoLogoIndex];
 
-    int8_t  Rom::ReadRomByte(const int16_t address)
-    {
-        // TODO: Check how bank switching works
-        assert(static_cast<size_t>(address) < _romData.size());
-        return (_romData[address]);
+        // Cartridge Title
+        for (uint32_t i = 0; i < romTitleSize; i++)
+        {
+            // Newer cartridges possibly used some bytes of the title for the manufacturer code
+            // or the CBG flag. Since the CBG flag is not a printable ASCII value,
+            // we can prevent adding it into the title with this check.
+            if (!(std::isprint(data[i + titleIndex])))
+                break ;
+            title[i] = data[i + titleIndex];
+        }
+
+        // Manufacturer Code
+        // Not all cartridges contained a manufacturer code, instead using the space for the title
+        // TODO: figure out if there is a way to separate the title and the manufacturer code
+        // Opened issue #20 to track this TODO.
+        for (uint32_t i = 0; i < manufacturerCodeSize; i++)
+            manufacturerCode[i] = data[manufacturerCodeIndex + i];
+
+        // CGB Flag
+        // Not all cartridges contained a CGB Flag, instead using the space for the title
+        if (data[cgbFlagIndex] == static_cast<uint8_t>(CgbFlag::BackwardsCompatible) || \
+            data[cgbFlagIndex] == static_cast<uint8_t>(CgbFlag::CgbOnly))
+        {
+            cgbFlag = static_cast<CgbFlag>(data[cgbFlagIndex]);
+        }
+        else
+        {
+            cgbFlag = CgbFlag::NotSet;
+        }
+
+        // New Licensing Code
+        const uint8_t firstByte = data[newLicensingCodeIndex];
+        const uint8_t secondByte = data[newLicensingCodeIndex + 1];
+        newLicensingCode = static_cast<NewLicensingCode>(firstByte << 8 | secondByte);
+
+        // Remaining data
+        sgbFlag = data[sgbFlagIndex];
+        cartridgeType = static_cast<CartridgeType>(data[cartridgeTypeIndex]);
+        romSize = static_cast<RomSize>(data[romSizeIndex]);
+        ramSize = static_cast<RamSize>(data[ramSizeIndex]);
+        destinationCode = static_cast<DestinationCode>(data[destinationCodeindex]);
+        oldLicensingCode = static_cast<OldLicensingCode>(data[oldLicensingCodeindex]);
+        romVersion = data[romVersionIndex];
+        headerChecksum = data[headerChecksumIndex];
+        globalChecksum = data[globalChecksumIndex];
     }
 
     std::ostream& operator << (std::ostream& lhs, const RomHeader& header)
@@ -131,6 +157,66 @@ namespace GameBoy {
         lhs << "/                                                  \\" << "\n";
         lhs << "/**************************************************\\" << "\n";
         return (lhs);
+    }
+
+
+
+    /*     Rom     */
+
+    Rom::Rom(const char* romFilePath) noexcept(false)
+    {
+        filePath = romFilePath;
+        ParseRomFile(filePath);
+    }
+
+    void    Rom::ParseRomFile(const char* filePath) noexcept(false)
+    {
+        std::ifstream rom(filePath);
+
+        if (!rom.is_open())
+        {
+            std::string error;
+
+            error += "Failed to open ROM: ";
+            error += filePath;
+            error += "\nError: " + Utility::ErrnoToString() + "\n";
+            throw std::runtime_error(error); 
+        }
+
+        std::streamsize romSize = std::filesystem::file_size(filePath);
+
+        romData.resize(romSize);
+        rom.read(reinterpret_cast<char*>(romData.data()), romSize);
+        rom.close();
+
+        header.ParseRawData(romData);
+    }
+
+    const RomHeader& Rom::GetHeader() const
+    {
+        return header;
+    }
+
+    const std::vector<uint8_t>& Rom::GetData() const
+    {
+        return romData;
+    }
+
+    const char* Rom::GetFilePath()
+    {
+        return filePath;
+    }
+
+    uint8_t  Rom::ReadByte(const uint16_t address)
+    {
+        // TODO: Check how bank switching works
+        assert(static_cast<size_t>(address) < romData.size());
+        return (romData[address]);
+    }
+
+    CartridgeType   Rom::GetCartridgeType() const
+    {
+        return header.cartridgeType;
     }
 
     std::ostream& operator << (std::ostream& lhs, Rom& rom)

@@ -43,6 +43,7 @@ constexpr size_t globalChecksumIndex = 0x014E;
 constexpr size_t romHeaderSize = 0x14F;
 
 #define CgbFlagSeq(x, n) \
+    x(n, NotSet, 0x00)              \
     x(n, BackwardsCompatible, 0x80) \
     x(n, CgbOnly, 0xC0)
 

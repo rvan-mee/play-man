@@ -31,13 +31,13 @@ uint8_t MemoryBus::ReadByte(const uint16_t address)
 {
     if (address >= romAddressStart && address <= romAddressEnd)
     {
-        return (rom.ReadRomByte(address));
+        return (cartridge->ReadByte(address));
     }
     else if (address >= romBankAddressStart && address <= romBankAddressEnd)
     {
         // TODO: check how bank switching works
         assert(false && "Rom bank switching is currently not supported");
-        return (rom.ReadRomByte(address));
+        return (cartridge->ReadByte(address));
     }
     else if (address >= vRamAddressStart && address <= vRamAddressEnd)
     {

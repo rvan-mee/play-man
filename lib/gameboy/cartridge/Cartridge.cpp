@@ -15,42 +15,30 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#pragma once
-
-#include <play-man/gameboy/cpu/Register.hpp>
-#include <play-man/gameboy/cpu/CpuCore.hpp>
 #include <play-man/gameboy/cartridge/Cartridge.hpp>
-#include <stdint.h>
+#include <play-man/gameboy/cartridge/Rom.hpp>
+#include <play-man/logger/Logger.hpp>
 
-namespace GameBoy {
+namespace GameBoy
+{
 
-    class MemoryBus {
-        private:
-            std::unique_ptr<ACartridge>&    cartridge;
-            CpuCore&                        core;
-            // TODO:
-            // video module
-            // io module
-            // other modules
+std::unique_ptr<ACartridge> MakeCartridge(const char* filePath) noexcept(false)
+{
+    auto rom = std::make_unique<Rom>(filePath);
 
-        public:
-            MemoryBus() = delete;
-            MemoryBus(std::unique_ptr<ACartridge>& _cartridge, CpuCore& _core) : cartridge(_cartridge), core(_core) {};
-
-            /**
-             * @brief Passthrough function to call the regular Readbyte,
-             * converting the register into an u16.
-             * @param reg The register to get the address from.
-             */
-            uint8_t ReadByte(const Register reg);
-
-            /**
-             * @brief Handles the correct mapping of an address to a location,
-             * be it on the ROM, inside the CPU or any other module.
-             * @param address The address to fetch the data from.
-             */
-            uint8_t ReadByte(const uint16_t address);
-
-    };
+    switch (rom->GetCartridgeType())
+    {
+        case CartridgeType::MBC1:
+        case CartridgeType::MBC1_RAM:
+        case CartridgeType::MBC1_RAM_BATTERY:
+            return std::make_unique<MCB1Cartridge>(std::move(rom));
+        default:
+            std::stringstream error;
+            error << "Unsupported ROM type: ";
+            error << rom->GetCartridgeType();
+            LOG_FATAL(error.str());
+            throw std::runtime_error(error.str());
+    }
+}
 
 }

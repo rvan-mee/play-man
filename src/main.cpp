@@ -15,12 +15,11 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <iostream>
-#include <play-man/gameboy/rom/RomParser.hpp>
 #include <play-man/settings/PlayManSettings.hpp>
 #include <play-man/gameboy/opcodes/Opcodes.hpp>
 #include <play-man/gameboy/cpu/Cpu.hpp>
 #include <play-man/logger/Logger.hpp>
+#include <iostream>
 
 int main(int argc, char** argv)
 {

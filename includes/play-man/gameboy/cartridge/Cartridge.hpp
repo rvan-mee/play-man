@@ -17,12 +17,21 @@
 
 #pragma once
 
-#include <cstddef>
-#include <string>
-#include <play-man/gameboy/rom/Rom.hpp>
+#include <play-man/gameboy/cartridge/ACartridge.hpp>
+#include <play-man/gameboy/cartridge/MCB1.hpp>
+#include <play-man/gameboy/cartridge/MCB2.hpp>
+#include <play-man/gameboy/cartridge/MCB3.hpp>
+#include <play-man/gameboy/cartridge/MCB5.hpp>
+#include <memory>
 
 namespace GameBoy {
 
-RomHeader   ParseRomHeader(std::string fileName);
+/**
+ * @param filePath The path where the ROM/Cartridge is located
+ * @throw std::runtime_error: Errors can happen with permission/non existing files or
+ *        unsupported cartridge types
+ * @return A unique pointer to the abstract cartridge class
+ */
+std::unique_ptr<ACartridge> MakeCartridge(const char* filePath) noexcept(false);
 
-};
+}
