@@ -31,7 +31,7 @@ namespace GameBoy
     class Cpu
     {
     private:
-        std::unique_ptr<ACartridge>     cartridge;
+        std::shared_ptr<ACartridge>     cartridge;
         CpuCore                         core;
         MemoryBus                       memoryBus;
 
@@ -46,9 +46,8 @@ namespace GameBoy
     public:
 
         Cpu() = delete;
-        Cpu(const char* romFilePath) : memoryBus(cartridge, core)
+        Cpu(std::shared_ptr<ACartridge> _cartridge) : cartridge(_cartridge), memoryBus(cartridge, core)
         {
-            cartridge = MakeCartridge(romFilePath);
             InitInstructionTable();
         };
 

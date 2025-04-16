@@ -30,8 +30,8 @@ namespace GameBoy {
  * @param filePath The path where the ROM/Cartridge is located
  * @throw std::runtime_error: Errors can happen with permission/non existing files or
  *        unsupported cartridge types
- * @return A unique pointer to the abstract cartridge class
+ * @return A shared pointer to the abstract cartridge class
  */
-std::unique_ptr<ACartridge> MakeCartridge(const char* filePath) noexcept(false);
+std::shared_ptr<ACartridge> MakeCartridge(const char* filePath) noexcept(false);
 
 }

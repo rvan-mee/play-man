@@ -26,8 +26,8 @@ namespace GameBoy {
 
     class MemoryBus {
         private:
-            std::unique_ptr<ACartridge>&    cartridge;
-            CpuCore&                        core;
+            std::shared_ptr<ACartridge> cartridge;
+            CpuCore&                    core;
             // TODO:
             // video module
             // io module
@@ -35,7 +35,7 @@ namespace GameBoy {
 
         public:
             MemoryBus() = delete;
-            MemoryBus(std::unique_ptr<ACartridge>& _cartridge, CpuCore& _core) : cartridge(_cartridge), core(_core) {};
+            MemoryBus(std::shared_ptr<ACartridge> _cartridge, CpuCore& _core) : cartridge(_cartridge), core(_core) {};
 
             /**
              * @brief Passthrough function to call the regular Readbyte,

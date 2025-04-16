@@ -15,6 +15,7 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
+#include <play-man/gameboy/cartridge/Cartridge.hpp>
 #include <play-man/settings/PlayManSettings.hpp>
 #include <play-man/gameboy/opcodes/Opcodes.hpp>
 #include <play-man/gameboy/cpu/Cpu.hpp>
@@ -30,7 +31,8 @@ int main(int argc, char** argv)
 
     if (argc > 1)
     {
-        GameBoy::Cpu cpu(argv[1]);
+        std::shared_ptr<GameBoy::ACartridge> cartridge = GameBoy::MakeCartridge(argv[1]);
+        GameBoy::Cpu cpu(cartridge);
 
         while (true)
         {
