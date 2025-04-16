@@ -207,16 +207,60 @@ namespace GameBoy {
         return filePath;
     }
 
-    uint8_t  Rom::ReadByte(const uint16_t address)
-    {
-        // TODO: Check how bank switching works
-        assert(static_cast<size_t>(address) < romData.size());
-        return (romData[address]);
-    }
-
     CartridgeType   Rom::GetCartridgeType() const
     {
         return header.cartridgeType;
+    }
+
+    uint32_t Rom::GetRomBankCount() const
+    {
+        switch (header.romSize)
+        {
+            case RomSize::KiB32:
+                return 2;
+            case RomSize::KiB64:
+                return 4;
+            case RomSize::KiB128:
+                return 8;
+            case RomSize::KiB256:
+                return 16;
+            case RomSize::KiB512:
+                return 32;
+            case RomSize::MiB1:
+                return 64;
+            case RomSize::MiB2:
+                return 128;
+            case RomSize::MiB4:
+                return 256;
+            case RomSize::MiB8:
+                return 512;
+            default:
+                return 0;
+        }
+    }
+
+    uint32_t Rom::GetRamBankCount() const
+    {
+        switch (header.ramSize)
+        {
+            case RamSize::NoRam:
+                return 0;
+            case RamSize::KiB8:
+                return 1;
+            case RamSize::KiB32:
+                return 4;
+            case RamSize::KiB64:
+                return 8;
+            case RamSize::KiB128:
+                return 16;
+            default:
+                return 0;
+        }
+    }
+
+    void Rom::ClearData()
+    {
+        romData.clear();
     }
 
     std::ostream& operator << (std::ostream& lhs, Rom& rom)

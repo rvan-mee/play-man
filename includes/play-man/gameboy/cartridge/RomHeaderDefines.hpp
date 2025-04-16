@@ -175,9 +175,9 @@ CREATE_ENUM_WITH_UTILS(CartridgeTypeSeq, CartridgeType);
 #define RomSizeSeq(x, n) \
                         /* Size,    Number of ROM banks */ \
     x(n, KiB32  , 0x00)	/* 32 KiB	2 (no banking) */ \
-    x(n, Kib64  , 0x01)	/* 64 KiB	4   */ \
-    x(n, Kib128 , 0x02)	/* 128 KiB	8   */ \
-    x(n, Kib256 , 0x03)	/* 256 KiB	16  */ \
+    x(n, KiB64  , 0x01)	/* 64 KiB	4   */ \
+    x(n, KiB128 , 0x02)	/* 128 KiB	8   */ \
+    x(n, KiB256 , 0x03)	/* 256 KiB	16  */ \
     x(n, KiB512 , 0x04)	/* 512 KiB	32  */ \
     x(n, MiB1   , 0x05)	/* 1 MiB	64  */ \
     x(n, MiB2   , 0x06)	/* 2 MiB	128 */ \
@@ -198,8 +198,8 @@ CREATE_ENUM_WITH_UTILS(RomSizeSeq, RomSize);
     x(n, Unused  , 0x01)	/* -        Unused                 */ \
     x(n, KiB8    , 0x02)	/* 8 KiB    1 bank                 */ \
     x(n, KiB32   , 0x03)	/* 32 KiB	4 banks of 8 KiB each  */ \
-    x(n, KiB128  , 0x04)	/* 128 KiB	16 banks of 8 KiB each */ \
     x(n, KiB64   , 0x05)	/* 64 KiB	8 banks of 8 KiB each  */ \
+    x(n, KiB128  , 0x04)	/* 128 KiB	16 banks of 8 KiB each */ \
 
 CREATE_ENUM_WITH_UTILS(RamSizeSeq, RamSize);
 

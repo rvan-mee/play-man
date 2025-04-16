@@ -56,9 +56,10 @@ class Rom
 {
     private:
         RomHeader            header;
+        // After a Cartridge is created from the ROM the romData is
+        // cleared and stored inside romBanks inside the cartridge.
         std::vector<uint8_t> romData;
         const char*          filePath;
-        // TODO: Bank switching
 
         void ParseRomFile(const char* filePath) noexcept(false);
 
@@ -69,8 +70,16 @@ class Rom
         const RomHeader&                GetHeader() const;
         const std::vector<uint8_t>&     GetData() const;
         const char*                     GetFilePath();
-        uint8_t                         ReadByte(const uint16_t address);
         CartridgeType                   GetCartridgeType() const;
+        uint32_t                        GetRomBankCount() const;
+        uint32_t                        GetRamBankCount() const;
+
+        /**
+         * @note After a Cartridge is created there is no use
+         * to keep storing the romData inside the Rom class,
+         * the Cartridge will use its own ROM banks. 
+         */
+        void                            ClearData();
 
 };
 
