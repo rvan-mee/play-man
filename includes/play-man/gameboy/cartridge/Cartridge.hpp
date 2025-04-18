@@ -18,10 +18,10 @@
 #pragma once
 
 #include <play-man/gameboy/cartridge/ACartridge.hpp>
-#include <play-man/gameboy/cartridge/MCB1.hpp>
-#include <play-man/gameboy/cartridge/MCB2.hpp>
-#include <play-man/gameboy/cartridge/MCB3.hpp>
-#include <play-man/gameboy/cartridge/MCB5.hpp>
+#include <play-man/gameboy/cartridge/MBC1.hpp>
+#include <play-man/gameboy/cartridge/MBC2.hpp>
+#include <play-man/gameboy/cartridge/MBC3.hpp>
+#include <play-man/gameboy/cartridge/MBC5.hpp>
 #include <memory>
 
 namespace GameBoy {
