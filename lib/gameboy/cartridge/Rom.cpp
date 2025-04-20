@@ -79,7 +79,7 @@ namespace GameBoy {
 
     /*     RomHeader     */
 
-    void RomHeader::ParseRawData(const std::vector<uint8_t>& data)
+    void RomHeader::Init(const std::vector<uint8_t>& data)
     {
         assert(data.size() >= romHeaderSize);
         title.fill('\0');
@@ -159,21 +159,14 @@ namespace GameBoy {
         return (lhs);
     }
 
-
-
     /*     Rom     */
 
     Rom::Rom(const char* romFilePath) noexcept(false)
     {
         filePath = romFilePath;
-        ParseRomFile(filePath);
-    }
-
-    void    Rom::ParseRomFile(const char* filePath) noexcept(false)
-    {
         std::ifstream rom(filePath);
-
-        if (!rom.is_open())
+    
+        if (!rom.good())
         {
             std::string error;
 
@@ -184,12 +177,47 @@ namespace GameBoy {
         }
 
         std::streamsize romSize = std::filesystem::file_size(filePath);
+        std::vector<uint8_t> rawRomData;
 
-        romData.resize(romSize);
-        rom.read(reinterpret_cast<char*>(romData.data()), romSize);
+        rawRomData.resize(romSize);
+        rom.read(reinterpret_cast<char*>(rawRomData.data()), romSize);
         rom.close();
 
-        header.ParseRawData(romData);
+        header.Init(rawRomData);
+        InitRomBanks(rawRomData);
+    }
+
+    /**
+     * @brief Copies the given raw data into the correct rom bank
+     * 
+     * @param rawRomData The full data inside the ROM
+     * @param romBank The bank needing to be filled
+     * @param bankNumber The number of the bank being filled
+     */
+    static void CopyRomBankData(const std::vector<uint8_t>& rawRomData, std::vector<uint8_t>& romBank, uint32_t bankNumber)
+    {
+        uint32_t    currentBankStart = bankNumber * RomBankSize;
+        uint32_t    currentBankEnd = (bankNumber + 1) * RomBankSize;
+
+        if (currentBankStart > rawRomData.size())
+            return ;
+
+        if (currentBankEnd > rawRomData.size())
+            currentBankEnd = rawRomData.size();
+        
+        romBank.insert(romBank.begin(), rawRomData.begin() + currentBankStart, rawRomData.begin() + currentBankEnd);
+    }
+    
+    void    Rom::InitRomBanks(std::vector<uint8_t>& rawRomData)
+    {
+        uint32_t romBankCount = GetRomBankCount();
+        
+        romBanks.resize(romBankCount);
+        for (uint32_t i = 0; i < romBankCount; i++)
+        {
+            romBanks[i].resize(RomBankSize);
+            CopyRomBankData(rawRomData, romBanks[i], i);
+        }
     }
 
     const RomHeader& Rom::GetHeader() const
@@ -197,12 +225,12 @@ namespace GameBoy {
         return header;
     }
 
-    const std::vector<uint8_t>& Rom::GetData() const
+    const MemoryBanks& Rom::GetBanks() const
     {
-        return romData;
+        return romBanks;
     }
 
-    const char* Rom::GetFilePath()
+    const char* Rom::GetFilePath() const
     {
         return filePath;
     }
@@ -258,9 +286,11 @@ namespace GameBoy {
         }
     }
 
-    void Rom::ClearData()
+    uint8_t Rom::ReadFromBank(uint32_t bank, uint16_t address) const
     {
-        romData.clear();
+        assert(bank < romBanks.size());
+        assert(address < romBanks[bank].size());
+        return romBanks[bank][address];
     }
 
     std::ostream& operator << (std::ostream& lhs, Rom& rom)

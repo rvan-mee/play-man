@@ -18,6 +18,7 @@
 #pragma once
 
 #include <play-man/gameboy/cartridge/RomHeaderDefines.hpp>
+#include <play-man/gameboy/cartridge/CartridgeDefines.hpp>
 #include <array>
 #include <vector>
 #include <stdint.h>
@@ -47,7 +48,7 @@ class RomHeader {
          * 
          * @param data A vector that contains the raw data from a ROM. 
          */
-        void ParseRawData(const std::vector<uint8_t>& data);
+        void Init(const std::vector<uint8_t>& data);
 };
 
 std::ostream& operator << (std::ostream& lhs, const RomHeader& header);
@@ -55,31 +56,24 @@ std::ostream& operator << (std::ostream& lhs, const RomHeader& header);
 class Rom
 {
     private:
-        RomHeader            header;
-        // After a Cartridge is created from the ROM the romData is
-        // cleared and stored inside romBanks inside the cartridge.
-        std::vector<uint8_t> romData;
-        const char*          filePath;
+        RomHeader   header;
+        MemoryBanks romBanks;
+        const char* filePath;
 
-        void ParseRomFile(const char* filePath) noexcept(false);
+        void InitRomBanks(std::vector<uint8_t>& rawRomData);
 
     public:
         Rom() = delete;
         Rom(const char* romFilePath) noexcept(false);
 
         const RomHeader&                GetHeader() const;
-        const std::vector<uint8_t>&     GetData() const;
-        const char*                     GetFilePath();
+        const MemoryBanks&              GetBanks() const;
+        const char*                     GetFilePath() const;
         CartridgeType                   GetCartridgeType() const;
         uint32_t                        GetRomBankCount() const;
         uint32_t                        GetRamBankCount() const;
 
-        /**
-         * @note After a Cartridge is created there is no use
-         * to keep storing the romData inside the Rom class,
-         * the Cartridge will use its own ROM banks. 
-         */
-        void                            ClearData();
+        uint8_t                         ReadFromBank(uint32_t bank, uint16_t address) const;
 
 };
 

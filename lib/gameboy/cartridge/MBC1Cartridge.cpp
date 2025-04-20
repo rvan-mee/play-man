@@ -52,7 +52,8 @@ constexpr uint32_t AmountOfBanksToBeLargeRom = 64;
 constexpr uint32_t RomBankCountMBC1M = 64;
 
 /**
- * @brief 
+ * @brief Simple banking mode deactivated the possibility of making the
+ * RomAddressStart - RomAddressEnd area bank switchable
  */
 constexpr uint8_t SimpleBankingMode = 0x00;
 /**
@@ -72,48 +73,9 @@ namespace GameBoy
         bankingModeSelect = DefaultBankingModeSelect;
         ramEnabled = DefaultRamEnabled;
 
-        InitRomBanks();
-        InitRamBanks();
-
         cartIsMBC1M = CheckMBC1M();
         if (cartIsMBC1M)
             bankRegisterBitCount = MBC1MBankRegisterBitCount;
-    }
-
-    static void CopyRomBank(const std::vector<uint8_t>& romData, std::vector<uint8_t>& cartData, uint32_t bankNumber)
-    {
-        uint32_t    currentBankStart = bankNumber * RomBankSize;
-        uint32_t    currentBankEnd = (bankNumber + 1) * RomBankSize;
-
-        if (currentBankStart > romData.size())
-            return ;
-
-        if (currentBankEnd > romData.size())
-            currentBankEnd = romData.size();
-        
-        cartData.insert(cartData.begin(), romData.begin() + currentBankStart, romData.begin() + currentBankEnd);
-    }
-
-    void MBC1Cartridge::InitRomBanks()
-    {
-        uint8_t romBankCount = rom->GetRomBankCount();
-        
-        romBanks.resize(romBankCount);
-        for (uint32_t i = 0; i < romBankCount; i++)
-        {
-            romBanks[i].resize(RomBankSize);
-            CopyRomBank(rom->GetData(), romBanks[i], i);
-        }
-        rom->ClearData();
-    }
-
-    void MBC1Cartridge::InitRamBanks()
-    {
-        uint8_t ramBankCount = rom->GetRamBankCount();
-
-        ramBanks.resize(ramBankCount);
-        for (uint32_t i = 0; i < ramBankCount; i++)
-            ramBanks[i].resize(RamBankSize);
     }
 
     uint8_t MBC1Cartridge::RomBankMask()
@@ -144,7 +106,7 @@ namespace GameBoy
         // If the Logo is found again this MBC1 cartridge contains 2 games, thus being a MBC1M cart.
         for (uint32_t i = 0; i < sizeof(NintendoLogo); i++)
         {
-            if (romBanks[NintendoLogoRomBank][NintendoLogoStartAddress + i] != NintendoLogo[i])
+            if (rom->ReadFromBank(NintendoLogoRomBank, NintendoLogoStartAddress + i) != NintendoLogo[i])
                 return false;
         }
         LOG_DEBUG("Cartridge detected as MBC1M");
@@ -165,7 +127,7 @@ namespace GameBoy
                 // for a regular MBC1 and 0x00, 0x10, 0x20, and 0x30 for MCB1M cartridges
                 selectedBank = secondarySelectedBankRegister << bankRegisterBitCount;
             }
-            return romBanks[selectedBank][address];
+            return rom->ReadFromBank(selectedBank, address);
         }
         else if (address >= RomBankedAddressStart && address <= RomBankedAddressEnd)
         {
@@ -187,7 +149,7 @@ namespace GameBoy
                 selectedBank |= secondarySelectedBankRegister << bankRegisterBitCount;
             }
 
-            return romBanks[selectedBank][address - RomBankedAddressStart];
+            return rom->ReadFromBank(selectedBank, address - RomBankedAddressStart);
         }
         else if (address >= RamBankedAddressStart && address <= RamBankedAddressEnd)
         {
@@ -212,6 +174,8 @@ namespace GameBoy
 
     void MBC1Cartridge::WriteByte(const uint16_t address, const uint8_t value)
     {
+        (void) value;
+        (void) SimpleBankingMode;
         if (address >= RamEnableAddressStart && address <= RamEnableAddressEnd)
         {
 

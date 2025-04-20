@@ -26,10 +26,6 @@ namespace GameBoy {
 class MBC1Cartridge : public ACartridge
 {
 private:
-    /* Banks */
-    MemoryBanks ramBanks;
-    MemoryBanks romBanks;
-
     /* Control Registers*/
 
     /**
@@ -90,9 +86,6 @@ private:
      * are wired differently, making the register only 4 bits long.
      */
     uint8_t bankRegisterBitCount;
-
-    void    InitRomBanks();
-    void    InitRamBanks();
 
     /**
      * @brief Returns the mask that is used to get the right selected rom bank.
