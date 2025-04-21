@@ -18,6 +18,19 @@
 #include <play-man/gameboy/cartridge/MBC1.hpp>
 #include <play-man/logger/Logger.hpp>
 
+/*          Banking Modes          */
+/**
+ * @brief Simple banking mode deactivates the possibility of making the
+ * RomAddressStart - RomAddressEnd area bank switchable and for
+ * the secondary banking register to be used in bank calculation
+ */
+constexpr uint8_t SimpleBankingMode = 0x00;
+/**
+ * @brief Advanced banking mode allows the use of the secondary banking register
+ * to extend the amount of available banks
+ */
+constexpr uint8_t AdvancedBankingMode = 0x01;
+
 /*          Write Address Defines          */
 constexpr uint16_t RamEnableAddressStart = 0x0000;
 constexpr uint16_t RamEnableAddressEnd = 0x1FFF;
@@ -33,13 +46,14 @@ constexpr uint16_t RomAddressStart = 0x0000;
 constexpr uint16_t RomAddressEnd = 0x3FFF;
 constexpr uint16_t RomBankedAddressStart = 0x4000;
 constexpr uint16_t RomBankedAddressEnd = 0x7FFF;
+// also used for writing
 constexpr uint16_t RamBankedAddressStart = 0xA000;
 constexpr uint16_t RamBankedAddressEnd = 0xBFFF;
 
 /*          Control Registers Defines          */
 constexpr bool DefaultRamEnabled = false;
 constexpr uint8_t DefaultSelectedRomBank = 0x01;
-constexpr uint8_t DefaultBankingModeSelect = 0x00;
+constexpr uint8_t DefaultBankingModeSelect = SimpleBankingMode;
 constexpr uint8_t DefaultSecondarySelectedBankBits = 0x00;
 constexpr uint8_t DefaultBankRegisterBitCount = 0x05;
 constexpr uint8_t MBC1MBankRegisterBitCount = 0x04;
@@ -51,16 +65,9 @@ constexpr uint8_t OpenBusValue = 0xFF;
 constexpr uint32_t AmountOfBanksToBeLargeRom = 64;
 constexpr uint32_t RomBankCountMBC1M = 64;
 
-/**
- * @brief Simple banking mode deactivated the possibility of making the
- * RomAddressStart - RomAddressEnd area bank switchable
- */
-constexpr uint8_t SimpleBankingMode = 0x00;
-/**
- * @brief Advanced banking mode allows the use of the secondary banking register
- * to 
- */
-constexpr uint8_t AdvancedBankingMode = 0x01;
+constexpr uint8_t EnableRamValue = 0x0A;
+constexpr uint8_t SecondarySelectedBankRegisterMask = 0b00000011;
+constexpr uint8_t BankingModeSelectMask = 0b00000001;
 
 namespace GameBoy
 {
@@ -174,23 +181,45 @@ namespace GameBoy
 
     void MBC1Cartridge::WriteByte(const uint16_t address, const uint8_t value)
     {
-        (void) value;
         (void) SimpleBankingMode;
         if (address >= RamEnableAddressStart && address <= RamEnableAddressEnd)
         {
-
+            // If the value being written contains 0x0A within the 4 lower bits
+            // the RAM get enabled, any other value will disable it
+            if ((value & 0x0F) == EnableRamValue)
+                ramEnabled = true;
+            else
+                ramEnabled = false;
         }
         else if (address >= RomBankNumberAddressStart && address <= RomBankNumberAddressEnd)
         {
-
+            selectedBankRegister = value;
         }
         else if (address >= RamBankNumberAddressStart && address <= RamBankNumberAddressEnd)
         {
-
+            secondarySelectedBankRegister = value & SecondarySelectedBankRegisterMask;
         }
         else if (address >= BankingModeAddressStart && address <= BankingModeAddressEnd)
         {
+            bankingModeSelect = value & BankingModeSelectMask;
+        }
+        else if (address >= RamBankedAddressStart && address <= RamBankedAddressEnd)
+        {
+            if (!ramEnabled)
+            {
+                LOG_DEBUG("Cartridge: Trying to write to RAM whilst it is not enabled");
+                return ;
+            }
 
+            if (rom->GetRamBankCount() > 1 && bankingModeSelect == AdvancedBankingMode)
+                ramBanks[secondarySelectedBankRegister][address - RamBankedAddressStart] = value;
+            else
+                ramBanks[0][address - RamBankedAddressStart] = value;
+        }
+        else
+        {
+            LOG_ERROR("Cartridge: Trying to write to an address that is not within range");
+            assert(false);
         }
     }
 }
