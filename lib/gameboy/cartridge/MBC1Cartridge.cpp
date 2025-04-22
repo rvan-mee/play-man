@@ -58,10 +58,6 @@ constexpr uint8_t DefaultSecondarySelectedBankBits = 0x00;
 constexpr uint8_t DefaultBankRegisterBitCount = 0x05;
 constexpr uint8_t MBC1MBankRegisterBitCount = 0x04;
 
-// TODO: figure out the correct value: https://gbdev.io/pandocs/MBC1.html
-// mentions that 0xFF is often the value, but not guaranteed.
-constexpr uint8_t OpenBusValue = 0xFF;
-
 constexpr uint32_t AmountOfBanksToBeLargeRom = 64;
 constexpr uint32_t RomBankCountMBC1M = 64;
 
