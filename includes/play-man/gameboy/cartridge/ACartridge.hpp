@@ -42,6 +42,8 @@ public:
     virtual void    WriteByte(const uint16_t address, const uint8_t value) = 0;
 
     CartridgeType   GetType() const;
+    uint32_t        GetRamBankCount() const;
+    uint32_t        GetRomBankCount() const;
 
 };
 

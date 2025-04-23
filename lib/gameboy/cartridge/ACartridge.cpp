@@ -38,4 +38,14 @@ namespace GameBoy {
         return rom->GetCartridgeType();
     }
 
+    uint32_t        ACartridge::GetRamBankCount() const
+    {
+        return rom->GetRamBankCount();
+    }
+
+    uint32_t        ACartridge::GetRomBankCount() const
+    {
+        return rom->GetRomBankCount();
+    }
+
 }
