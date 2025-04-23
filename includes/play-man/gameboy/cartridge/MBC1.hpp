@@ -72,13 +72,14 @@ private:
     uint8_t  bankingModeSelect;
 
     /**
-     * @brief MBC1 carts, otherwise known as Multi-Game compilation carts
+     * @brief MBC1M carts, otherwise known as Multi-Game compilation carts
      * contain multiple games on the same cartridge. To accomplish this without
      * chaning their code, these cards have alternative wiring compared to a regular MBC1.
      * 
      * A MBC1M cart can be identified by a second nintendo copyright header in the 0x10 rom bank.
      */
     bool    cartIsMBC1M;
+
     /**
      * @brief The amount of bits used to represent the size of the selectedBankRegister.
      * 
