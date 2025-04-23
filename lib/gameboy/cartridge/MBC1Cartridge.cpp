@@ -32,38 +32,38 @@ constexpr uint8_t SimpleBankingMode = 0x00;
 constexpr uint8_t AdvancedBankingMode = 0x01;
 
 /*          Write Address Defines          */
-constexpr uint16_t RamEnableAddressStart = 0x0000;
-constexpr uint16_t RamEnableAddressEnd = 0x1FFF;
-constexpr uint16_t RomBankNumberAddressStart = 0x2000;
-constexpr uint16_t RomBankNumberAddressEnd = 0x3FFF;
-constexpr uint16_t RamBankNumberAddressStart = 0x4000;
-constexpr uint16_t RamBankNumberAddressEnd = 0x5FFF;
-constexpr uint16_t BankingModeAddressStart = 0x6000;
-constexpr uint16_t BankingModeAddressEnd = 0x7FFF;
+static constexpr uint16_t RamEnableAddressStart = 0x0000;
+static constexpr uint16_t RamEnableAddressEnd = 0x1FFF;
+static constexpr uint16_t RomBankNumberAddressStart = 0x2000;
+static constexpr uint16_t RomBankNumberAddressEnd = 0x3FFF;
+static constexpr uint16_t RamBankNumberAddressStart = 0x4000;
+static constexpr uint16_t RamBankNumberAddressEnd = 0x5FFF;
+static constexpr uint16_t BankingModeAddressStart = 0x6000;
+static constexpr uint16_t BankingModeAddressEnd = 0x7FFF;
 
 /*          Read Address Defines          */
-constexpr uint16_t RomAddressStart = 0x0000;
-constexpr uint16_t RomAddressEnd = 0x3FFF;
-constexpr uint16_t RomBankedAddressStart = 0x4000;
-constexpr uint16_t RomBankedAddressEnd = 0x7FFF;
+static constexpr uint16_t RomAddressStart = 0x0000;
+static constexpr uint16_t RomAddressEnd = 0x3FFF;
+static constexpr uint16_t RomBankedAddressStart = 0x4000;
+static constexpr uint16_t RomBankedAddressEnd = 0x7FFF;
 // also used for writing
-constexpr uint16_t RamBankedAddressStart = 0xA000;
-constexpr uint16_t RamBankedAddressEnd = 0xBFFF;
+static constexpr uint16_t RamBankedAddressStart = 0xA000;
+static constexpr uint16_t RamBankedAddressEnd = 0xBFFF;
 
 /*          Control Registers Defines          */
-constexpr bool DefaultRamEnabled = false;
-constexpr uint8_t DefaultSelectedRomBank = 0x01;
-constexpr uint8_t DefaultBankingModeSelect = SimpleBankingMode;
-constexpr uint8_t DefaultSecondarySelectedBankBits = 0x00;
-constexpr uint8_t DefaultBankRegisterBitCount = 0x05;
-constexpr uint8_t MBC1MBankRegisterBitCount = 0x04;
+static constexpr bool DefaultRamEnabled = false;
+static constexpr uint8_t DefaultSelectedRomBank = 0x01;
+static constexpr uint8_t DefaultBankingModeSelect = SimpleBankingMode;
+static constexpr uint8_t DefaultSecondarySelectedBankBits = 0x00;
+static constexpr uint8_t DefaultBankRegisterBitCount = 0x05;
+static constexpr uint8_t MBC1MBankRegisterBitCount = 0x04;
 
-constexpr uint32_t AmountOfBanksToBeLargeRom = 64;
-constexpr uint32_t RomBankCountMBC1M = 64;
+static constexpr uint32_t AmountOfBanksToBeLargeRom = 64;
+static constexpr uint32_t RomBankCountMBC1M = 64;
 
-constexpr uint8_t EnableRamValue = 0x0A;
-constexpr uint8_t SecondarySelectedBankRegisterMask = 0b00000011;
-constexpr uint8_t BankingModeSelectMask = 0b00000001;
+static constexpr uint8_t EnableRamValue = 0x0A;
+static constexpr uint8_t SecondarySelectedBankRegisterMask = 0b00000011;
+static constexpr uint8_t BankingModeSelectMask = 0b00000001;
 
 namespace GameBoy
 {

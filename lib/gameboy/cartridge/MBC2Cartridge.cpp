@@ -19,28 +19,28 @@
 #include <play-man/logger/Logger.hpp>
 
 /*     Address Ranges Defines     */
-constexpr uint16_t RomBank00Start = 0x0000;
-constexpr uint16_t RomBank00End = 0x3FFF;
-constexpr uint16_t RomBankedStart = 0x4000;
-constexpr uint16_t RomBankedEnd = 0x7FFF;
-constexpr uint16_t RamStart = 0xA000;
-constexpr uint16_t RamEnd = 0xA1FF;
-constexpr uint16_t RamEchoesStart = 0xA200;
-constexpr uint16_t RamEchoesEnd = 0xBFFF;
-constexpr uint16_t RamEnableOrBankNumberStart = 0x0000;
-constexpr uint16_t RamEnableOrBankNumberEnd = 0x3FFF;
+static constexpr uint16_t RomBank00Start = 0x0000;
+static constexpr uint16_t RomBank00End = 0x3FFF;
+static constexpr uint16_t RomBankedStart = 0x4000;
+static constexpr uint16_t RomBankedEnd = 0x7FFF;
+static constexpr uint16_t RamStart = 0xA000;
+static constexpr uint16_t RamEnd = 0xA1FF;
+static constexpr uint16_t RamEchoesStart = 0xA200;
+static constexpr uint16_t RamEchoesEnd = 0xBFFF;
+static constexpr uint16_t RamEnableOrBankNumberStart = 0x0000;
+static constexpr uint16_t RamEnableOrBankNumberEnd = 0x3FFF;
 
 /*     Control Register values     */
-constexpr bool DefaultRamEnabled = false;
-constexpr uint8_t DefaultRomBankNumber = 01;
+static constexpr bool DefaultRamEnabled = false;
+static constexpr uint8_t DefaultRomBankNumber = 01;
 
 /*     Masks     */
-constexpr uint16_t Bit8Mask = 0b00000001'00000000;
-constexpr uint16_t Lower9BitsMask = 0b00000001'11111111;
-constexpr uint8_t  Lower4BitsMask = 0b0000'1111;
+static constexpr uint16_t Bit8Mask = 0b00000001'00000000;
+static constexpr uint16_t Lower9BitsMask = 0b00000001'11111111;
+static constexpr uint8_t  Lower4BitsMask = 0b0000'1111;
 
 /*     Misc     */
-constexpr uint8_t  RamEnabledValue = 0x0A;
+static constexpr uint8_t  RamEnabledValue = 0x0A;
 
 namespace GameBoy {
 
