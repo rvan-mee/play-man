@@ -165,13 +165,13 @@ namespace GameBoy
                     selectedBank = secondarySelectedBankRegister;
                 return ramBanks[selectedBank][address - RamBankedAddressStart];
             }
-            LOG_DEBUG("Cartridge: Trying to read from RAM whilst it is not enabled");
+            LOG_DEBUG(READ_RAM_DISABLED);
             // If the cartridge has not enabled RAM writes are ignored and reads return
             // an open bus value, often being 0xFF but not guaranteed.
             return OpenBusValue;
         }
         // TODO: figure out what gets returned for other addresses
-        LOG_DEBUG("Cartridge: Trying to read from an unsupported address");
+        LOG_DEBUG(READ_OUT_OF_RANGE);
         return OpenBusValue;
     }
 
@@ -203,7 +203,7 @@ namespace GameBoy
         {
             if (!ramEnabled)
             {
-                LOG_DEBUG("Cartridge: Trying to write to RAM whilst it is not enabled");
+                LOG_DEBUG(WRITE_RAM_DISABLED);
                 return ;
             }
 
@@ -214,7 +214,7 @@ namespace GameBoy
         }
         else
         {
-            LOG_ERROR("Cartridge: Trying to write to an address that is not within range");
+            LOG_ERROR(WRITE_OUT_OF_RANGE);
             assert(false);
         }
     }

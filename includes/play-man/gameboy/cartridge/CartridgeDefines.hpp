@@ -42,4 +42,14 @@ namespace GameBoy {
     // mentions that 0xFF is often the value, but not guaranteed.
     constexpr uint8_t  OpenBusValue = 0xFF;
 
+    #define RAM_BANK_INVALID "Cartridge: Trying to access an invalid RAM bank"
+
+    #define READ_RAM_DISABLED "Cartridge: Trying to read from RAM whilst it is not enabled"
+    #define WRITE_RAM_DISABLED "Cartridge: Trying to write to RAM whilst it is not enabled"
+
+    #define READ_TIMER_DISABLED "Cartridge: Trying to read from the RTC registers whilst they are not enabled"
+    #define WRITE_TIMER_DISABLED "Cartridge: Trying to write to the RTC registers whilst they are not enabled"
+
+    #define READ_OUT_OF_RANGE "Cartridge: Trying to read from an address that is not within range"
+    #define WRITE_OUT_OF_RANGE "Cartridge: Trying to write to an address that is not within range"
 }

@@ -64,7 +64,7 @@ namespace GameBoy {
         {
             if (!ramEnabled)
             {
-                LOG_DEBUG("Cartridge: Trying to read from RAM whilst it is not enabled");
+                LOG_DEBUG(READ_RAM_DISABLED);
                 return OpenBusValue;
             }
 
@@ -74,7 +74,7 @@ namespace GameBoy {
         {
             if (!ramEnabled)
             {
-                LOG_DEBUG("Cartridge: Trying to read from RAM whilst it is not enabled");
+                LOG_DEBUG(READ_RAM_DISABLED);
                 return OpenBusValue;
             }
 
@@ -84,7 +84,7 @@ namespace GameBoy {
             return ram[address & Lower9BitsMask];
         }
 
-        LOG_DEBUG("Cartridge: Trying to read from an unsupported address");
+        LOG_DEBUG(READ_OUT_OF_RANGE);
         return OpenBusValue;
     }
 
@@ -116,7 +116,7 @@ namespace GameBoy {
         {
             if (!ramEnabled)
             {
-                LOG_DEBUG("Cartridge: Trying to write to RAM whilst it is not enabled");
+                LOG_DEBUG(WRITE_RAM_DISABLED);
                 return ;
             }
 
@@ -126,7 +126,7 @@ namespace GameBoy {
         {
             if (!ramEnabled)
             {
-                LOG_DEBUG("Cartridge: Trying to write to RAM whilst it is not enabled");
+                LOG_DEBUG(WRITE_RAM_DISABLED);
                 return ;
             }
 
@@ -137,7 +137,7 @@ namespace GameBoy {
         }
         else
         {
-            LOG_ERROR("Cartridge: Trying to write to an address that is not within range");
+            LOG_ERROR(WRITE_OUT_OF_RANGE);
             assert(false);
         }
     }
