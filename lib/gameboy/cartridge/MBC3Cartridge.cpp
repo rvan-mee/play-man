@@ -224,6 +224,8 @@ namespace GameBoy {
                         return ;
                 } 
             }
+
+            LOG_ERROR("Cartridge: ramOrTimerSelect register contains an invalid value");
         }
         else
             LOG_DEBUG(WRITE_OUT_OF_RANGE);
