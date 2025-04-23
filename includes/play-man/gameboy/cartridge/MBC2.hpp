@@ -40,7 +40,9 @@ private:
      * @brief Bit 8 (least significant bit of the upper address byte) controls
      * if his register is being written to or the ramEnabled register.
      * 
-     * @note 
+     * @note The lower 4 bits of the value being written to the address
+     * connected to this register determine what bank will be selected.
+     * If the value is 0x00 bank 0x01 will be selected.
      */
     uint8_t romBankNumber;
 
@@ -48,7 +50,9 @@ private:
      * @brief Bit 8 (least significant bit of the upper address byte) controls
      * if his register is being written to or the romBankNumber register.
      * 
-     * 
+     * @note To enable the RAM the value 0x0A has to be in the lower 4 bits
+     * when writing to the address connected to this register.
+     * Any other value will disable it.
      */
     bool ramEnabled;
 
