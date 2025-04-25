@@ -48,4 +48,10 @@ namespace GameBoy {
         return rom->GetRomBankCount();
     }
 
+    std::ostream& operator << (std::ostream& lhs, ACartridge& cart)
+    {
+        lhs << "Cartridge: " << *cart.rom << std::endl;
+        return (lhs);
+    }
+
 }

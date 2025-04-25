@@ -45,6 +45,8 @@ public:
     uint32_t        GetRamBankCount() const;
     uint32_t        GetRomBankCount() const;
 
+    friend std::ostream& operator << (std::ostream& lhs, ACartridge& cart);
 };
+
 
 }

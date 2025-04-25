@@ -32,6 +32,9 @@ int main(int argc, char** argv)
     if (argc > 1)
     {
         std::shared_ptr<GameBoy::ACartridge> cartridge = GameBoy::MakeCartridge(argv[1]);
+
+        std::cout << *cartridge << std::endl;
+
         GameBoy::Cpu cpu(cartridge);
 
         while (true)
