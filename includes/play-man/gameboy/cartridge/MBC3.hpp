@@ -38,6 +38,67 @@ CREATE_ENUM_WITH_UTILS(RTC_REGISTERS_SEQ, RTCRegisters);
 class MBC3Cartridge : public ACartridge
 {
 private:
+
+    /*     RTC     */
+
+    /**
+     * @brief Real Time Clock included in some MBC3 cartridges.
+     * 
+     * @note The Pan Docs are not the best at explaining how this chip works (imho).
+     * @note The main resourse I used are: https://thomas.spurden.name/gameboy/#mbc3-real-time-clock-rtc
+     * @note and https://pastebin.com/7BypTSqX
+     */
+    class RealTimeClock
+    {
+    private:
+        time_t  lastUpdateTime;
+
+        /* Registers */
+        uint8_t secondsInternal;
+        uint8_t minutesInternal;
+        uint8_t hoursInternal;
+        uint8_t daysLowerInternal;
+        // This register contains the upper (8th) bit of the day, a bit to check
+        // if the clock is halted and a bit to check if the day counter has overflown.
+        uint8_t daysUpperAndFlagsInternal;
+
+        uint8_t secondsLatched;
+        uint8_t minutesLatched;
+        uint8_t hoursLatched;
+        uint8_t daysLowerLatched;
+        // This register contains the upper (8th) bit of the day, a bit to check
+        // if the clock is halted and a bit to check if the day counter has overflown.
+        uint8_t daysUpperAndFlagsLatched;
+
+    public:
+        RealTimeClock();
+        ~RealTimeClock() = default;
+
+        /**
+         * @brief Updates the internal registers based on the device's system time.
+         * 
+         * @note Make sure to call this before anything gets latched.
+         */
+        void      UpdateInternalTime();
+        void      LatchInternalRegisters();
+
+        void      SetSecondsInternal(uint8_t newSeconds);
+        void      SetMinutesInternal(uint8_t newMinutes);
+        void      SetHoursInternal(uint8_t newHours);
+        void      SetDaysLowerInternal(uint8_t newDaysLower);
+        void      SetDaysUpperAndFlagsInternal(uint8_t newDaysUpperAndFlags);
+
+        uint8_t   GetSecondsLatched() const;
+        uint8_t   GetMinutesLatched() const;
+        uint8_t   GetHoursLatched() const;
+        uint8_t   GetDaysLowerLatched() const;
+        uint8_t   GetDaysUpperAndFlagsLatched() const;
+        bool      IsHalted() const;
+
+    };
+
+    RealTimeClock RTC;
+
     /*     Control Registers     */
 
     /**
@@ -65,20 +126,12 @@ private:
      */
     uint8_t latchClockData;
 
-
-    /*     RTC registers     */
-
-    uint8_t secondsLatched;
-    uint8_t minutesLatched;
-    uint8_t hoursLatched;
-    uint8_t daysUpperLatched;
-    uint8_t daysLowerLatched;
-
     /**
      * @brief Writing 0x0A into the address range connected to this register will enable
      * reads and writes to both the RAM banks and the RTC registers.
      */
     bool ramAndTimerEnabled;
+
 
     /*     Misc     */
 
@@ -87,11 +140,34 @@ private:
      */
     bool hasRTC;
 
+    /**
+     * @brief Reads the byte at the given address.
+     * The selected bank can be found inside the ramOrTimerSelect register.
+     * 
+     * @return The byte at the address or OpenBusValue on error.
+     */
+    uint8_t ReadRAM(const uint16_t address);
 
     /**
-     * @brief Calling this function will latch the current time into the RTC registers
+     * @brief Reads a register inside the RTC.
+     * The selected register is based on the value inside the ramOrTimerSelect register.
+     * 
+     * @return The byte in the register or OpenBusValue on error.
      */
-    void LatchTimerRegisters();
+    uint8_t ReadRTC();
+
+    /**
+     * @brief Writes the given value at the given address.
+     * The selected bank can be found inside the ramOrTimerSelect register.
+     */
+    void    WriteRAM(const uint16_t address, const uint8_t value);
+
+    /**
+     * @brief Writes to an internal register inside the RTC.
+     * The selected register is based on the value inside the ramOrTimerSelect register.
+     * 
+     */
+    void    WriteRTC(const uint8_t value);
 
 public:
     MBC3Cartridge() = delete;

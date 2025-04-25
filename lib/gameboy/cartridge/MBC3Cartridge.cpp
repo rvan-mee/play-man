@@ -47,12 +47,7 @@ static constexpr uint8_t TimerRegisterSelectEnd = 0x0C;
 /*     Default Register Values     */
 static constexpr uint8_t DefaultRomBankNumber = 0x01;
 static constexpr uint8_t DefaultRamOrTimerSelect = 0x00;
-static constexpr uint8_t DefaultLatchClockData = 0x00; // TODO: does this start at 0x00?
-static constexpr uint8_t DefaultSecondsLatched = 0x00;
-static constexpr uint8_t DefaultMinutesLatched = 0x00;
-static constexpr uint8_t DefaultHoursLatched = 0x00;
-static constexpr uint8_t DefaultDaysUpperLatched = 0x00;
-static constexpr uint8_t DefaultDaysLowerLatched = 0x00;
+static constexpr uint8_t DefaultLatchClockData = 0x00;
 static constexpr bool    DefaultRamAndTimerEnabled = false;
 static constexpr bool    DefaultHasRTC = false;
 
@@ -75,16 +70,48 @@ namespace GameBoy {
         romBankNumber = DefaultRomBankNumber;
         hasRTC = DefaultHasRTC;
 
-        /*    RTC Registers     */
-        daysUpperLatched = DefaultDaysUpperLatched;
-        daysLowerLatched = DefaultDaysLowerLatched;
-        secondsLatched = DefaultSecondsLatched;
-        minutesLatched = DefaultMinutesLatched;
-        hoursLatched = DefaultHoursLatched;
-
         const CartridgeType cType = GetType();
         if (cType == CartridgeType::MBC3_TIMER_BATTERY || cType == CartridgeType::MBC3_TIMER_RAM_BATTERY)
             hasRTC = true;
+    }
+
+    uint8_t MBC3Cartridge::ReadRAM(const uint16_t address)
+    {
+        if (!ramAndTimerEnabled)
+        {
+            LOG_DEBUG(READ_RAM_DISABLED);
+            return OpenBusValue;
+        }
+
+        if (ramOrTimerSelect >= GetRamBankCount())
+        {
+            LOG_DEBUG(RAM_BANK_INVALID);
+            return OpenBusValue;
+        }
+
+        // The ramOrTimerSelect register specifies which bank to read from.
+        return ramBanks[ramOrTimerSelect][address - RamBankOrTimerStart];
+    }
+
+    uint8_t MBC3Cartridge::ReadRTC()
+    {
+        if (!ramAndTimerEnabled)
+        {
+            LOG_DEBUG(READ_TIMER_DISABLED);
+            return OpenBusValue;
+        }
+
+        // The value inside the ramOrTimerSelect register specifies which RTC register has to be read from.
+        switch (ramOrTimerSelect)
+        {
+            case GetEnumAsValue(RTCRegisters::Seconds): return RTC.GetSecondsLatched();
+            case GetEnumAsValue(RTCRegisters::Minutes): return RTC.GetMinutesLatched();
+            case GetEnumAsValue(RTCRegisters::Hours): return RTC.GetHoursLatched();
+            case GetEnumAsValue(RTCRegisters::DaysLowerBits): return RTC.GetDaysLowerLatched();
+            case GetEnumAsValue(RTCRegisters::DaysUpperAndFlags): return RTC.GetDaysUpperAndFlagsLatched();
+        }
+
+        assert(false); // Should be unreachable
     }
 
     uint8_t MBC3Cartridge::ReadByte(const uint16_t address)
@@ -99,48 +126,17 @@ namespace GameBoy {
         }
         else if (address >= RamBankOrTimerStart && address <= RamBankOrTimerEnd)
         {
-            // This address range is used for both the ram and the RTC registers,
-            // the ramOrTimerSelect register controls which of the 2 will be accessed.
+            // This address range is used for both the ram and the RTC registers.
+
             if (ramOrTimerSelect >= RamBankSelectStart && ramOrTimerSelect <= RamBankSelectEnd)
             {
-                if (!ramAndTimerEnabled)
-                {
-                    LOG_DEBUG(READ_RAM_DISABLED);
-                    return OpenBusValue;
-                }
-
-                if (ramOrTimerSelect >= GetRamBankCount())
-                {
-                    LOG_DEBUG(RAM_BANK_INVALID);
-                    return OpenBusValue;
-                }
-
-                // The ramOrTimerSelect register specifies which bank to read from.
-                return ramBanks[ramOrTimerSelect][address - RamBankOrTimerStart];
+                // The RAM bank is selected based on the value inside the ramOrTimerSelect register.
+                return ReadRAM(address);
             }
             else if (ramOrTimerSelect >= TimerRegisterSelectStart && ramOrTimerSelect <= TimerRegisterSelectEnd)
             {
-                if (!ramAndTimerEnabled)
-                {
-                    LOG_DEBUG(READ_TIMER_DISABLED);
-                    return OpenBusValue;
-                }
-
-                // The value inside the ramOrTimerSelect register specifies which RTC register has to be read from.
-                switch (ramOrTimerSelect)
-                {
-                    case GetEnumAsValue(RTCRegisters::Seconds): 
-                        return secondsLatched;
-                    case GetEnumAsValue(RTCRegisters::Minutes): 
-                        return minutesLatched;
-                    case GetEnumAsValue(RTCRegisters::Hours): 
-                        return hoursLatched;
-                    case GetEnumAsValue(RTCRegisters::DaysLowerBits): 
-                        return daysLowerLatched;
-                    case GetEnumAsValue(RTCRegisters::DaysUpperAndFlags): 
-                        return daysUpperLatched;
-                }
-
+                // RTC reads are done based on the value inside the ramOrTimerSelect register.
+                return ReadRTC();
             }
 
             LOG_ERROR("Cartridge: ramOrTimerSelect register contains an invalid value");
@@ -149,6 +145,43 @@ namespace GameBoy {
 
         LOG_ERROR(READ_OUT_OF_RANGE);
         return OpenBusValue;
+    }
+
+    void    MBC3Cartridge::WriteRAM(const uint16_t address, const uint8_t value)
+    {
+        if (!ramAndTimerEnabled)
+        {
+            LOG_DEBUG(WRITE_RAM_DISABLED);
+            return ;
+        }
+
+        if (ramOrTimerSelect >= GetRamBankCount())
+        {
+            LOG_DEBUG(RAM_BANK_INVALID);
+            return ;
+        }
+
+        // The ramOrTimerSelect register specifies which bank to write to.
+        ramBanks[ramOrTimerSelect][address - RamBankOrTimerStart] = value;
+    }
+
+    void    MBC3Cartridge::WriteRTC(const uint8_t value)
+    {
+        if (!ramAndTimerEnabled)
+        {
+            LOG_DEBUG(WRITE_TIMER_DISABLED);
+            return ;
+        }
+
+        // The value inside the ramOrTimerSelect register specifies which RTC register has to be written to.
+        switch (ramOrTimerSelect)
+        {
+            case GetEnumAsValue(RTCRegisters::Seconds): RTC.SetSecondsInternal(value); return ;
+            case GetEnumAsValue(RTCRegisters::Minutes): RTC.SetMinutesInternal(value); return ;
+            case GetEnumAsValue(RTCRegisters::Hours): RTC.SetHoursInternal(value); return ;
+            case GetEnumAsValue(RTCRegisters::DaysLowerBits): RTC.SetDaysLowerInternal(value); return ;
+            case GetEnumAsValue(RTCRegisters::DaysUpperAndFlags): RTC.SetDaysUpperAndFlagsInternal(value); return ;
+        }
     }
 
     void    MBC3Cartridge::WriteByte(const uint16_t address, const uint8_t value)
@@ -171,8 +204,10 @@ namespace GameBoy {
         }
         else if (address >= LatchClockDataStart && address <= LatchClockDataEnd)
         {
+            // To latch the clock's counter registers to the latched ones a write of 0x00 followed by a write
+            // of 0x01 must be done on this address range.
             if (latchClockData == 0x00 && value == 0x01)
-                LatchTimerRegisters();
+                RTC.LatchInternalRegisters();
             latchClockData = value;
         }
         else if (address >= RamBankOrTimerStart && address <= RamBankOrTimerEnd)
@@ -181,48 +216,11 @@ namespace GameBoy {
             // the ramOrTimerSelect register controls which of the 2 will be accessed.
             if (ramOrTimerSelect >= RamBankSelectStart && ramOrTimerSelect <= RamBankSelectEnd)
             {
-                if (!ramAndTimerEnabled)
-                {
-                    LOG_DEBUG(WRITE_RAM_DISABLED);
-                    return ;
-                }
-
-                if (ramOrTimerSelect >= GetRamBankCount())
-                {
-                    LOG_DEBUG(RAM_BANK_INVALID);
-                    return ;
-                }
-
-                // The ramOrTimerSelect register specifies which bank to write to.
-                ramBanks[ramOrTimerSelect][address - RamBankOrTimerStart] = value;
+                WriteRAM(address, value);
             }
             else if (ramOrTimerSelect >= TimerRegisterSelectStart && ramOrTimerSelect <= TimerRegisterSelectEnd)
             {
-                if (!ramAndTimerEnabled)
-                {
-                    LOG_DEBUG(WRITE_TIMER_DISABLED);
-                    return ;
-                }
-
-                // The value inside the ramOrTimerSelect register specifies which RTC register has to be written to.
-                switch (ramOrTimerSelect)
-                {
-                    case GetEnumAsValue(RTCRegisters::Seconds): 
-                        secondsLatched = value;
-                        return ;
-                    case GetEnumAsValue(RTCRegisters::Minutes): 
-                        minutesLatched = value;
-                        return ;
-                    case GetEnumAsValue(RTCRegisters::Hours): 
-                        hoursLatched = value;
-                        return ;
-                    case GetEnumAsValue(RTCRegisters::DaysLowerBits): 
-                        daysLowerLatched = value;
-                        return ;
-                    case GetEnumAsValue(RTCRegisters::DaysUpperAndFlags): 
-                        daysUpperLatched = value;
-                        return ;
-                } 
+                WriteRTC(value);
             }
 
             LOG_ERROR("Cartridge: ramOrTimerSelect register contains an invalid value");
@@ -231,8 +229,4 @@ namespace GameBoy {
             LOG_DEBUG(WRITE_OUT_OF_RANGE);
     }
 
-    void MBC3Cartridge::LatchTimerRegisters()
-    {
-        LOG_DEBUG("Cartridge: Latching the RTC registers");
-    }
 }

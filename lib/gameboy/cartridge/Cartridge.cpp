@@ -35,6 +35,11 @@ std::shared_ptr<ACartridge> MakeCartridge(const char* filePath) noexcept(false)
         case CartridgeType::MBC2:
         case CartridgeType::MBC2_BATTERY:
             return std::make_shared<MBC2Cartridge>(std::move(rom));
+        case CartridgeType::MBC3_RAM:
+        case CartridgeType::MBC3_RAM_BATTERY:
+        case CartridgeType::MBC3_TIMER_BATTERY:
+        case CartridgeType::MBC3_TIMER_RAM_BATTERY:
+            return std::make_shared<MBC3Cartridge>(std::move(rom));
         default:
             std::stringstream error;
             error << "Unsupported ROM type: ";
