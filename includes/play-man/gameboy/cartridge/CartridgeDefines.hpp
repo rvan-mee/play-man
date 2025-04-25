@@ -36,7 +36,7 @@ namespace GameBoy {
     constexpr uint32_t KiB = 1024;
     constexpr uint32_t RamBankSize = KiB * 8;
     constexpr uint32_t RomBankSize = KiB * 16;
-    constexpr uint32_t MCB2RamSize = 512;
+    constexpr uint32_t MBC2RamSize = 512;
 
     // TODO: figure out the correct value: https://gbdev.io/pandocs/MBC1.html
     // mentions that 0xFF is often the value, but not guaranteed.

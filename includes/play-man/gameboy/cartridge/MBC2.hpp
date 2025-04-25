@@ -34,7 +34,7 @@ private:
      * @note the upper 4 bits of this RAM is undefined and should not
      * be relied upon.
      */
-    std::array<uint8_t, MCB2RamSize>    ram;
+    std::array<uint8_t, MBC2RamSize>    ram;
 
     /**
      * @brief Bit 8 (least significant bit of the upper address byte) controls
