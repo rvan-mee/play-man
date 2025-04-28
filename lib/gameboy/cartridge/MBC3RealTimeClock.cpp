@@ -211,7 +211,7 @@ uint8_t   MBC3Cartridge::RealTimeClock::GetDaysUpperAndFlagsLatched() const
 
 bool MBC3Cartridge::RealTimeClock::IsHalted() const
 {
-    return UpperDayBitMask & HaltMask;
+    return daysUpperAndFlagsInternal & HaltMask;
 }
 
 }
