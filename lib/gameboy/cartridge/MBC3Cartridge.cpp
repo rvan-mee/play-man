@@ -128,7 +128,7 @@ namespace GameBoy {
                 return OpenBusValue;
             }
 
-            return rom->ReadFromBank(romBankNumber, address);
+            return rom->ReadFromBank(romBankNumber, address - RomBankedStart);
         }
         else if (address >= RamBankOrTimerStart && address <= RamBankOrTimerEnd)
         {
