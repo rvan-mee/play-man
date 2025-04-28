@@ -18,21 +18,28 @@
 #pragma once
 
 #include <play-man/gameboy/cartridge/ACartridge.hpp>
-#include <play-man/gameboy/cartridge/NoMBC.hpp>
-#include <play-man/gameboy/cartridge/MBC1.hpp>
-#include <play-man/gameboy/cartridge/MBC2.hpp>
-#include <play-man/gameboy/cartridge/MBC3.hpp>
-#include <play-man/gameboy/cartridge/MBC5.hpp>
-#include <memory>
+#include <play-man/gameboy/cartridge/CartridgeDefines.hpp>
 
 namespace GameBoy {
 
-/**
- * @param filePath The path where the ROM/Cartridge is located
- * @throw std::runtime_error: Errors can happen with permission/non existing files or
- *        unsupported cartridge types
- * @return A shared pointer to the abstract cartridge class
- */
-std::shared_ptr<ACartridge> MakeCartridge(const char* filePath) noexcept(false);
+    /**
+     * @brief A cartridge without a memory bank controller
+     * 
+     * Could optionally contain RAM by using a discrete logic decoder instead
+     * of a full memory bank controller chip.
+     */
+    class NoMBCCartridge : public ACartridge
+    {
+    private:
+        bool hasRam;
+    
+    public:
+        NoMBCCartridge() = delete;
+        NoMBCCartridge(std::unique_ptr<Rom> rom);
+        ~NoMBCCartridge() = default;
+
+        virtual uint8_t ReadByte(const uint16_t address) override;
+        virtual void    WriteByte(const uint16_t address, const uint8_t value) override;
+    };
 
 }

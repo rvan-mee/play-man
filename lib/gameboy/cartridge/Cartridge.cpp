@@ -28,6 +28,10 @@ std::shared_ptr<ACartridge> MakeCartridge(const char* filePath) noexcept(false)
 
     switch (rom->GetCartridgeType())
     {
+        case CartridgeType::ROM_ONLY:
+        case CartridgeType::ROM_RAM:
+        case CartridgeType::ROM_RAM_BATTERY:
+            return std::make_shared<NoMBCCartridge>(std::move(rom));
         case CartridgeType::MBC1:
         case CartridgeType::MBC1_RAM:
         case CartridgeType::MBC1_RAM_BATTERY:
