@@ -44,8 +44,20 @@ private:
     /**
      * @brief Real Time Clock included in some MBC3 cartridges.
      * 
+     * The RTC included 2 sets of register, a set of internal register that would get updated
+     * by the clock and a second set of registers that could 'latch' the internal's values into its own.
+     * 
+     * The way the clock emulation is done by using the device's system time, taking the difference between
+     * the current time inside the UpdateInternalTime() call and the lastUpdateTime.
+     * 
+     * To have the correct time when trying to latch, a call to UpdateInternalTime() must be done right before.
+     * 
+     * To make sure that halting the clock also works we update the lastUpdateTime, before halting and un-halting.
+     * When the clock is halted the internal registers will not be updated but the lastUpdateTime will be,
+     * making it seem like no time has passed when the clock will be un-halted.
+     * 
      * @note The Pan Docs are not the best at explaining how this chip works (imho).
-     * @note The main resourse I used are: https://thomas.spurden.name/gameboy/#mbc3-real-time-clock-rtc
+     * @note The main resources I used are: https://thomas.spurden.name/gameboy/#mbc3-real-time-clock-rtc
      * @note and https://pastebin.com/7BypTSqX
      */
     class RealTimeClock
