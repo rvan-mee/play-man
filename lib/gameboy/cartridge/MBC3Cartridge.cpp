@@ -173,6 +173,10 @@ namespace GameBoy {
             return ;
         }
 
+        // Update the internal time of the RTC, if the halt flag gets set then the internal clock
+        // will be halted at in the correct state.
+        RTC.UpdateInternalTime();
+
         // The value inside the ramOrTimerSelect register specifies which RTC register has to be written to.
         switch (ramOrTimerSelect)
         {
