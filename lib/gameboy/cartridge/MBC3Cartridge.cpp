@@ -122,6 +122,12 @@ namespace GameBoy {
         }
         else if (address >= RomBankedStart && address <= RomBankedEnd)
         {
+            if (romBankNumber >= rom->GetRomBankCount())
+            {
+                LOG_DEBUG(ROM_BANK_INVALID);
+                return OpenBusValue;
+            }
+
             return rom->ReadFromBank(romBankNumber, address);
         }
         else if (address >= RamBankOrTimerStart && address <= RamBankOrTimerEnd)

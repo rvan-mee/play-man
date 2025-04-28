@@ -43,6 +43,7 @@ namespace GameBoy {
     constexpr uint8_t  OpenBusValue = 0xFF;
 
     #define RAM_BANK_INVALID "Cartridge: Trying to access an invalid RAM bank"
+    #define ROM_BANK_INVALID "Cartridge: Trying to access an invalid ROM bank"
 
     #define READ_RAM_DISABLED "Cartridge: Trying to read from RAM whilst it is not enabled"
     #define WRITE_RAM_DISABLED "Cartridge: Trying to write to RAM whilst it is not enabled"

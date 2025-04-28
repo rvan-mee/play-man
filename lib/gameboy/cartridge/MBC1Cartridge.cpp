@@ -130,6 +130,13 @@ namespace GameBoy
                 // for a regular MBC1 and 0x00, 0x10, 0x20, and 0x30 for MCB1M cartridges
                 selectedBank = secondarySelectedBankRegister << bankRegisterBitCount;
             }
+
+            if (selectedBank >= rom->GetRomBankCount())
+            {
+                LOG_DEBUG(ROM_BANK_INVALID);
+                return OpenBusValue;
+            }
+
             return rom->ReadFromBank(selectedBank, address);
         }
         else if (address >= RomBankedAddressStart && address <= RomBankedAddressEnd)
