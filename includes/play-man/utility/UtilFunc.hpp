@@ -19,10 +19,23 @@
 
 #include <string>
 #include <fstream>
+#include <sstream>
 #include <filesystem>
 
 namespace Utility
 {
+	/**
+	 * @brief Converts any size unsigned integer into a hex string.
+	 */
+	template<typename T>
+	std::string IntAsHexString(const T value)
+	{
+		std::stringstream stream;
+
+		stream << "0x" << std::setfill ('0') << std::setw(sizeof(T) * 2) << std::hex << std::uppercase << +value;
+		return (stream.str());
+	}
+
 	/**
 	 * @brief 
 	 * @return

@@ -15,40 +15,38 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <play-man/gameboy/cartridge/Cartridge.hpp>
-#include <play-man/settings/PlayManSettings.hpp>
-#include <play-man/gameboy/opcodes/Opcodes.hpp>
-#include <play-man/gameboy/cpu/Cpu.hpp>
-#include <play-man/logger/Logger.hpp>
-#include <iostream>
+#pragma once
 
-int main(int argc, char** argv)
+#include <play-man/gameboy/cartridge/CartridgeDefines.hpp>
+#include <play-man/gameboy/cartridge/Rom.hpp>
+#include <memory>
+#include <stdint.h>
+
+namespace GameBoy {
+
+class ACartridge
 {
-	(void)argc;
-	(void)argv;
-	std::cout << "Welcome to play-man!" << std::endl;
-    Logger::LogInterface::Initialize("Logging", Logger::LogLevel::Debug);
+private:
+    void    InitRamBanks();
 
-    if (argc > 1)
-    {
-        std::shared_ptr<GameBoy::ACartridge> cartridge = GameBoy::MakeCartridge(argv[1]);
+protected:
+    std::unique_ptr<Rom>    rom;
+    MemoryBanks             ramBanks;
 
-        std::cout << *cartridge << std::endl;
+public:
+    ACartridge() = delete;
+    ACartridge(std::unique_ptr<Rom> _rom);
+    virtual ~ACartridge() = default;
 
-        GameBoy::Cpu cpu(cartridge);
+    virtual uint8_t ReadByte(const uint16_t address) = 0;
+    virtual void    WriteByte(const uint16_t address, const uint8_t value) = 0;
 
-        while (true)
-        {
-            cpu.FetchInstruction();
-            cpu.ExecuteInstruction();
-        }
+    CartridgeType   GetType() const;
+    uint32_t        GetRamBankCount() const;
+    uint32_t        GetRomBankCount() const;
 
-        return 0;
-    }
-    else
-    {
-        std::cout << "No ROM provided!" << std::endl;
-    }
+    friend std::ostream& operator << (std::ostream& lhs, ACartridge& cart);
+};
 
-	return 0;
+
 }

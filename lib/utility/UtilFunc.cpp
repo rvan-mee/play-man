@@ -29,7 +29,6 @@
 
 namespace Utility
 {
-
 	std::string CurrentTimeAsString(const std::string& format)
 	{
 		const auto logTimeStamp = std::chrono::system_clock::now();

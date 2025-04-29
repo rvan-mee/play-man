@@ -68,8 +68,14 @@ public:
 	 */
 	static std::shared_ptr<Derived> ReadFromFile(const std::filesystem::path& fileToReadSettingsFrom)
 	{
-		nlohmann::json settingsAsJson;
-		settingsAsJson = Utility::Json::ReadJsonFromFile(fileToReadSettingsFrom);
+		nlohmann::json settingsAsJson = Utility::Json::CreateEmptyJson();
+		try {
+			settingsAsJson = Utility::Json::ReadJsonFromFile(fileToReadSettingsFrom);
+		}
+		catch (const std::exception&)
+		{
+			std::cerr << "Could not find setings file, using default settings instead." << std::endl;
+		}
 		return std::make_shared<Derived>(settingsAsJson.template get<Derived>());
 	}
 

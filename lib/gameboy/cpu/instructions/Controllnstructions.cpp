@@ -15,14 +15,11 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#pragma once
+#include <play-man/gameboy/cpu/Cpu.hpp>
 
-#include <cstddef>
-#include <string>
-#include <play-man/ROM/Rom.hpp>
-
-namespace GameBoy {
-
-RomHeader   ParseRomHeader(std::string fileName);
-
-};
+namespace GameBoy
+{
+    void Cpu::NOP()
+    {
+    }
+}

@@ -15,40 +15,31 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <play-man/gameboy/cartridge/Cartridge.hpp>
-#include <play-man/settings/PlayManSettings.hpp>
-#include <play-man/gameboy/opcodes/Opcodes.hpp>
-#include <play-man/gameboy/cpu/Cpu.hpp>
-#include <play-man/logger/Logger.hpp>
-#include <iostream>
+#pragma once
 
-int main(int argc, char** argv)
-{
-	(void)argc;
-	(void)argv;
-	std::cout << "Welcome to play-man!" << std::endl;
-    Logger::LogInterface::Initialize("Logging", Logger::LogLevel::Debug);
+#include <play-man/gameboy/cartridge/ACartridge.hpp>
+#include <play-man/gameboy/cartridge/CartridgeDefines.hpp>
 
-    if (argc > 1)
+namespace GameBoy {
+
+    /**
+     * @brief A cartridge without a memory bank controller
+     * 
+     * Could optionally contain RAM by using a discrete logic decoder instead
+     * of a full memory bank controller chip.
+     */
+    class NoMBCCartridge : public ACartridge
     {
-        std::shared_ptr<GameBoy::ACartridge> cartridge = GameBoy::MakeCartridge(argv[1]);
+    private:
+        bool hasRam;
+    
+    public:
+        NoMBCCartridge() = delete;
+        NoMBCCartridge(std::unique_ptr<Rom> rom);
+        ~NoMBCCartridge() = default;
 
-        std::cout << *cartridge << std::endl;
+        virtual uint8_t ReadByte(const uint16_t address) override;
+        virtual void    WriteByte(const uint16_t address, const uint8_t value) override;
+    };
 
-        GameBoy::Cpu cpu(cartridge);
-
-        while (true)
-        {
-            cpu.FetchInstruction();
-            cpu.ExecuteInstruction();
-        }
-
-        return 0;
-    }
-    else
-    {
-        std::cout << "No ROM provided!" << std::endl;
-    }
-
-	return 0;
 }
