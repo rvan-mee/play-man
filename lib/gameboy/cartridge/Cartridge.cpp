@@ -18,6 +18,7 @@
 #include <play-man/gameboy/cartridge/Cartridge.hpp>
 #include <play-man/gameboy/cartridge/Rom.hpp>
 #include <play-man/logger/Logger.hpp>
+#include <sstream>
 
 namespace GameBoy
 {

@@ -112,6 +112,7 @@ namespace GameBoy {
         }
 
         assert(false); // Should be unreachable
+        return OpenBusValue;
     }
 
     uint8_t MBC3Cartridge::ReadByte(const uint16_t address)

@@ -90,24 +90,6 @@ namespace GameBoy
 		 */
 		uint16_t Value() const;
 
-		/**
-		 * @brief -.
-		 * @return uint8_t 
-		 */
-		uint8_t& LowByteRef();
-
-		/**
-		 * @brief -.
-		 * @return uint8_t 
-		 */
-		uint8_t& HighByteRef();
-
-		/**
-		 * @brief -.
-		 * @return uint16_t 
-		 */
-		uint16_t& ValueRef();
-
 		// Postfix increment 
 		Register operator++(int)
 		{

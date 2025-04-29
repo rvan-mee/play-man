@@ -17,9 +17,10 @@
 
 #include <play-man/gameboy/cartridge/Rom.hpp>
 #include <play-man/utility/UtilFunc.hpp>
+#include <string_view>
+#include <sstream>
 #include <iostream>
 #include <iomanip>
-#include <string_view>
 #include <ios>
 
 static int32_t GetPaddingAfterName(const std::string_view name)
