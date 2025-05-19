@@ -22,6 +22,13 @@
 
 namespace GameBoy {
 
+MemoryBus::MemoryBus(std::shared_ptr<ACartridge> _cartridge, CpuCore& _core, PPU& _ppu) :
+    cartridge(_cartridge),
+    core(_core),
+    ppu(_ppu)
+{
+}
+
 uint16_t MemoryBus::PopStack()
 {
     uint8_t lowerByte;
@@ -49,6 +56,7 @@ uint8_t MemoryBus::ReadByte(const Register reg)
 
 uint8_t MemoryBus::ReadByte(const uint16_t address)
 {
+    (void) ppu;
     if (address >= romAddressStart && address <= romAddressEnd)
     {
         return (cartridge->ReadByte(address));
@@ -125,6 +133,7 @@ void MemoryBus::WriteByte(const Register reg, const uint8_t value)
 
 void MemoryBus::WriteByte(const uint16_t address, const uint8_t value)
 {
+    (void) ppu;
     if (address >= romAddressStart && address <= romAddressEnd)
     {
         return (cartridge->WriteByte(address, value));

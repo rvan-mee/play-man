@@ -44,6 +44,7 @@ public:
     CartridgeType   GetType() const;
     uint32_t        GetRamBankCount() const;
     uint32_t        GetRomBankCount() const;
+    bool            GetCgbMode() const;
 
     /**
      * @brief Only to be used for testing, clears the internal data and replaces it

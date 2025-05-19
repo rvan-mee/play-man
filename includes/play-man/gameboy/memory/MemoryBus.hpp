@@ -21,6 +21,7 @@
 #include <play-man/gameboy/cpu/CpuCore.hpp>
 #include <play-man/gameboy/cartridge/Cartridge.hpp>
 #include <play-man/gameboy/memory/MemoryDefines.hpp>
+#include <play-man/gameboy/graphics/PPU.hpp>
 #include <stdint.h>
 
 namespace GameBoy {
@@ -29,6 +30,7 @@ namespace GameBoy {
         private:
             std::shared_ptr<ACartridge> cartridge;
             CpuCore&                    core;
+            PPU&                        ppu;
             // TODO:
             // video module
             // io module
@@ -38,7 +40,7 @@ namespace GameBoy {
 
         public:
             MemoryBus() = delete;
-            MemoryBus(std::shared_ptr<ACartridge> _cartridge, CpuCore& _core) : cartridge(_cartridge), core(_core) {};
+            MemoryBus(std::shared_ptr<ACartridge> _cartridge, CpuCore& _core, PPU& _ppu);
 
             /**
              * @brief Passthrough function to call the regular Readbyte,

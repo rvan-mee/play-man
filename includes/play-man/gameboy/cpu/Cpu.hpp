@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <play-man/gameboy/graphics/PPU.hpp>
 #include <play-man/gameboy/cartridge/Cartridge.hpp>
 #include <play-man/gameboy/memory/MemoryBus.hpp>
 #include <play-man/gameboy/opcodes/Opcodes.hpp>
@@ -37,6 +38,7 @@ namespace GameBoy
     private:
         std::shared_ptr<ACartridge>     cartridge;
         CpuCore                         core;
+        PPU                             ppu;
         MemoryBus                       memoryBus;
 
         size_t cycles = 0;
@@ -51,7 +53,10 @@ namespace GameBoy
     public:
 
         Cpu() = delete;
-        Cpu(std::shared_ptr<ACartridge> _cartridge) : cartridge(_cartridge), memoryBus(cartridge, core)
+        Cpu(std::shared_ptr<ACartridge> _cartridge) :
+            cartridge(_cartridge),
+            ppu(cartridge->GetCgbMode()),
+            memoryBus(cartridge, core, ppu)
         {
             InitInstructionTable();
         };

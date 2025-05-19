@@ -15,55 +15,49 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <play-man/gameboy/cartridge/ACartridge.hpp>
+#include <play-man/gameboy/graphics/PPU.hpp>
 
 namespace GameBoy {
 
-    ACartridge::ACartridge(std::unique_ptr<Rom> _rom) : rom(std::move(_rom))
-    {
-        InitRamBanks();
-    };
+PPU::PPU(bool cgbEnabled) : CgbMode(cgbEnabled)
+{
+    // TODO:
+    // Find the correct default values.
+    (void) DMAregister;
+    (void) LCDCregister;
+    (void) LYregister;
+    (void) LYCregister;
+    (void) STATregister;
+    (void) SCYregister;
+    (void) SCXregister;
+    (void) WYregister;
+    (void) WXregister;
+    (void) BGPregister;
+    (void) OBP0register;
+    (void) OBP1register;
+    (void) BGPIregister;
+    (void) BCPDregister;
+    (void) OBPIregister;
+    (void) OBPDregister;
+    (void) state;
+}
 
-    void ACartridge::InitRamBanks()
-    {
-        const uint8_t ramBankCount = rom->GetRamBankCount();
+void    PPU::SetCgbMode(bool enabled)
+{
+    CgbMode = enabled;
+}
 
-        ramBanks.resize(ramBankCount);
-        for (uint32_t i = 0; i < ramBankCount; i++)
-            ramBanks[i].resize(RamBankSize);
-    }
+uint8_t PPU::ReadByte(uint16_t address)
+{
+    (void) address;
+    assert(false);
+}
 
-    CartridgeType   ACartridge::GetType() const
-    {
-        return rom->GetCartridgeType();
-    }
-
-    uint32_t        ACartridge::GetRamBankCount() const
-    {
-        return rom->GetRamBankCount();
-    }
-
-    uint32_t        ACartridge::GetRomBankCount() const
-    {
-        return rom->GetRomBankCount();
-    }
-
-    bool    ACartridge::GetCgbMode() const
-    {
-        CgbFlag flag = rom->GetCgbFlag();
-        
-        return flag == CgbFlag::CgbOnly || flag == CgbFlag::BackwardsCompatible;
-    }
-    
-    void    ACartridge::LoadTestRom(const char* filePath)
-    {
-        rom->LoadTestRom(filePath);
-    }
-
-    std::ostream& operator << (std::ostream& lhs, ACartridge& cart)
-    {
-        lhs << "Cartridge: " << *cart.rom << std::endl;
-        return (lhs);
-    }
+void    PPU::WriteByte(uint16_t address, uint8_t value)
+{
+    (void) address;
+    (void) value;
+    assert(false);
+}
 
 }

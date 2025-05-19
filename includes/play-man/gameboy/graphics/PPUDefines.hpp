@@ -15,55 +15,19 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <play-man/gameboy/cartridge/ACartridge.hpp>
+#pragma once
+
+#include <play-man/utility/EnumMacro.hpp>
 
 namespace GameBoy {
 
-    ACartridge::ACartridge(std::unique_ptr<Rom> _rom) : rom(std::move(_rom))
-    {
-        InitRamBanks();
-    };
+#define PpuStateSeq(x, n) \
+    x(n, hBlank, 0)       \
+    x(n, vBlank, 1)       \
+    x(n, ScanOAM, 2)      \
+    x(n, Drawing, 3)      \
 
-    void ACartridge::InitRamBanks()
-    {
-        const uint8_t ramBankCount = rom->GetRamBankCount();
-
-        ramBanks.resize(ramBankCount);
-        for (uint32_t i = 0; i < ramBankCount; i++)
-            ramBanks[i].resize(RamBankSize);
-    }
-
-    CartridgeType   ACartridge::GetType() const
-    {
-        return rom->GetCartridgeType();
-    }
-
-    uint32_t        ACartridge::GetRamBankCount() const
-    {
-        return rom->GetRamBankCount();
-    }
-
-    uint32_t        ACartridge::GetRomBankCount() const
-    {
-        return rom->GetRomBankCount();
-    }
-
-    bool    ACartridge::GetCgbMode() const
-    {
-        CgbFlag flag = rom->GetCgbFlag();
-        
-        return flag == CgbFlag::CgbOnly || flag == CgbFlag::BackwardsCompatible;
-    }
-    
-    void    ACartridge::LoadTestRom(const char* filePath)
-    {
-        rom->LoadTestRom(filePath);
-    }
-
-    std::ostream& operator << (std::ostream& lhs, ACartridge& cart)
-    {
-        lhs << "Cartridge: " << *cart.rom << std::endl;
-        return (lhs);
-    }
+CREATE_ENUM_WITH_UTILS(PpuStateSeq, PixelProcessingState);
+#undef PpuStateSeq
 
 }

@@ -287,6 +287,11 @@ namespace GameBoy {
         }
     }
 
+    CgbFlag Rom::GetCgbFlag() const
+    {
+        return header.cgbFlag;
+    }
+
     uint8_t Rom::ReadFromBank(uint32_t bank, uint16_t address) const
     {
         assert(bank < romBanks.size());
