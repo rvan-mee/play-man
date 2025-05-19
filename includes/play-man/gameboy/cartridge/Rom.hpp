@@ -72,6 +72,7 @@ class Rom
         CartridgeType                   GetCartridgeType() const;
         uint32_t                        GetRomBankCount() const;
         uint32_t                        GetRamBankCount() const;
+        CgbFlag                         GetCgbFlag() const;
 
         uint8_t                         ReadFromBank(uint32_t bank, uint16_t address) const;
 

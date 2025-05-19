@@ -44,6 +44,7 @@ public:
     CartridgeType   GetType() const;
     uint32_t        GetRamBankCount() const;
     uint32_t        GetRomBankCount() const;
+    bool            GetCgbMode() const;
 
     friend std::ostream& operator << (std::ostream& lhs, ACartridge& cart);
 };
