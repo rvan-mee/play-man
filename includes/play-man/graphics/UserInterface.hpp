@@ -15,41 +15,54 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <play-man/graphics/UserInterface.hpp>
-#include <play-man/gameboy/cartridge/Cartridge.hpp>
-#include <play-man/settings/PlayManSettings.hpp>
-#include <play-man/gameboy/opcodes/Opcodes.hpp>
-#include <play-man/gameboy/cpu/Cpu.hpp>
-#include <play-man/logger/Logger.hpp>
-#include <iostream>
+#pragma once
 
-int main(int argc, char** argv)
+#include <SDL3/SDL.h>
+#include <memory>
+
+namespace Graphics {
+
+class UserInterface
 {
-	(void)argc;
-	(void)argv;
-    Logger::LogInterface::Initialize("Logging", Logger::LogLevel::Debug);
-    Graphics::UserInterface::Initialize();
+private:
+    /**
+     * @brief The width of the main application window.
+     */
+    inline static int             AppWindowWidth;
 
-    if (argc > 1)
-    {
-        std::shared_ptr<GameBoy::ACartridge> cartridge = GameBoy::MakeCartridge(argv[1]);
+    /**
+     * @brief The height of the main application window.
+     */
+    inline static int             AppWindowHeight;
 
-        std::cout << *cartridge << std::endl;
+    /**
+     * @brief The the main application window.
+     */
+    inline static SDL_Window*     AppWindow;
 
-        GameBoy::Cpu cpu(cartridge);
+    /**
+     * @brief The surface of the main application window.
+     */
+    inline static SDL_Surface*    AppSurface;
 
-        while (true)
-        {
-            cpu.FetchInstruction();
-            cpu.ExecuteInstruction();
-        }
+    /**
+     * @brief Initializes the graphics library and starts the main application window.
+     * 
+     * @note throws an std::runtime_error on failure.
+     */
+    static void InitializeMainApplicationWindow();
 
-        return 0;
-    }
-    else
-    {
-    	LOG_ERROR("No ROM provided!");
-    }
+public:
+    UserInterface() {};
+    ~UserInterface();
 
-	return 0;
+    static std::unique_ptr<UserInterface>& GetInstance();
+
+    /**
+     * @brief Initializes the main application window and all of its UI elements.
+     */
+    static void Initialize();
+
+};
+
 }

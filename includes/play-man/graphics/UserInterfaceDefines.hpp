@@ -15,41 +15,9 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <play-man/graphics/UserInterface.hpp>
-#include <play-man/gameboy/cartridge/Cartridge.hpp>
-#include <play-man/settings/PlayManSettings.hpp>
-#include <play-man/gameboy/opcodes/Opcodes.hpp>
-#include <play-man/gameboy/cpu/Cpu.hpp>
-#include <play-man/logger/Logger.hpp>
-#include <iostream>
+#pragma once
 
-int main(int argc, char** argv)
-{
-	(void)argc;
-	(void)argv;
-    Logger::LogInterface::Initialize("Logging", Logger::LogLevel::Debug);
-    Graphics::UserInterface::Initialize();
+constexpr char const* AppWindowName = "Play-Man";
 
-    if (argc > 1)
-    {
-        std::shared_ptr<GameBoy::ACartridge> cartridge = GameBoy::MakeCartridge(argv[1]);
-
-        std::cout << *cartridge << std::endl;
-
-        GameBoy::Cpu cpu(cartridge);
-
-        while (true)
-        {
-            cpu.FetchInstruction();
-            cpu.ExecuteInstruction();
-        }
-
-        return 0;
-    }
-    else
-    {
-    	LOG_ERROR("No ROM provided!");
-    }
-
-	return 0;
-}
+constexpr size_t DefaultAppWindowWidth = 1920;
+constexpr size_t DefaultAppWindowHeight = 1080;

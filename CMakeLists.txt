@@ -8,6 +8,17 @@ cmake_minimum_required(VERSION 3.22.1)
 project(p VERSION 0.0.1 LANGUAGES C CXX)
 
 #
+# External libraries
+#
+
+# Disable unit tests for nlohmann_json
+set(JSON_BuildTests OFF CACHE INTERNAL "")
+add_subdirectory(external-libs/json)
+
+# Add the SDL directory
+add_subdirectory(external-libs/SDL EXCLUDE_FROM_ALL)
+
+#
 # Compiler Settings
 #
 
@@ -18,14 +29,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Add compile options
 set(COMPILE_OPTIONS -Wall -Wextra -Werror -pedantic -O3 -march=native)
 add_compile_options(${COMPILE_OPTIONS})
-
-#
-# External libraries
-#
-
-# Disable unit tests for nlohmann_json
-set(JSON_BuildTests OFF CACHE INTERNAL "")
-add_subdirectory(external-libs/json)
 
 #
 # Sources
@@ -57,6 +60,7 @@ target_include_directories(
 	${LIBRARY_NAME}
 	PUBLIC ${CMAKE_SOURCE_DIR}/includes
 	PUBLIC external-libs/json/include
+	PUBLIC external-libs/SDL/include
 )
 
 # Create the executable target
@@ -67,6 +71,7 @@ target_link_libraries(
 	${EXECUTABLE_NAME}
 	PRIVATE ${LIBRARY_NAME}
 	PRIVATE nlohmann_json::nlohmann_json
+	PRIVATE SDL3::SDL3
 )
 
 

@@ -16,40 +16,54 @@
 // ****************************************************************************** //
 
 #include <play-man/graphics/UserInterface.hpp>
-#include <play-man/gameboy/cartridge/Cartridge.hpp>
-#include <play-man/settings/PlayManSettings.hpp>
-#include <play-man/gameboy/opcodes/Opcodes.hpp>
-#include <play-man/gameboy/cpu/Cpu.hpp>
-#include <play-man/logger/Logger.hpp>
-#include <iostream>
+#include <play-man/graphics/UserInterfaceDefines.hpp>
+#include <stdexcept>
 
-int main(int argc, char** argv)
+namespace Graphics {
+
+UserInterface::~UserInterface()
 {
-	(void)argc;
-	(void)argv;
-    Logger::LogInterface::Initialize("Logging", Logger::LogLevel::Debug);
-    Graphics::UserInterface::Initialize();
+    SDL_DestroyWindow(AppWindow);
+    AppWindow = nullptr;
 
-    if (argc > 1)
+    SDL_Quit();
+}
+
+void UserInterface::InitializeMainApplicationWindow()
+{
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
+        throw std::runtime_error("Failed to initialize SDL");
+
+    AppWindow = SDL_CreateWindow(AppWindowName, DefaultAppWindowWidth, DefaultAppWindowHeight, SDL_WINDOW_RESIZABLE);
+    if (!AppWindow)
+        throw std::runtime_error("Failed to create a window.");
+
+    AppSurface = SDL_GetWindowSurface(AppWindow);
+    if (!AppSurface)
+        throw std::runtime_error("Failed to get the surface of the window");
+
+    if (!SDL_GetWindowSize(AppWindow, &AppWindowWidth, &AppWindowHeight))
+        throw std::runtime_error("Failed to get the window size");
+}
+
+std::unique_ptr<UserInterface>& UserInterface::GetInstance()
+{
+    static std::unique_ptr<UserInterface> ui;
+    return ui;
+}
+
+void UserInterface::Initialize()
+{
+    auto& ui = GetInstance();
+
+    if  (ui != nullptr)
     {
-        std::shared_ptr<GameBoy::ACartridge> cartridge = GameBoy::MakeCartridge(argv[1]);
-
-        std::cout << *cartridge << std::endl;
-
-        GameBoy::Cpu cpu(cartridge);
-
-        while (true)
-        {
-            cpu.FetchInstruction();
-            cpu.ExecuteInstruction();
-        }
-
-        return 0;
-    }
-    else
-    {
-    	LOG_ERROR("No ROM provided!");
+        throw std::runtime_error("UserInterface is already initialized.");
     }
 
-	return 0;
+    ui = std::make_unique<UserInterface>();
+
+    InitializeMainApplicationWindow();
+}
+
 }
