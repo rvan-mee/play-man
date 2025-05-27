@@ -27,6 +27,9 @@
 #include <functional>
 #include <stdint.h>
 
+// http://gameboy.mongenel.com/dmg/gbc_cpu_timing.txt
+constexpr uint32_t CyclesPerFrame = 702240;
+
 namespace GameBoy
 {	
     class Cpu
@@ -49,6 +52,17 @@ namespace GameBoy
 
         EnumIndexableArray<OpCode, InstructionPrototype, numberOfInstructions> instructions;
         EnumIndexableArray<PrefixedOpCode, InstructionPrototype, numberOfPrefixedInstructions> prefixedInstructions;
+        /**
+         * @brief How many times faster a single frame is generated, default 1.
+         */
+        uint32_t SpeedMultiplier;
+
+        /**
+         * @brief The amount of cycles left before the next instruction
+         * can be fetched and executed.
+         */
+        uint32_t CpuCyclesLeft;
+
 
     public:
 
@@ -56,7 +70,9 @@ namespace GameBoy
         Cpu(std::shared_ptr<ACartridge> _cartridge) :
             cartridge(_cartridge),
             ppu(cartridge->GetCgbMode()),
-            memoryBus(cartridge, core, ppu)
+            memoryBus(cartridge, core, ppu),
+            SpeedMultiplier(1),
+            CpuCyclesLeft(0)
         {
             InitInstructionTable();
         };
@@ -87,8 +103,9 @@ namespace GameBoy
 
         /**
          * @brief Executes the current instruction.
+         * @return The amount of cycles it took for this instruction to be executed.
          */
-        void ExecuteInstruction();
+        uint32_t ExecuteInstruction();
 
         /**
          * @brief Fetches the instruction located on the address stored inside the PC register.
@@ -121,6 +138,17 @@ namespace GameBoy
          * @brief Initializes the instruction array.
          */
         void InitInstructionTable();
+
+        /**
+         * @brief Handles a T-tick for instructions, making sure that instructions
+         * are not executed too fast, or too slow. 
+         */
+        void InstructionTick();
+
+        /**
+         * @brief Runs as many ticks as it needs for a frame to be generated.
+         */
+        void RenderFrame();
 
 //////////////////
 // Instructions //
@@ -1421,6 +1449,7 @@ private:
          * @return number of cycles.
          */
         size_t BitSet_Addr(uint8_t bitMask, RegisterPointer addrReg);
+
     };
 
 }

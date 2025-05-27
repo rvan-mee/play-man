@@ -47,7 +47,7 @@ namespace GameBoy
         LOG_DEBUG(ss.str());
     }
 
-    void Cpu::ExecuteInstruction()
+    uint32_t Cpu::ExecuteInstruction()
     {
         try
         {
@@ -65,6 +65,7 @@ namespace GameBoy
         // TODO: handle instruction timing
         // Take branching into account
         // cyclesPassed += cycleTable[opcodeIsPrefixed].at(currentOpcode);
+        return 4;
     }
 
 	uint8_t Cpu::Fetch(uint16_t address)
@@ -106,5 +107,39 @@ namespace GameBoy
 			LOG_FATAL(std::string("Unable to fetch instruction: ") + e.what());
 			abort();
 		}
+    }
+
+    void Cpu::InstructionTick()
+    {
+        // Check if we can perform a fetch & execute or if we have to wait
+        // till the current instruction has 'finished'.
+        if (CpuCyclesLeft == 0)
+        {
+            FetchInstruction();
+            CpuCyclesLeft += ExecuteInstruction();
+        }
+        else
+            CpuCyclesLeft--;
+    }
+
+    void Cpu::RenderFrame()
+    {
+        // Speed multiplication is done is by doing the logic for multiple
+        // frames in a single RenderFrame.
+        for (uint32_t Speed = 0; Speed < SpeedMultiplier; Speed++)
+        {
+            for (uint32_t Cycles = 0; Cycles < CyclesPerFrame; Cycles++)
+            {
+                // This loop produces T-ticks, it is up to the Tick() functions to handle
+                // conversion from M-ticks to T-ticks.
+
+                this->InstructionTick();
+                // ppu.TickPPU();
+                // ppu.TickDMA();
+
+            }
+        }
+        // TODO: Sleep for duration of the time left that a single frame should take on a GameBoy.
+        // "roughly 16.7ms"
     }
 }
