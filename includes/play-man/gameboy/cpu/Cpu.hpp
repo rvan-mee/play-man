@@ -17,18 +17,20 @@
 
 #pragma once
 
-#include <play-man/gameboy/graphics/PPU.hpp>
 #include <play-man/gameboy/cartridge/Cartridge.hpp>
 #include <play-man/gameboy/memory/MemoryBus.hpp>
 #include <play-man/gameboy/opcodes/Opcodes.hpp>
 #include <play-man/gameboy/cpu/Instruction.hpp>
 #include <play-man/containers/EnumIndexableArray.hpp>
-
-#include <functional>
+#include <play-man/gameboy/cpu/CpuCore.hpp>
+#include <play-man/gameboy/ppu/PPU.hpp>
+#include <array>
 #include <stdint.h>
 
 // http://gameboy.mongenel.com/dmg/gbc_cpu_timing.txt
 constexpr uint32_t CyclesPerFrame = 702240;
+
+constexpr uint8_t HighRamSize = 127;
 
 namespace GameBoy
 {	
@@ -47,11 +49,14 @@ namespace GameBoy
         size_t cycles = 0;
         Instruction currentInstruction; /*< The current instruction to execute/is being executed. */
 
+        std::array<uint8_t, HighRamSize>    highRam;
+
         static constexpr size_t numberOfInstructions = 256;
         static constexpr size_t numberOfPrefixedInstructions = 256;
 
         EnumIndexableArray<OpCode, InstructionPrototype, numberOfInstructions> instructions;
         EnumIndexableArray<PrefixedOpCode, InstructionPrototype, numberOfPrefixedInstructions> prefixedInstructions;
+
         /**
          * @brief How many times faster a single frame is generated, default 1.
          */
@@ -69,8 +74,8 @@ namespace GameBoy
         Cpu() = delete;
         Cpu(std::shared_ptr<ACartridge> _cartridge) :
             cartridge(_cartridge),
-            ppu(cartridge->GetCgbMode()),
-            memoryBus(cartridge, core, ppu),
+            ppu(cartridge->GetCgbMode(), highRam),
+            memoryBus(cartridge, highRam, core, ppu),
             SpeedMultiplier(1),
             CpuCyclesLeft(0)
         {

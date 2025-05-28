@@ -22,8 +22,9 @@
 
 namespace GameBoy {
 
-MemoryBus::MemoryBus(std::shared_ptr<ACartridge> _cartridge, CpuCore& _core, PPU& _ppu) :
+MemoryBus::MemoryBus(std::shared_ptr<ACartridge> _cartridge, HighRamBank& _highRam, CpuCore& _core, PPU& _ppu) :
     cartridge(_cartridge),
+    highRam(_highRam),
     core(_core),
     ppu(_ppu)
 {
@@ -111,7 +112,7 @@ uint8_t MemoryBus::ReadByte(const uint16_t address)
     }
     else if (address >= hRamAddressStart && address <= hRamAddressEnd)
     {
-        assert(false && "Fetching from this memory address is not supported yet!");
+        return highRam[address - hRamAddressStart];
     }
     else if (address == interruptAddress)
     {
@@ -188,7 +189,7 @@ void MemoryBus::WriteByte(const uint16_t address, const uint8_t value)
     }
     else if (address >= hRamAddressStart && address <= hRamAddressEnd)
     {
-        assert(false && "Writing to this memory address is not supported yet!");
+        highRam[address - hRamAddressStart] = value;
     }
     else if (address == interruptAddress)
     {

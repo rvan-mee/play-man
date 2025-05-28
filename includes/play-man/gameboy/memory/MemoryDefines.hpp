@@ -17,11 +17,31 @@
 
 #pragma once
 
+#include <stdint.h>
+#include <vector>
 #include <array>
 namespace GameBoy {
 
+    /**
+     * @note Banking: Banking is a way to use the same address space for much more data
+     *       then it should be able to fit. A cartridge contains registers that keep track of
+     *       which bank is activated. Changing the register will change which bank is active
+     *       and where the address will point to, allowing for a lot more memory to be addressed.
+     *       
+     *       Since ROMs are read only (as the name suggest) trying to write to the address space
+     *       connected to it seem counter productive but it will not attempt to write
+     *       into ROM memory, instead it will change a register values inside the cartridge.
+     */
+    using MemoryBanks = std::vector<std::vector<uint8_t>>;
     constexpr uint32_t KiB = 1024;
 
-    using WorkRamBank = std::array<uint8_t, 4 * KiB>; 
+    // TODO: figure out the correct value: https://gbdev.io/pandocs/MBC1.html
+    // mentions that 0xFF is often the value, but not guaranteed.
+    constexpr uint8_t  OpenBusValue = 0xFF;
+
+    constexpr uint32_t HighRamSize = 127;
+    constexpr uint32_t WorkRamSize = 4 * KiB;
+    using HighRamBank = std::array<uint8_t, HighRamSize>;
+    using WorkRamBank = std::array<uint8_t, WorkRamSize>; 
 
 }

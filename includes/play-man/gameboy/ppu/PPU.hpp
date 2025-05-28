@@ -17,12 +17,13 @@
 
 #pragma once
 
-#include <play-man/gameboy/graphics/PPUDefines.hpp>
+#include <play-man/gameboy/ppu/PPUDefines.hpp>
+#include <play-man/gameboy/memory/MemoryDefines.hpp>
 #include <stdint.h>
 
 namespace GameBoy {
 
-    class PPU
+class PPU
     {
     private:
         /**
@@ -237,20 +238,44 @@ namespace GameBoy {
         PixelProcessingState    state;
 
         /**
-         * @brief A bool to keep track if the PPU is in CGB mode or not;
+         * @brief A bool to keep track if the PPU is in CGB mode or not.
          */
         bool CgbMode;
 
-    public:
+        /**
+         * @brief A bool to keep track if there is currently an active DMA transfer.
+         */
+        bool DMATransferActive;
+
+        /**
+         * @brief Sets all the correct data for the DMA transfer to commence.
+         */
+        void StartDmaTransfer();
+
+        /**
+         * @brief A reference to the CPU's high ram.
+         */
+        HighRamBank& highRam;
+
+        public:
         PPU() = delete;
-        PPU(bool cgbEnabled);
+        PPU(bool cgbEnabled, HighRamBank& _highRam);
         ~PPU() = default;
 
         void SetCgbMode(bool enabled);
-
+        
         uint8_t ReadByte(uint16_t address);
         void    WriteByte(uint16_t address, uint8_t value);
-
+        
+        /**
+         * @brief Simulates a T-tick for the DMA transfer, if active.
+         */
+        void TickDMA();
+    
+        /**
+         * @brief Simulates a T-tick for the PPU. 
+         */
+        void TickPPU();
     };
 
 }

@@ -15,19 +15,26 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#pragma once
-
-#include <play-man/utility/EnumMacro.hpp>
+#include <play-man/gameboy/ppu/PPU.hpp>
+#include <play-man/logger/Logger.hpp>
 
 namespace GameBoy {
 
-#define PpuStateSeq(x, n) \
-    x(n, hBlank, 0)       \
-    x(n, vBlank, 1)       \
-    x(n, ScanOAM, 2)      \
-    x(n, Drawing, 3)      \
+void    PPU::TickDMA()
+{
+    if (!DMATransferActive)
+        return ;
 
-CREATE_ENUM_WITH_UTILS(PpuStateSeq, PixelProcessingState);
-#undef PpuStateSeq
+    LOG_ERROR("DMA transfer not yet implemented");
+    assert(false);
+}
+
+void    PPU::StartDmaTransfer()
+{
+    DMATransferActive = true;
+
+    LOG_ERROR("DMA transfer not yet implemented");
+    assert(false);
+}
 
 }

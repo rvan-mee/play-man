@@ -17,8 +17,7 @@
 
 #pragma once
 
-#include <stdint.h>
-#include <vector>
+#include <play-man/gameboy/memory/MemoryDefines.hpp>
 
 #include <play-man/gameboy/memory/MemoryDefines.hpp>
 
@@ -39,10 +38,6 @@ namespace GameBoy {
     constexpr uint32_t RamBankSize = KiB * 8;
     constexpr uint32_t RomBankSize = KiB * 16;
     constexpr uint32_t MBC2RamSize = 512;
-
-    // TODO: figure out the correct value: https://gbdev.io/pandocs/MBC1.html
-    // mentions that 0xFF is often the value, but not guaranteed.
-    constexpr uint8_t  OpenBusValue = 0xFF;
 
     #define RAM_BANK_INVALID "Cartridge: Trying to access an invalid RAM bank"
     #define ROM_BANK_INVALID "Cartridge: Trying to access an invalid ROM bank"
