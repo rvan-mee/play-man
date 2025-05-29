@@ -227,6 +227,15 @@ class PPU
         uint8_t OBPDregister;
 
         /**
+         * @brief The selected vram bank.
+         * 
+         * Can be switched from 0 to 1.
+         * 
+         * @note Used in CGB mode only.
+         */
+        uint8_t vRamBankRegister;
+
+        /**
          * @brief The state the PPU is currently in.
          * 
          * Possible states:
@@ -256,6 +265,18 @@ class PPU
          * @brief A reference to the CPU's high ram.
          */
         HighRamBank& highRam;
+
+        /**
+         * @brief Initializes the vram banks.
+         * 
+         * Will always allocate for 2 banks, so CGB switching is possible.
+         */
+        void InitVram();
+
+        /**
+         * @brief The video ram, in CGB mode it consists of 2 banks. 
+         */
+        MemoryBanks  vRam;
 
         public:
         PPU() = delete;

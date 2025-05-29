@@ -57,18 +57,17 @@ uint8_t MemoryBus::ReadByte(const Register reg)
 
 uint8_t MemoryBus::ReadByte(const uint16_t address)
 {
-    (void) ppu;
     if (address >= romAddressStart && address <= romAddressEnd)
     {
-        return (cartridge->ReadByte(address));
+        return cartridge->ReadByte(address);
     }
     else if (address >= romBankAddressStart && address <= romBankAddressEnd)
     {
-        return (cartridge->ReadByte(address));
+        return cartridge->ReadByte(address);
     }
     else if (address >= vRamAddressStart && address <= vRamAddressEnd)
     {
-        assert(false && "Fetching from this memory address is not supported yet!");
+        return ppu.ReadByte(address);
     }
     else if (address >= externalRamAddressStart && address <= externalRamAddressEnd)
     {
@@ -134,18 +133,17 @@ void MemoryBus::WriteByte(const Register reg, const uint8_t value)
 
 void MemoryBus::WriteByte(const uint16_t address, const uint8_t value)
 {
-    (void) ppu;
     if (address >= romAddressStart && address <= romAddressEnd)
     {
-        return (cartridge->WriteByte(address, value));
+        cartridge->WriteByte(address, value);
     }
     else if (address >= romBankAddressStart && address <= romBankAddressEnd)
     {
-        return (cartridge->WriteByte(address, value));
+        cartridge->WriteByte(address, value);
     }
     else if (address >= vRamAddressStart && address <= vRamAddressEnd)
     {
-        assert(false && "Writing to this memory address is not supported yet!");
+        ppu.WriteByte(address, value);
     }
     else if (address >= externalRamAddressStart && address <= externalRamAddressEnd)
     {

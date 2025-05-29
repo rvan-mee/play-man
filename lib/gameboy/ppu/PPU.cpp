@@ -33,6 +33,7 @@ PPU::PPU(bool cgbEnabled, HighRamBank& _highRam) : CgbMode(cgbEnabled), highRam(
     SCXregister = DefaultSCXregisterValue;
     WYregister = DefaultWYregisterValue;
     WXregister = DefaultWXregisterValue;
+    vRamBankRegister = DefaultVRamBankRegisterValue;
     BGPregister = DefaultBGPregisterValue;
     OBP0register = DefaultOBP0registerValue;
     OBP1register = DefaultOBP1registerValue;
@@ -42,6 +43,8 @@ PPU::PPU(bool cgbEnabled, HighRamBank& _highRam) : CgbMode(cgbEnabled), highRam(
     OBPDregister = DefaultOBPDregisterValue;
 
     state = DefaultStateValue;
+
+    InitVram();
 }
 
 void    PPU::SetCgbMode(bool enabled)
@@ -49,10 +52,27 @@ void    PPU::SetCgbMode(bool enabled)
     CgbMode = enabled;
 }
 
+void    PPU::InitVram()
+{
+    // Initializes 2 banks, incase we want to switch to CGB mode.
+    vRam.resize(2);
+    for (uint8_t bank = 0; bank < 2; bank++)
+        vRam[bank].resize(VRamBankSize);
+}
+
 uint8_t PPU::ReadByte(uint16_t address)
 {
     switch (address)
     {
+        case AddressVramStart ... AddressVramEnd:
+        {
+            // The GameBoy color has a switchable vRam bank, DMG does not.
+            if (CgbMode)
+            {
+                return vRam[vRamBankRegister][address - AddressVramStart];
+            }
+            return vRam[0][address - AddressVramStart];
+        }
         case (AddressLCDC):
         {
             return LCDCregister; 
@@ -119,6 +139,16 @@ uint8_t PPU::ReadByte(uint16_t address)
         {
             return WXregister;
         }
+        case (AddressVramBank):
+        {
+            if (!CgbMode)
+            {
+                LOG_DEBUG(PPU_READ_IN_NON_CGB_MODE);
+                return OpenBusValue;
+            }
+
+            return vRamBankRegister;
+        }
         case (AddressBGPI):
         {
             if (!CgbMode)
@@ -177,6 +207,17 @@ void    PPU::WriteByte(uint16_t address, uint8_t value)
 {
     switch (address)
     {
+        case AddressVramStart ... AddressVramEnd:
+        {
+            // The GameBoy color has a switchable vRam bank, DMG does not.
+            if (CgbMode)
+            {
+                vRam[vRamBankRegister][address - AddressVramStart] = value;
+                break;
+            }
+            vRam[0][address - AddressVramStart] = value;
+            break;
+        }
         case (AddressLCDC):
         {
             LCDCregister = value; 
@@ -253,6 +294,17 @@ void    PPU::WriteByte(uint16_t address, uint8_t value)
             WXregister = value;
             break;
         }
+        case (AddressVramBank):
+        {
+            if (!CgbMode)
+            {
+                LOG_DEBUG(PPU_WRITE_IN_NON_CGB_MODE);
+                break;
+            }
+
+            vRamBankRegister = value & vRamBankMask;
+            break;
+        }
         case (AddressBGPI):
         {
             if (!CgbMode)
@@ -309,11 +361,6 @@ void    PPU::WriteByte(uint16_t address, uint8_t value)
             break;
         }
     }
-
-    // READ ONLY
-    if (address == AddressLY)
-
-    assert(false);
 }
 
 }

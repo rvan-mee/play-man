@@ -41,6 +41,8 @@ namespace GameBoy {
 
     constexpr uint32_t HighRamSize = 127;
     constexpr uint32_t WorkRamSize = 4 * KiB;
+    constexpr uint16_t VRamBankSize = 8 * KiB;
+
     using HighRamBank = std::array<uint8_t, HighRamSize>;
     using WorkRamBank = std::array<uint8_t, WorkRamSize>; 
 

@@ -41,6 +41,7 @@ constexpr uint8_t DefaultSCYregisterValue = 0x00;
 constexpr uint8_t DefaultSCXregisterValue = 0x00;
 constexpr uint8_t DefaultWYregisterValue = 0x00;
 constexpr uint8_t DefaultWXregisterValue = 0x00;
+constexpr uint8_t DefaultVRamBankRegisterValue = 0x00;
 constexpr uint8_t DefaultBGPregisterValue = 0x00;
 constexpr uint8_t DefaultOBP0registerValue = 0x00;
 constexpr uint8_t DefaultOBP1registerValue = 0x00;
@@ -51,8 +52,11 @@ constexpr uint8_t DefaultOBPDregisterValue = 0x00;
 
 constexpr PixelProcessingState DefaultStateValue = PixelProcessingState::ScanOAM;
 
-// The address ranges for addressing the PPU registers
+// The address range for the video RAM
+constexpr uint16_t AddressVramStart = 0x8000;
+constexpr uint16_t AddressVramEnd = 0x9FFF;
 
+// The address ranges for addressing the PPU registers
 constexpr uint16_t AddressLCDC = 0xFF40;
 constexpr uint16_t AddressSTAT = 0xFF41;
 constexpr uint16_t AddressSCY = 0xFF42;
@@ -65,6 +69,7 @@ constexpr uint16_t AddressOBP0 = 0xFF48;
 constexpr uint16_t AddressOBP1 = 0xFF49;
 constexpr uint16_t AddressWY = 0xFF4A;
 constexpr uint16_t AddressWX = 0xFF4B;
+constexpr uint16_t AddressVramBank = 0xFF4F;
 constexpr uint16_t AddressBGPI = 0xFF68;
 constexpr uint16_t AddressBCPD = 0xFF69;
 constexpr uint16_t AddressOBPI = 0xFF6A;
@@ -78,6 +83,11 @@ constexpr uint16_t AddressOBPD = 0xFF6B;
  * 
  */
 constexpr uint8_t WriteMaskSTATvalue = 0b01111000;
+
+/**
+ * @brief The vram bank can be switched from 0 to 1 so we will only check a single bit.
+ */
+constexpr uint8_t vRamBankMask = 0b00000001;
 
 #define PPU_READ_OUT_OF_RANGE "PPU: Trying to read from an address that is not within range"
 #define PPU_READ_IN_MODE_3 "PPU: Trying to read from a register inaccessible during PPU mode 3 (drawing)"
