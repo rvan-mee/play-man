@@ -63,6 +63,10 @@ public:
      */
     static void Initialize();
 
+    /**
+     * @brief Sets the entire main application window to white.
+     */
+    static void ClearScreen();
 };
 
 }
