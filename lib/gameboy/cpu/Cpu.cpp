@@ -160,7 +160,7 @@ namespace GameBoy
 
                 this->InstructionTick();
                 // ppu.TickPPU();
-                // ppu.TickDMA();
+                ppu.TickDMA();
 
             }
         }

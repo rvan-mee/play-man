@@ -20,6 +20,7 @@
 #include <play-man/gameboy/ppu/PPUDefines.hpp>
 #include <play-man/gameboy/memory/MemoryDefines.hpp>
 #include <stdint.h>
+#include <array>
 
 namespace GameBoy {
 
@@ -260,7 +261,19 @@ class PPU
         bool DMATransferActive;
 
         /**
-         * @brief Sets all the correct data for the DMA transfer to commence.
+         * @brief The amount of T-ticks remaining before the next DMA tick can commence.
+         */
+        uint8_t CyclesRemainingDMA;
+
+        /**
+         * @brief The amount of bytes transferred in the current DMA transfer.
+         */
+        uint8_t BytesDMATransferred;
+
+        /**
+         * @brief Initializes the data for the DMA transfer to begin.
+         * 
+         * @note The address where the transfer starts from should be set inside the DMAregister beforehand.
          */
         void StartDmaTransfer();
 
@@ -280,6 +293,40 @@ class PPU
          * @brief The video ram, in CGB mode it consists of 2 banks. 
          */
         MemoryBanks  vRam;
+
+        /**
+         * @brief The Object Attribute Memory.
+         * 
+         * This block of memory contains the extra information (attributes) of the displayed sprites (objects).
+         * The GameBoy PPU can display up to 40 movable sprites, consisting of 8x8 or 8x16 pixels.
+         * Due to a hardware limitation only 10 sprites could be displayed per scanline.
+         * The sprites themselves are located at the address 0x8000 - 0x8FFF inside the VRAM.
+         * 
+         * An entry inside the OAM consists of 4 bytes:
+         * 
+         * Byte 0: The Y position on the screen.
+         * 
+         * Byte 1: The X position on the screen.
+         * 
+         * Byte 2: The tile index which can have 2 different addressing modes, depending if bit 2 of the LCDC register is set:
+         *       - Unset: 8x8 mode, uses the value as an index inside range 0x8000 - 0x8FFF which can be banked in CGB mode.
+         *       - Set:   8x16 mode, The same area is interpereted as a series of 8x8 sprites where 2 sprites form an object.
+         *                           This byte is pointing to the index of the first (top) sprite.
+         * 
+         * Byte 3: The attributes and flags:
+         *       Bit 0: CGB mode only - CGB pallette - Which of OBP0-7 to use for the color.
+         *       Bit 1: CGB mode only - CGB pallette - Which of OBP0-7 to use for the color.
+         *       Bit 2: CGB mode only - CGB pallette - Which of OBP0-7 to use for the color.
+         *       Bit 3: CGB mode only - VRAM bank - Unset: Use bank 0 - Set: use bank 1.
+         * 
+         *       Bit 4: Non CGB mode only - DMG palette - Unset: Use palette OBP0 - Set: use palette OBP1.
+         * 
+         *       Bit 5: X flip   - Unset: Normal - Set: This object is horizontally mirrored/flipped.
+         *       Bit 6: Y flip   - Unset: Normal - Set: This object is vertically mirrored/flipped. 
+         *       Bit 7: Priority - Unset: None - Set: Background and window color indices 1-3 are drawn over this object.
+         * 
+         */
+        ObjectAttributeMemory   oam;
 
         public:
         PPU() = delete;

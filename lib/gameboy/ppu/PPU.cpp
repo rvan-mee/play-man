@@ -71,6 +71,15 @@ uint8_t PPU::ReadByte(uint16_t address)
         }
         return vRam[0][address - AddressVramStart];
     }
+    if (address >= AddressOamStart && address <= AddressOamEnd)
+    {
+        if (DMATransferActive)
+        {
+            LOG_DEBUG(PPU_READ_DURING_DMA);
+            return OpenBusValue;
+        }
+        return oam[address - AddressOamStart];
+    }
     switch (address)
     {
         case (AddressLCDC):
@@ -215,6 +224,16 @@ void    PPU::WriteByte(uint16_t address, uint8_t value)
         }
         vRam[0][address - AddressVramStart] = value;
         return ;
+    }
+    if (address >= AddressOamStart && address <= AddressOamEnd)
+    {
+        if (DMATransferActive)
+        {
+            LOG_DEBUG(PPU_WRITE_DURING_DMA);
+            return;
+        }
+        oam[address - AddressOamStart] = value;
+        return;
     }
     switch (address)
     {

@@ -56,6 +56,10 @@ constexpr PixelProcessingState DefaultStateValue = PixelProcessingState::ScanOAM
 constexpr uint16_t AddressVramStart = 0x8000;
 constexpr uint16_t AddressVramEnd = 0x9FFF;
 
+// The address range for the OAM
+constexpr uint16_t AddressOamStart = 0xFE00;
+constexpr uint16_t AddressOamEnd = 0xFE9F;
+
 // The address ranges for addressing the PPU registers
 constexpr uint16_t AddressLCDC = 0xFF40;
 constexpr uint16_t AddressSTAT = 0xFF41;
@@ -89,6 +93,38 @@ constexpr uint8_t WriteMaskSTATvalue = 0b01111000;
  */
 constexpr uint8_t vRamBankMask = 0b00000001;
 
+/**
+ * @brief The size in bytes of a single entry inside the OAM (Object Attribute Memory).
+ */
+constexpr uint8_t OamEntrySize = 4;
+
+/**
+ * @brief The amount of entries inside the OAM (Object Attribute memory).
+ */
+constexpr uint8_t OamEntryCount = 40;
+
+/**
+ * @brief The size of the OAM (Object Attribute Memory) in bytes.
+ */
+constexpr uint8_t OamSize = OamEntryCount * OamEntrySize;
+
+using ObjectAttributeMemory = std::array<uint8_t, OamSize>;
+
+/**
+ * @brief After a DMA transfer is requested there is a small delay (2 M-ticks) before the transfer actually starts.
+ */
+constexpr uint8_t StartDMATransferDelay = 8;
+
+/**
+ * @brief A DMA transfer fills the entire OAM, with this being the count of final byte that should be transferred.
+ */
+constexpr uint8_t FinalDMATransferByte = 0x9F;
+
+/**
+ * @brief The value written to the DMA register need to be multiplied by this offset to get the correct starting value. 
+ */
+constexpr uint16_t OffsetDMATransfer = 0x100;
+
 #define PPU_READ_OUT_OF_RANGE "PPU: Trying to read from an address that is not within range"
 #define PPU_READ_IN_MODE_3 "PPU: Trying to read from a register inaccessible during PPU mode 3 (drawing)"
 #define PPU_READ_IN_CGB_MODE "PPU: Trying to perform a read from a register that is not accessible when the CgbMode is enabled"
@@ -98,5 +134,8 @@ constexpr uint8_t vRamBankMask = 0b00000001;
 #define PPU_WRITE_IN_MODE_3 "PPU: Trying to write to a register inaccessible during PPU mode 3 (drawing)"
 #define PPU_WRITE_IN_CGB_MODE "PPU: Trying to perform a write to a register that is not accessible when the CgbMode is enabled"
 #define PPU_WRITE_IN_NON_CGB_MODE "PPU: Trying to perform a write to a register that is not accessible when the CgbMode is disabled"
+
+#define PPU_READ_DURING_DMA "PPU: Trying to read from the OAM whilst a DMA transfer is active"
+#define PPU_WRITE_DURING_DMA "PPU: Trying to write to the OAM whilst a DMA transfer is active"
 
 }
