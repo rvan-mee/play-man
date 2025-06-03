@@ -122,6 +122,31 @@ namespace GameBoy
             CpuCyclesLeft--;
     }
 
+    ACartridge& Cpu::GetCartridge()
+    {
+        return *cartridge;
+    }
+
+    CpuCore& Cpu::GetCpuCore()
+    {
+        return core;
+    }
+
+    PPU& Cpu::GetPPU()
+    {
+        return ppu;
+    }
+
+    MemoryBus& Cpu::GetMemoryBus()
+    {
+        return memoryBus;
+    }
+
+    std::array<uint8_t, HighRamSize>& Cpu::GetHighRam()
+    {
+        return highRam;
+    }
+
     void Cpu::RenderFrame()
     {
         // Speed multiplication is done is by doing the logic for multiple

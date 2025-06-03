@@ -22,11 +22,7 @@
 
 namespace GameBoy {
 
-MemoryBus::MemoryBus(std::shared_ptr<ACartridge> _cartridge, HighRamBank& _highRam, CpuCore& _core, PPU& _ppu) :
-    cartridge(_cartridge),
-    highRam(_highRam),
-    core(_core),
-    ppu(_ppu)
+MemoryBus::MemoryBus(Cpu* _cpu) : cpu(_cpu)
 {
 }
 
@@ -59,19 +55,19 @@ uint8_t MemoryBus::ReadByte(const uint16_t address)
 {
     if (address >= romAddressStart && address <= romAddressEnd)
     {
-        return cartridge->ReadByte(address);
+        return cpu->GetCartridge().ReadByte(address);
     }
     else if (address >= romBankAddressStart && address <= romBankAddressEnd)
     {
-        return cartridge->ReadByte(address);
+        return cpu->GetCartridge().ReadByte(address);
     }
     else if (address >= vRamAddressStart && address <= vRamAddressEnd)
     {
-        return ppu.ReadByte(address);
+        return cpu->GetPPU().ReadByte(address);
     }
     else if (address >= externalRamAddressStart && address <= externalRamAddressEnd)
     {
-        assert(false && "Fetching from this memory address is not supported yet!");
+        return cpu->GetCartridge().ReadByte(address);
     }
     else if (address >= wRamAddressStart && address <= wRamAddressEnd)
     {
@@ -104,6 +100,7 @@ uint8_t MemoryBus::ReadByte(const uint16_t address)
     else if (address >= prohibitedAddressStart && address <= prohibitedAddressEnd)
     {
         LOG_WARNING("Fetching memory from a prohibited address");
+        return OpenBusValue;
     }
     else if (address >= ioAddressStart && address <= ioAddressEnd)
     {
@@ -111,19 +108,17 @@ uint8_t MemoryBus::ReadByte(const uint16_t address)
     }
     else if (address >= hRamAddressStart && address <= hRamAddressEnd)
     {
-        return highRam[address - hRamAddressStart];
+        return cpu->GetHighRam()[address - hRamAddressStart];
     }
     else if (address == interruptAddress)
     {
-        return (core.GetInterruptRegister());
+        return cpu->GetCpuCore().GetInterruptRegister();
     }
     else
     {
         LOG_FATAL("Trying to read from an invalid address");
-        assert(false);
-        return (-1);
     }
-    return (-1);
+    return OpenBusValue;
 }
 
 void MemoryBus::WriteByte(const Register reg, const uint8_t value)
@@ -135,15 +130,15 @@ void MemoryBus::WriteByte(const uint16_t address, const uint8_t value)
 {
     if (address >= romAddressStart && address <= romAddressEnd)
     {
-        cartridge->WriteByte(address, value);
+        cpu->GetCartridge().WriteByte(address, value);
     }
     else if (address >= romBankAddressStart && address <= romBankAddressEnd)
     {
-        cartridge->WriteByte(address, value);
+        cpu->GetCartridge().WriteByte(address, value);
     }
     else if (address >= vRamAddressStart && address <= vRamAddressEnd)
     {
-        ppu.WriteByte(address, value);
+        cpu->GetPPU().WriteByte(address, value);
     }
     else if (address >= externalRamAddressStart && address <= externalRamAddressEnd)
     {
@@ -187,7 +182,7 @@ void MemoryBus::WriteByte(const uint16_t address, const uint8_t value)
     }
     else if (address >= hRamAddressStart && address <= hRamAddressEnd)
     {
-        highRam[address - hRamAddressStart] = value;
+        cpu->GetHighRam()[address - hRamAddressStart] = value;
     }
     else if (address == interruptAddress)
     {

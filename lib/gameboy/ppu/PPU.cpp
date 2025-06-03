@@ -20,7 +20,7 @@
 
 namespace GameBoy {
 
-PPU::PPU(bool cgbEnabled, HighRamBank& _highRam) : CgbMode(cgbEnabled), highRam(_highRam)
+PPU::PPU(bool cgbEnabled, Cpu* _cpu) : CgbMode(cgbEnabled), cpu(_cpu)
 {
     // TODO:
     // Find the correct default values.

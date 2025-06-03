@@ -74,8 +74,8 @@ namespace GameBoy
         Cpu() = delete;
         Cpu(std::shared_ptr<ACartridge> _cartridge) :
             cartridge(_cartridge),
-            ppu(cartridge->GetCgbMode(), highRam),
-            memoryBus(cartridge, highRam, core, ppu),
+            ppu(cartridge->GetCgbMode(), this),
+            memoryBus(this),
             SpeedMultiplier(1),
             CpuCyclesLeft(0)
         {
@@ -149,6 +149,35 @@ namespace GameBoy
          * are not executed too fast, or too slow. 
          */
         void InstructionTick();
+
+        /**
+         * @brief Returns a reference to the currently 'inserted' cartridge.
+         * 
+         * @note Do NOT store the reference returned. It comes from a smart pointer which can invalidate it at any point.
+         * @note TODO: Might be a better idea to return the shared_ptr? This way the access is the same for all other modules
+         * so will keep it as is for now.
+         */
+        ACartridge& GetCartridge();
+
+        /**
+         * @brief Returns a reference to the CPU Core.
+         */
+        CpuCore& GetCpuCore();
+
+        /**
+         * @brief  Returns a reference to the PPU.
+         */
+        PPU& GetPPU();
+
+        /**
+         * @brief  Returns a reference to the memory bus.
+         */
+        MemoryBus& GetMemoryBus();
+
+        /**
+         * @brief  Returns a reference to the high RAM.
+         */
+        std::array<uint8_t, HighRamSize>& GetHighRam();
 
         /**
          * @brief Runs as many ticks as it needs for a frame to be generated.

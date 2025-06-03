@@ -18,29 +18,22 @@
 #pragma once
 
 #include <play-man/gameboy/cpu/Register.hpp>
-#include <play-man/gameboy/cpu/CpuCore.hpp>
-#include <play-man/gameboy/cartridge/Cartridge.hpp>
-#include <play-man/gameboy/memory/MemoryDefines.hpp>
-#include <play-man/gameboy/ppu/PPU.hpp>
 #include <stdint.h>
 
 namespace GameBoy {
 
+    // Forward declaration of the CPU class used to access all modules.
+    class Cpu;
+
     class MemoryBus {
         private:
-            std::shared_ptr<ACartridge> cartridge;
-            HighRamBank&                highRam;
-            CpuCore&                    core;
-            PPU&                        ppu;
-            // TODO:
-            // io module
-            // other modules
+            Cpu* cpu;
 
             std::array<WorkRamBank, 8> workRam;
 
         public:
             MemoryBus() = delete;
-            MemoryBus(std::shared_ptr<ACartridge> _cartridge, HighRamBank& _highRam, CpuCore& _core, PPU& _ppu);
+            MemoryBus(Cpu* _cpu);
 
             /**
              * @brief Passthrough function to call the regular Readbyte,
@@ -92,3 +85,5 @@ namespace GameBoy {
     };
 
 }
+
+#include <play-man/gameboy/cpu/Cpu.hpp>

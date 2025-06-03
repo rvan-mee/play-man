@@ -23,6 +23,9 @@
 
 namespace GameBoy {
 
+// Forward declaration of the CPU class.
+class Cpu;
+
 class PPU
     {
     private:
@@ -262,9 +265,9 @@ class PPU
         void StartDmaTransfer();
 
         /**
-         * @brief A reference to the CPU's high ram.
+         * @brief A pointer to the CPU to access all other modules.
          */
-        HighRamBank& highRam;
+        Cpu* cpu;
 
         /**
          * @brief Initializes the vram banks.
@@ -280,7 +283,7 @@ class PPU
 
         public:
         PPU() = delete;
-        PPU(bool cgbEnabled, HighRamBank& _highRam);
+        PPU(bool cgbEnabled, Cpu* _cpu);
         ~PPU() = default;
 
         void SetCgbMode(bool enabled);
@@ -300,3 +303,5 @@ class PPU
     };
 
 }
+
+#include <play-man/gameboy/cpu/Cpu.hpp>
