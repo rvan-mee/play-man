@@ -87,19 +87,20 @@ uint8_t MemoryBus::ReadByte(const uint16_t address)
     }
     else if (address >= echoRamAddressStart && address <= echoRamAddressEnd)
     {
-        assert(false && "Fetching from this memory address is not supported yet!");
+        // This memory area is a mirror of the range 0xC000 – 0xDDFF so to access it
+        // we subtract an offset and call the memory bus again.
+        //
+        // Nintendo has prohibited the use of this area.
+        LOG_DEBUG(MEMBUS_READ_FROM_ECHO);
+        return this->ReadByte(address - EchoRamOffset);
     }
     else if (address >= oamAddressStart && address <= oamAddressEnd)
     {
-        assert(false && "Fetching from this memory address is not supported yet!");
-    }
-    else if (address >= oamAddressStart && address <= oamAddressEnd)
-    {
-        assert(false && "Fetching from this memory address is not supported yet!");
+        return cpu->GetPPU().ReadByte(address);
     }
     else if (address >= prohibitedAddressStart && address <= prohibitedAddressEnd)
     {
-        LOG_WARNING("Fetching memory from a prohibited address");
+        LOG_WARNING(MEMBUS_READ_FROM_PROHIBITED_AREA);
         return OpenBusValue;
     }
     else if (address >= ioAddressStart && address <= ioAddressEnd)
@@ -116,7 +117,7 @@ uint8_t MemoryBus::ReadByte(const uint16_t address)
     }
     else
     {
-        LOG_FATAL("Trying to read from an invalid address");
+        LOG_WARNING(MEMBUS_READ_OUT_OF_RANGE);
     }
     return OpenBusValue;
 }
@@ -142,7 +143,7 @@ void MemoryBus::WriteByte(const uint16_t address, const uint8_t value)
     }
     else if (address >= externalRamAddressStart && address <= externalRamAddressEnd)
     {
-        assert(false && "Writing to this memory address is not supported yet!");
+        cpu->GetCartridge().WriteByte(address, value);
     }
     else if (address >= wRamAddressStart && address <= wRamAddressEnd)
     {
@@ -162,19 +163,20 @@ void MemoryBus::WriteByte(const uint16_t address, const uint8_t value)
     }
     else if (address >= echoRamAddressStart && address <= echoRamAddressEnd)
     {
-        assert(false && "Writing to this memory address is not supported yet!");
+        // This memory area is a mirror of the range 0xC000 – 0xDDFF so to access it
+        // we subtract an offset and call the memory bus again.
+        //
+        // Nintendo has prohibited the use of this area.
+        LOG_DEBUG(MEMBUS_WRITE_TO_ECHO);
+        this->WriteByte(address - EchoRamOffset, value);
     }
     else if (address >= oamAddressStart && address <= oamAddressEnd)
     {
-        assert(false && "Writing to this memory address is not supported yet!");
-    }
-    else if (address >= oamAddressStart && address <= oamAddressEnd)
-    {
-        assert(false && "Writing to this memory address is not supported yet!");
+        cpu->GetPPU().WriteByte(address, value);
     }
     else if (address >= prohibitedAddressStart && address <= prohibitedAddressEnd)
     {
-        LOG_WARNING("Fetching memory from a prohibited address");
+        LOG_WARNING(MEMBUS_WRITE_TO_PROHIBITED_AREA);
     }
     else if (address >= ioAddressStart && address <= ioAddressEnd)
     {
@@ -206,7 +208,7 @@ void MemoryBus::WriteByte(const uint16_t address, const uint8_t value)
     }
     else
     {
-        assert(false && "Trying to write to an unsupported address");
+        LOG_WARNING(MEMBUS_WRITE_OUT_OF_RANGE);
     }
 }
 

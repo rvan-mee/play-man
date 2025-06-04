@@ -65,3 +65,15 @@ constexpr uint16_t hRamAddressEnd = 0xFFFE;
 
 // Address for the interrupt register 
 constexpr uint16_t interruptAddress = 0xFFFF;
+
+// The offset required to reach the right section of memory.
+constexpr uint16_t EchoRamOffset = 0x2000;
+
+#define MEMBUS_READ_FROM_PROHIBITED_AREA "MemoryBus: Trying to read from a prohibited address"
+#define MEMBUS_WRITE_TO_PROHIBITED_AREA "MemoryBus: Trying to write to a prohibited address"
+
+#define MEMBUS_READ_FROM_ECHO "MemoryBus: Trying to read from the echo ram section, this is prohibited by Nintendo"
+#define MEMBUS_WRITE_TO_ECHO "MemoryBus: Trying to write to the echo ram section, this is prohibited by Nintendo"
+
+#define MEMBUS_WRITE_OUT_OF_RANGE "MemoryBus: Trying to perform a write on an invalid address"
+#define MEMBUS_READ_OUT_OF_RANGE "MemoryBus: Trying to perform a read on an invalid address"
