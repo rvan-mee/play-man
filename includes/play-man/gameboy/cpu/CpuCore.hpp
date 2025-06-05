@@ -81,7 +81,7 @@ namespace GameBoy
         uint8_t GetInterruptRegister();
 
         /**
-         * @brief -.
+         * @brief Sets the interrupt register.
          */
         void    SetInterruptRegister(const uint8_t value);
 
