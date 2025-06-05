@@ -125,6 +125,116 @@ constexpr uint8_t FinalDMATransferByte = 0x9F;
  */
 constexpr uint16_t OffsetDMATransfer = 0x100;
 
+
+/********************************  LCDC register masks  ********************************/
+
+/**
+ * @brief The bit inside the LCDC that can toggle the LCD and PPU.
+ * 
+ * Having this bit set will enable the LCD and PPU.
+ * If the bit is unset both are disabled and full access to the VRAM and OAM is possible.
+ * 
+ * When the screen is disabled the screen will blank, turning white (more so than color #0).
+ * Re-enabling the LCD will cause the PPU to instantly start drawing again,
+ * but the screen will stay blank during the first frame.
+ */
+constexpr uint8_t LCDandPPUenableMask = 0b10000000;
+
+/**
+ * @brief The bit inside the LCDC that controls which background map
+ * the window uses for rendering.
+ * 
+ * Having this bit set will use the 0x9C00 tilemap.
+ * If the bit is unset tilemap 0x9800 is used.
+ */
+constexpr uint8_t WindowTileMapAreaMask = 0b01000000;
+
+/**
+ * @brief The bit inside the LCDC that enables or disables the window.
+ * 
+ * Having this bit set enables the window.
+ * If this bit is unset the window is disabled.
+ * 
+ * On DMG this bit is overridden by disabling the BackgroundWindowEnablePriorityMask bit.
+ */
+constexpr uint8_t WindowEnableMask = 0b00100000;
+
+/**
+ * @brief The bit inside the LCDC that controls which addressing mode is used
+ * for the background and window tiles.
+ * 
+ * Having this bit enabled will use the PrimaryTileAddressingMethod.
+ * If this is unset the SecondaryTileAddressingMethod will be used.
+ */
+constexpr uint8_t BackgroundWindowTileDataAreaMask = 0b00010000;
+
+/**
+ * @brief The bit inside the LCDC that controls which background tile map
+ * the background uses for rendering.
+ * 
+ * Having this bit set will use the 0x9C00 tilemap.
+ * If the bit is unset tilemap 0x9800 is used.
+ */
+constexpr uint8_t BackgroundTilemapAreaMask = 0b00001000;
+
+/**
+ * @brief The bit inside the LCDC that controls the size of all objects.
+ * 
+ * Having this bit set will use objects as 8x8 pixels.
+ * If the bit is unset an object is seen as 8x16 (vertically stacked) pixels.
+ * 
+ * @note When this bit is changed in PPU mode 2 or 3 could cause artifacts.
+ */
+constexpr uint8_t ObjectSizeMask = 0b00000100;
+
+/**
+ * @brief The bit inside the LCDC that controls wether objects are enabled.
+ * 
+ * Having this bit set will cause objects to be rendered.
+ * If this bit is unset objects will not be displayed.
+ * 
+ * @note This bit can be changed mid scanline.
+ */
+constexpr uint8_t ObjectEnableMask = 0b00000010;
+
+/**
+ * This bit has different effects for CGB or DMG mode.
+ * 
+ * DMG:
+ * Having this bit set will cause the window and background to be rendered normally.
+ * If this bit is unset both the background and window will become blank (white)
+ * and the WindowEnableMask bit is ignored.
+ * 
+ * CGB:
+ * Having this bit set will cause the window and background to be rendered normally.
+ * If this bit is unset the background and window lose their priority in rendering
+ * meaning that objects will always be displayed on top, regardless of the priority bits
+ * found inside the OAM and BackgroundMapAttributes. 
+ */
+constexpr uint8_t BackgroundWindowEnablePriorityMask = 0b00000001;
+
+/********************************                       ********************************/
+
+
+/**
+ * @brief The base pointer used for addressing the window and background tiles in VRAM,
+ * when the 4th bit inside the LCDC register is set.
+ * 
+ * @note For addressing objects this is always the base pointer.
+ */
+constexpr uint16_t PrimaryTileAddressingMethod = 0x8000;
+
+/**
+ * @brief The base pointer used for addressing the window and background tiles in VRAM,
+ * when the 4th bit inside the LCDC register is unset.
+ * 
+ * When this mode is enabled a signed addressing is used, meaning offsets -1 to -128
+ * are in the 0x8800 to 0x8FFF range and offsets 0 to 127 are in the 0x9000 to 0x97FF range. 
+ * 
+ * @note For addressing objects the PrimaryTileAddressingMethod is used as the base pointer.
+ */
+constexpr uint16_t SecondaryTileAddressingMethod = 0x8800;
+
 #define PPU_READ_OUT_OF_RANGE "PPU: Trying to read from an address that is not within range"
 #define PPU_READ_IN_MODE_3 "PPU: Trying to read from a register inaccessible during PPU mode 3 (drawing)"
 #define PPU_READ_IN_CGB_MODE "PPU: Trying to perform a read from a register that is not accessible when the CgbMode is enabled"
