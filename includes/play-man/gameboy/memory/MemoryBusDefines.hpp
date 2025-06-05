@@ -57,7 +57,7 @@ constexpr uint16_t prohibitedAddressEnd = 0xFEFF;
 
 // Addresses for the IO registers
 constexpr uint16_t ioAddressStart = 0xFF00;
-constexpr uint16_t ioAddressEnd = 0xFF00;
+constexpr uint16_t ioAddressEnd = 0xFF7F;
 
 // Addresses for the high RAM
 constexpr uint16_t hRamAddressStart = 0xFF80;
