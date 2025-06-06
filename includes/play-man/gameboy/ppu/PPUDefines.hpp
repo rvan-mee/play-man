@@ -216,6 +216,47 @@ constexpr uint8_t BackgroundWindowEnablePriorityMask = 0b00000001;
 /********************************                       ********************************/
 
 
+/******************************  LCD STAT register masks  ******************************/
+
+/**
+ * @brief If this bit is set the condition LYC == LY is selected for the STAT interrupt.
+ */
+constexpr uint8_t InterruptSelectLYCMask = 0b01000000;
+
+/**
+ * @brief If this bit is set the condition for mode 0 is selected for the STAT interrupt.
+ */
+constexpr uint8_t InterruptSelectMode2Mask = 0b00100000;
+
+/**
+ * @brief If this bit is set the condition for mode 1 is selected for the STAT interrupt.
+ */
+constexpr uint8_t InterruptSelectMode1Mask = 0b00010000;
+
+/**
+ * @brief If this bit is set the condition for mode 2 is selected for the STAT interrupt.
+ */
+constexpr uint8_t InterruptSelectMode0Mask = 0b00001000;
+
+/**
+ * @brief This bit gets set by the PPU when the LY and LYC register are the same.
+ * It gets constantly updated by the PPU.
+ * 
+ * @note This part of the STAT register should be read only.
+ */
+constexpr uint8_t LYCEqualsLYMask = 0b00000100;
+
+/**
+ * @brief These bits indicate the PPU's current status/mode. If all bits
+ * are unset then the PPU is disabled.
+ * 
+ * @note This part of the STAT register should be read only.
+ */
+constexpr uint8_t PPUModeMask = 0b00000011;
+
+/********************************                       ********************************/
+
+
 /**
  * @brief The base pointer used for addressing the window and background tiles in VRAM,
  * when the 4th bit inside the LCDC register is set.
