@@ -51,6 +51,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
     try
     {
         auto cartridge = GameBoy::MakeCartridge(argv[1]);
+
+        std::cout << *cartridge;
         // For now we can store a single CPU, we can wrap this around an application class later on.
         *appstate = new GameBoy::Cpu(cartridge);
     }

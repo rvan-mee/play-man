@@ -30,6 +30,13 @@ namespace GameBoy {
 CREATE_ENUM_WITH_UTILS(PpuStateSeq, PixelProcessingState);
 #undef PpuStateSeq
 
+#define OamScanStateSeq(x, n) \
+    x(n, Reading)             \
+    x(n, Comparing)           \
+
+CREATE_ENUM_WITH_UTILS(OamScanStateSeq, OamScanState);
+#undef OamScanStateSeq
+
 // These are the default values of the registers after the boot rom has ran it course.
 
 constexpr uint8_t DefaultDMAregisterValue = 0x00;
@@ -50,8 +57,12 @@ constexpr uint8_t DefaultBCPDregisterValue = 0x00;
 constexpr uint8_t DefaultOBPIregisterValue = 0x00;
 constexpr uint8_t DefaultOBPDregisterValue = 0x00;
 
-constexpr PixelProcessingState DefaultStateValue = PixelProcessingState::ScanOAM;
+constexpr uint8_t DefaultAmountOfSelectedObjects = 0;
+constexpr uint8_t DefaultCurrentOamScanAddress = 0;
+constexpr uint8_t DefaultDotsPassedInScanline = 0;
 
+constexpr PixelProcessingState DefaultStateValue = PixelProcessingState::ScanOAM;
+constexpr OamScanState DefaultOamScanState = OamScanState::Reading;
 // The address range for the video RAM
 constexpr uint16_t AddressVramStart = 0x8000;
 constexpr uint16_t AddressVramEnd = 0x9FFF;
@@ -108,7 +119,13 @@ constexpr uint8_t OamEntryCount = 40;
  */
 constexpr uint8_t OamSize = OamEntryCount * OamEntrySize;
 
+/**
+ * @brief The amount of objects that could be selected for drawing during OAM scan (mode 2).
+ */
+constexpr uint8_t SelectedObjectsStoreSize = 10;
+
 using ObjectAttributeMemory = std::array<uint8_t, OamSize>;
+using SelectedObjectsStoreMemory = std::array<uint8_t, SelectedObjectsStoreSize>;
 
 /**
  * @brief After a DMA transfer is requested there is a small delay (2 M-ticks) before the transfer actually starts.
@@ -180,8 +197,8 @@ constexpr uint8_t BackgroundTilemapAreaMask = 0b00001000;
 /**
  * @brief The bit inside the LCDC that controls the size of all objects.
  * 
- * Having this bit set will use objects as 8x8 pixels.
- * If the bit is unset an object is seen as 8x16 (vertically stacked) pixels.
+ * Having this bit set will use objects as 8x16 (vertically stacked) pixels.
+ * If the bit is unset an object is seen as 8x8 pixels.
  * 
  * @note When this bit is changed in PPU mode 2 or 3 could cause artifacts.
  */
@@ -275,6 +292,19 @@ constexpr uint16_t PrimaryTileAddressingMethod = 0x8000;
  * @note For addressing objects the PrimaryTileAddressingMethod is used as the base pointer.
  */
 constexpr uint16_t SecondaryTileAddressingMethod = 0x8800;
+
+/**
+ * @brief The amount of scanlines that have to be passed when rendering a frame for the PPU to reach
+ * the VBlank state (mode 1).
+ */
+constexpr uint8_t ScanlinesPassedTillVBlank = 144;
+
+/**
+ * @brief The amount of scanlines required to render a single frame.
+ *
+ * @note 0 based indexed.
+ */
+constexpr uint8_t ScanlinesPerFrame = 153;
 
 #define PPU_READ_OUT_OF_RANGE "PPU: Trying to read from an address that is not within range"
 #define PPU_READ_IN_MODE_3 "PPU: Trying to read from a register inaccessible during PPU mode 3 (drawing)"

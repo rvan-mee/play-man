@@ -28,7 +28,7 @@ namespace GameBoy {
 class Cpu;
 
 class PPU
-    {
+{
     private:
         /**
          * @brief Writing to this register will start a DMA transfer from ROM or RAM to the OAM.
@@ -64,6 +64,22 @@ class PPU
         uint8_t LYCregister;
 
         /**
+         * @brief Increments the LY register and then compares the LY register to the LYC register
+         * and sets the correct bit inside the STAT register.
+         */
+        void IncrementLY();
+
+        /**
+         * @brief Resets the LY register to 0 and does then compares the LY and LYC registers.
+         */
+        void ResetLY();
+
+        /**
+         * @brief Compares the LY and LYC register and updates the STAT register.
+         */
+        void CompareLYC();
+
+        /**
          * @brief Register used to keep track of the status of the LCD.
          * 
          * Each bit inside this register represents the 
@@ -79,6 +95,11 @@ class PPU
          *  7    -   -            -   Unused.
          */
         uint8_t STATregister;
+
+        /**
+         * @brief Updates the STAT register to report the current PPU mode in bits 0 and 1.
+         */
+        void UpdateStatMode();
 
         /**
          * @brief Background Viewport Y Coordinate.
@@ -327,6 +348,80 @@ class PPU
          * 
          */
         ObjectAttributeMemory   oam;
+
+        /**
+         * @brief The objects that are selected during OAM Scan (mode 2) are stored here.
+         * 
+         * This array contains the index into the oam where the sprites to be drawn are stored.
+         */
+        SelectedObjectsStoreMemory   selectedObjects;
+
+        /**
+         * @brief The Amount of objects that are currently selected to be drawn, stored inside selectedObjects.
+         * 
+         * The maximum amount of objects to be stored per scanline is 10.
+         */
+        uint8_t amountOfSelectedObjects;
+
+        /**
+         * @brief This represents what the OAM has to handle in its current cycle.
+         */
+        OamScanState oamScanState;
+
+        /**
+         * @brief The current byte being scanned in mode 2.
+         */
+        uint8_t currentOamScanAddress;
+
+        /**
+         * @brief The byte retrieved by the last OAM scan tick, used for comparing with the LY register.
+         */
+        uint8_t currentScanSpriteY;
+
+        /**
+         * @brief The amount of Dots that have passed for the current scanline. 
+         */
+        uint16_t dotsPassedInScanline;
+
+        /**
+         * @brief Readies the PPU for the next regular (non VBlank) scanline.
+         */
+        void ResetForNextScanline();
+
+        /**
+         * @brief Performs a T-tick for the OAM Scan (Mode 2).
+         * 
+         * The OAM scan takes a total of 80 Dots to complete (2 per object), within this time
+         * it checks the entire OAM for (up to 10) sprites to use on the current scanline
+         * by comparing their Y values with the LY register.
+         * 
+         * @note I have not been able to find good documentation about why it takes 2 Dots
+         * per sprite so the way we are emulating it is by, in the first Dot, reading the
+         * Y value from the OAM and the next Dot comparing it and saving it's oam index.
+         * 
+         * @note Documentation about how sprites are selected varies, some saying the X position
+         * is taken into account and some say it is not, we follow the pandocs for now:
+         * 
+         * https://gbdev.io/pandocs/OAM.html#object-attribute-memory-oam
+         * vs
+         * https://hacktix.github.io/GBEDG/ppu/#oam-scan-mode-2
+         */
+        void TickOamScan();
+
+        /**
+         * @brief Performs a T-tick for the Drawing Pixel (Mode 3). 
+         */
+        void TickDrawingPixel();
+
+        /**
+         * @brief Performs a T-tick for the Horizontal Blank (Mode 0).
+         */
+        void TickHorizontalBlank();
+
+        /**
+         * @brief Performs a T-tick for the Vertical Blank (Mode 1).
+         */
+        void TickVerticalBlank();
 
         public:
         PPU() = delete;

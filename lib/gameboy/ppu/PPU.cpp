@@ -15,6 +15,7 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
+#include <play-man/gameboy/cpu/CycleDefines.hpp>
 #include <play-man/gameboy/ppu/PPU.hpp>
 #include <play-man/logger/Logger.hpp>
 
@@ -42,6 +43,12 @@ PPU::PPU(bool cgbEnabled, Cpu* _cpu) : CgbMode(cgbEnabled), cpu(_cpu)
     OBPIregister = DefaultOBPIregisterValue;
     OBPDregister = DefaultOBPDregisterValue;
 
+    // OAM related values
+    amountOfSelectedObjects = DefaultAmountOfSelectedObjects;
+    currentOamScanAddress = DefaultCurrentOamScanAddress;
+    dotsPassedInScanline = DefaultDotsPassedInScanline;
+    oamScanState = DefaultOamScanState;
+
     state = DefaultStateValue;
 
     InitVram();
@@ -60,326 +67,159 @@ void    PPU::InitVram()
         vRam[bank].resize(VRamBankSize);
 }
 
-uint8_t PPU::ReadByte(uint16_t address)
+void PPU::CompareLYC()
 {
-    if (address >= AddressVramStart && address <= AddressVramEnd)
+    if (LYregister == LYCregister)
+        STATregister |= LYCEqualsLYMask;
+    else
+        STATregister &= ~LYCEqualsLYMask;
+}
+
+void PPU::ResetLY()
+{
+    LYregister = 0;
+    CompareLYC();
+}
+
+void PPU::IncrementLY()
+{
+    LYregister++;
+    CompareLYC();
+}
+
+void PPU::UpdateStatMode()
+{
+    STATregister = (STATregister & ~PPUModeMask) | (GetEnumAsValue(state) & PPUModeMask);
+}
+
+void PPU::ResetForNextScanline()
+{
+    state = PixelProcessingState::ScanOAM;
+    oamScanState = OamScanState::Reading;
+    amountOfSelectedObjects = 0;
+    dotsPassedInScanline = 0;
+    currentOamScanAddress = 0;
+}
+
+void PPU::TickOamScan()
+{
+    switch (oamScanState)
     {
-        // The GameBoy color has a switchable vRam bank, DMG does not.
-        if (CgbMode)
-        {
-            return vRam[vRamBankRegister][address - AddressVramStart];
-        }
-        return vRam[0][address - AddressVramStart];
+    case OamScanState::Reading:
+    {
+        currentScanSpriteY = oam[currentOamScanAddress];
+        oamScanState = OamScanState::Comparing;
+        break;
     }
-    if (address >= AddressOamStart && address <= AddressOamEnd)
+    case OamScanState::Comparing:
     {
-        if (DMATransferActive)
+        uint8_t currentObjectAddress = currentOamScanAddress;
+        // Increment the address and set the state to reading
+        currentOamScanAddress += OamEntrySize;
+        oamScanState = OamScanState::Reading;
+
+        // Cannot select more than 10 object per scanline
+        if (amountOfSelectedObjects == SelectedObjectsStoreSize)
+            break ;
+
+        // The first 16 Y values are considered off-screen, the OAM scan starts at Y 16 since this
+        // height value is the first scanline's height.
+        const uint8_t currentY = LYregister + 16;
+        // If the Object Size bit is set inside the LCDC register objects are seen as 16 pixels high
+        const uint8_t spriteHeight = (LCDCregister & ObjectSizeMask) ? 16 : 8;
+
+        // Check if the current sprite is visible on this scanline
+        if (currentY >= currentScanSpriteY && currentY < currentScanSpriteY + spriteHeight)
         {
-            LOG_DEBUG(PPU_READ_DURING_DMA);
-            return OpenBusValue;
+            selectedObjects[amountOfSelectedObjects] = currentObjectAddress;
+            amountOfSelectedObjects++;
         }
-        return oam[address - AddressOamStart];
+        break;
     }
-    switch (address)
+    default:
     {
-        case (AddressLCDC):
-        {
-            return LCDCregister; 
-        }
-        case (AddressSTAT):
-        {
-            return STATregister; 
-        }
-        case (AddressSCY):
-        {
-            return SCYregister;
-        }
-        case (AddressSCX):
-        {
-            return SCXregister;
-        }
-        case (AddressLY):
-        {
-            return LYregister;
-        }
-        case (AddressLYC):
-        {
-            return LYCregister;
-        }
-        case (AddressDMA):
-        {
-            return DMAregister;
-        }
-        case (AddressBGP):
-        {
-            if (CgbMode)
-            {
-                LOG_DEBUG(PPU_READ_IN_CGB_MODE);
-                return OpenBusValue;
-            }
+        LOG_FATAL("PPU: Invalid OAM Scan State?");
+        assert(false);
+    }
+    }
 
-            return BGPregister;
-        }
-        case (AddressOBP0):
-        {
-            if (CgbMode)
-            {
-                LOG_DEBUG(PPU_READ_IN_CGB_MODE);
-                return OpenBusValue;
-            }
+    // If we have completed the OAM scan switch the PPU mode to drawing.
+    if (dotsPassedInScanline == DotsInMode2)
+        state = PixelProcessingState::Drawing;
+}
 
-            return OBP0register;
-        }
-        case (AddressOBP1):
-        {
-            if (CgbMode)
-            {
-                LOG_DEBUG(PPU_READ_IN_CGB_MODE);
-                return OpenBusValue;
-            }
+void PPU::TickDrawingPixel()
+{
+    assert(false && "PPU: Pixel drawing is currently not implemented");
+}
 
-            return OBP1register;
-        }
-        case (AddressWY):
-        {
-            return WYregister;
-        }
-        case (AddressWX):
-        {
-            return WXregister;
-        }
-        case (AddressVramBank):
-        {
-            if (!CgbMode)
-            {
-                LOG_DEBUG(PPU_READ_IN_NON_CGB_MODE);
-                return OpenBusValue;
-            }
-
-            return vRamBankRegister;
-        }
-        case (AddressBGPI):
-        {
-            if (!CgbMode)
-            {
-                LOG_DEBUG(PPU_READ_IN_NON_CGB_MODE);
-                return OpenBusValue;
-            }
-
-            return BGPIregister;
-        }
-        case (AddressBCPD):
-        {
-            if (!CgbMode)
-            {
-                LOG_DEBUG(PPU_READ_IN_NON_CGB_MODE);
-                return OpenBusValue;
-            }
-
-            return BCPDregister;
-        }
-        case (AddressOBPI):
-        {
-            if (!CgbMode)
-            {
-                LOG_DEBUG(PPU_READ_IN_NON_CGB_MODE);
-                return OpenBusValue;
-            }
-
-            if (state == PixelProcessingState::Drawing)
-            {
-                LOG_DEBUG(PPU_READ_IN_MODE_3);
-                return OpenBusValue;
-            }
-
-            return OBPDregister;
-        }
-        case (AddressOBPD):
-        {
-            if (!CgbMode)
-            {
-                LOG_DEBUG(PPU_READ_IN_NON_CGB_MODE);
-                return OpenBusValue;
-            }
-
-            return OBPDregister;
-        }
-        default:
-        {
-            LOG_WARNING(PPU_READ_OUT_OF_RANGE);
-            return OpenBusValue;
-        }
+void PPU::TickHorizontalBlank()
+{
+    // Move to the next scanline if we have reached te end of the current one
+    if (dotsPassedInScanline == DotsPerScanline)
+    {
+        IncrementLY();
+        ResetForNextScanline();
+        // If we have passed all the scanlines meant for drawing, move to the next PPU mode.
+        if (LYregister == ScanlinesPassedTillVBlank)
+            state = PixelProcessingState::vBlank;
     }
 }
 
-void    PPU::WriteByte(uint16_t address, uint8_t value)
+void PPU::TickVerticalBlank()
 {
-    if (address >= AddressVramStart && address <= AddressVramEnd)
+    // The LY register starts reporting 0 in the middle of the final scanline
+    if (LYregister == ScanlinesPerFrame && dotsPassedInScanline == DotsResetLY)
+        ResetLY();
+
+    // Moves to the next scanline if we have reached te end of the current one
+    if (dotsPassedInScanline == DotsPerScanline)
     {
-        // The GameBoy color has a switchable vRam bank, DMG does not.
-        if (CgbMode)
-        {
-            vRam[vRamBankRegister][address - AddressVramStart] = value;
-            return ;
-        }
-        vRam[0][address - AddressVramStart] = value;
-        return ;
+        // If we are at the end of the final scanline for a frame, the LY register will
+        // report back 0 meaning we can start working on the next frame again
+        //
+        // Else we will move on with the next VBlank scanline by incrementing LY 
+        if (LYregister == 0)
+            ResetForNextScanline();
+        else
+            IncrementLY();
+        dotsPassedInScanline = 0;
     }
-    if (address >= AddressOamStart && address <= AddressOamEnd)
+}
+
+void PPU::TickPPU()
+{
+    // TODO: Handle PPU disabling through the LCDC register.
+    // After enabling the register it should wait for a frame.
+    if (!(LCDCregister & LCDandPPUenableMask))
     {
-        if (DMATransferActive)
-        {
-            LOG_DEBUG(PPU_WRITE_DURING_DMA);
-            return;
-        }
-        oam[address - AddressOamStart] = value;
-        return;
+        assert(false && "PPU: Trying to tick the PPU whilst it should be disabled");
     }
-    switch (address)
+
+    // Increase the cycles done for this scanline.
+    dotsPassedInScanline += Dot;
+
+    switch (state)
     {
-        case (AddressLCDC):
-        {
-            LCDCregister = value; 
-            break;
-        }
-        case (AddressSTAT):
-        {
-            STATregister = value & WriteMaskSTATvalue; 
-            break;
-        }
-        case (AddressSCY):
-        {
-            SCYregister = value;
-            break;
-        }
-        case (AddressSCX):
-        {
-            SCXregister = value;
-            break;
-        }
-        case (AddressLYC):
-        {
-            LYCregister = value;
-            break;
-        }
-        case (AddressDMA):
-        {
-            // The value stored inside the register is the address the DMA should start from, divided by 0x100.
-            // Writing to this register will start the DMA transfer.
-            DMAregister = value;
-            StartDmaTransfer();
-            break;
-        }
-        case (AddressBGP):
-        {
-            if (CgbMode)
-            {
-                LOG_DEBUG(PPU_WRITE_IN_CGB_MODE);
-                break;
-            }
-
-            BGPregister = value;
-            break;
-        }
-        case (AddressOBP0):
-        {
-            if (CgbMode)
-            {
-                LOG_DEBUG(PPU_WRITE_IN_CGB_MODE);
-                break;
-            }
-
-            OBP0register = value;
-            break;
-        }
-        case (AddressOBP1):
-        {
-            if (CgbMode)
-            {
-                LOG_DEBUG(PPU_WRITE_IN_CGB_MODE);
-                break;
-            }
-
-            OBP1register = value;
-            break;
-        }
-        case (AddressWY):
-        {
-            WYregister = value;
-            break;
-        }
-        case (AddressWX):
-        {
-            WXregister = value;
-            break;
-        }
-        case (AddressVramBank):
-        {
-            if (!CgbMode)
-            {
-                LOG_DEBUG(PPU_WRITE_IN_NON_CGB_MODE);
-                break;
-            }
-
-            vRamBankRegister = value & vRamBankMask;
-            break;
-        }
-        case (AddressBGPI):
-        {
-            if (!CgbMode)
-            {
-                LOG_DEBUG(PPU_WRITE_IN_NON_CGB_MODE);
-                break;
-            }
-
-            BGPIregister = value;
-            break;
-        }
-        case (AddressBCPD):
-        {
-            if (!CgbMode)
-            {
-                LOG_DEBUG(PPU_WRITE_IN_NON_CGB_MODE);
-                break;
-            }
-
-            BCPDregister = value;
-            break;
-        }
-        case (AddressOBPI):
-        {
-            if (!CgbMode)
-            {
-                LOG_DEBUG(PPU_WRITE_IN_NON_CGB_MODE);
-                break;
-            }
-
-            if (state == PixelProcessingState::Drawing)
-            {
-                LOG_DEBUG(PPU_WRITE_IN_MODE_3);
-                break;
-            }
-
-            OBPDregister = value;
-            break;
-        }
-        case (AddressOBPD):
-        {
-            if (!CgbMode)
-            {
-                LOG_DEBUG(PPU_WRITE_IN_NON_CGB_MODE);
-                break;
-            }
-
-            OBPDregister = value;
-            break;
-        }
-        default:
-        {
-            LOG_WARNING(PPU_WRITE_OUT_OF_RANGE);
-            break;
-        }
+    case PixelProcessingState::hBlank:
+        TickHorizontalBlank();
+        break;
+    case PixelProcessingState::vBlank:
+        TickVerticalBlank();
+        break;    
+    case PixelProcessingState::ScanOAM:
+        TickOamScan();
+        break;
+    case PixelProcessingState::Drawing:
+        TickDrawingPixel();
+        break;
+    default:
+        LOG_ERROR("PPU: Encountered an unknown Pixel Processing State? whilst trying to tick the PPU");
+        assert(false);
     }
+
+    // Update the STAT register's PPU mode bits with the current mode
+    UpdateStatMode();
 }
 
 }
