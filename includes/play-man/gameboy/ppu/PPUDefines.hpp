@@ -18,6 +18,7 @@
 #pragma once
 
 #include <play-man/utility/EnumMacro.hpp>
+#include <queue>
 
 namespace GameBoy {
 
@@ -36,6 +37,81 @@ CREATE_ENUM_WITH_UTILS(PpuStateSeq, PixelProcessingState);
 
 CREATE_ENUM_WITH_UTILS(OamScanStateSeq, OamScanState);
 #undef OamScanStateSeq
+
+#define PpuDrawingStateSeq(x, n) \
+    x(n, FetchBackground)        \
+    x(n, FetchSprite)            \
+    x(n, PixelMixer)             \
+
+CREATE_ENUM_WITH_UTILS(PpuDrawingStateSeq, DrawingState);
+#undef PpuDrawingStateSeq
+
+#define PixelFetchStateSeq(x, n) \
+    x(n, NumberFetch)                 \
+    x(n, DataLowFetch)                \
+    x(n, DataHighFetch)               \
+    x(n, Sleep)                       \
+    x(n, FiFoPush)                    \
+
+CREATE_ENUM_WITH_UTILS(PixelFetchStateSeq, PixelFetchState);
+#undef PixelFetchStateSeq
+
+using PixelColor = uint32_t;
+
+typedef struct s_FiFoEntry {
+    /**
+     * @brief The color number between 0 and 3, taken from the tile data. 
+     */
+    uint8_t color;
+
+    /**
+     * @brief on CGB: A value between 0 and 7 representing the palette.
+     *        on DMG: Represents the OBP0 or OBP1 palette.
+     */
+    uint8_t palette;
+
+    /**
+     * @brief The OAM index for the object.
+     * 
+     * @note This value does not exist on DMG mode.
+     */
+    uint8_t spritePriority;
+
+    /**
+     * @brief Stores the bit (7) from the attributes/flags (byte 3) from an OAM entry
+     * that specifies the background/window priority.
+     * 
+     * @note Only relevant for sprites.
+     */
+    uint8_t backgroundPriority;
+
+    s_FiFoEntry() : color(0), palette(0), spritePriority(0), backgroundPriority(0) {}
+
+    s_FiFoEntry(uint8_t _color, uint8_t _palette, uint8_t _sPriority, uint8_t bPriority) :
+    color(_color), palette(_palette), spritePriority(_sPriority), backgroundPriority(bPriority) {}
+
+    s_FiFoEntry(s_FiFoEntry& other) { *this = other; }
+
+    struct s_FiFoEntry& operator = (const struct s_FiFoEntry& rhs)
+    {
+        this->color = rhs.color;
+        this->palette = rhs.palette;
+        this->spritePriority = rhs.spritePriority;
+        this->backgroundPriority = rhs.backgroundPriority;
+        return *this;
+    }
+
+    void clear()
+    {
+        color = 0;
+        palette = 0;
+        spritePriority = 0;
+        backgroundPriority = 0;   
+    }
+
+}   FiFoEntry;
+
+using PixelFiFo = std::queue<FiFoEntry>;
 
 // These are the default values of the registers after the boot rom has ran it course.
 
@@ -57,12 +133,17 @@ constexpr uint8_t DefaultBCPDregisterValue = 0x00;
 constexpr uint8_t DefaultOBPIregisterValue = 0x00;
 constexpr uint8_t DefaultOBPDregisterValue = 0x00;
 
+// OAM related values
 constexpr uint8_t DefaultAmountOfSelectedObjects = 0;
 constexpr uint8_t DefaultCurrentOamScanAddress = 0;
 constexpr uint8_t DefaultDotsPassedInScanline = 0;
 
 constexpr PixelProcessingState DefaultStateValue = PixelProcessingState::ScanOAM;
 constexpr OamScanState DefaultOamScanState = OamScanState::Reading;
+
+// Drawing related values
+constexpr uint8_t DefaultDrawDelay = 0;
+
 // The address range for the video RAM
 constexpr uint16_t AddressVramStart = 0x8000;
 constexpr uint16_t AddressVramEnd = 0x9FFF;

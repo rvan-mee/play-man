@@ -49,6 +49,9 @@ PPU::PPU(bool cgbEnabled, Cpu* _cpu) : CgbMode(cgbEnabled), cpu(_cpu)
     dotsPassedInScanline = DefaultDotsPassedInScanline;
     oamScanState = DefaultOamScanState;
 
+    // Drawing related values
+    drawDelay = DefaultDrawDelay;
+
     state = DefaultStateValue;
 
     InitVram();
@@ -145,12 +148,105 @@ void PPU::TickOamScan()
 
     // If we have completed the OAM scan switch the PPU mode to drawing.
     if (dotsPassedInScanline == DotsInMode2)
+    {
         state = PixelProcessingState::Drawing;
+
+        // The start of Mode 3 has a draw delay depending on the value inside SCX
+        // Both the Pixel FiFos are cleared as well.
+        drawDelay = SCXregister % 8;
+        ResetBackgroundFetcher();
+        ResetSpriteFetcher();
+    }
+}
+
+uint32_t PPU::PixelMixer()
+{
+
+}
+
+void PPU::ResetBackgroundFetcher()
+{
+    backgroundFetchX = 0;
+    backgroundFetchCycle = 0;
+    backgroundFetchSleepCycles = 0;
+    backgroundFiFo = {}; // clear the queue (no .clear member function)
+    currentBackroundFetch.clear();
+    backgroundFetchState = PixelFetchState::NumberFetch;
+}
+
+void PPU::BackgroundFetchNumber()
+{
+    if (backgroundFetchCycle == 0)
+    {
+        currentBackroundFetch.color = 
+    }
+    else if (backgroundFetchCycle == 1)
+    {
+        backgroundFetchState = PixelFetchState::DataLowFetch;
+    }
+    else
+    {
+        LOG_FATAL("PPU: background pixel fetch out of sync");
+        assert(false);
+    }
+}
+
+void PPU::BackgroundFetchDataLow()
+{
+
+}
+
+void PPU::BackgroundFetchDataHigh()
+{
+
+}
+
+void PPU::BackgroundFetchSleep()
+{
+    if (backgroundFetchSleepCycles)
+        backgroundFetchSleepCycles--;
+    else
+        backgroundFetchState = PixelFetchState::FiFoPush;
+}
+
+void PPU::BackgroundFiFoPush()
+{
+
+}
+
+void PPU::TickBackgroundPixelFetcher()
+{
+    switch (backgroundFetchState)
+    {
+        case PixelFetchState::NumberFetch: BackgroundFetchNumber(); break;
+        case PixelFetchState::DataLowFetch: BackgroundFetchDataLow(); break;
+        case PixelFetchState::DataHighFetch: BackgroundFetchDataHigh(); break;
+        case PixelFetchState::Sleep: BackgroundFetchSleep(); break;
+        case PixelFetchState::FiFoPush: BackgroundFiFoPush(); break;
+        default: break;
+    }
+
+    backgroundFetchCycle++;
+}
+
+void PPU::ResetSpriteFetcher()
+{
+
+}
+
+void PPU::TickSpritePixelFetcher()
+{
+    
 }
 
 void PPU::TickDrawingPixel()
 {
-    assert(false && "PPU: Pixel drawing is currently not implemented");
+    if (drawDelay)
+    {
+        drawDelay--;
+        return;
+    }
+
 }
 
 void PPU::TickHorizontalBlank()
