@@ -38,16 +38,22 @@ CREATE_ENUM_WITH_UTILS(PpuStateSeq, PixelProcessingState);
 CREATE_ENUM_WITH_UTILS(OamScanStateSeq, OamScanState);
 #undef OamScanStateSeq
 
-#define PpuDrawingStateSeq(x, n) \
-    x(n, FetchBackground)        \
-    x(n, FetchSprite)            \
-    x(n, PixelMixer)             \
+#define PpuInnerPixelFetchStateSeq(x, n) \
+    x(n, Computing)                \
+    x(n, Reading)                   \
 
-CREATE_ENUM_WITH_UTILS(PpuDrawingStateSeq, DrawingState);
-#undef PpuDrawingStateSeq
+CREATE_ENUM_WITH_UTILS(PpuInnerPixelFetchStateSeq, InnerPixelFetchState);
+#undef PpuInnerPixelFetchStateSeq
+
+#define PpuFiFoTypeSeq(x, n) \
+    x(n, Object)             \
+    x(n, BackgroundWindow)   \
+
+CREATE_ENUM_WITH_UTILS(PpuFiFoTypeSeq, FiFoType);
+#undef PpuFiFoTypeSeq
 
 #define PixelFetchStateSeq(x, n) \
-    x(n, NumberFetch)                 \
+    x(n, TileFetch)                   \
     x(n, DataLowFetch)                \
     x(n, DataHighFetch)               \
     x(n, Sleep)                       \
@@ -55,8 +61,6 @@ CREATE_ENUM_WITH_UTILS(PpuDrawingStateSeq, DrawingState);
 
 CREATE_ENUM_WITH_UTILS(PixelFetchStateSeq, PixelFetchState);
 #undef PixelFetchStateSeq
-
-using PixelColor = uint32_t;
 
 typedef struct s_FiFoEntry {
     /**
@@ -106,12 +110,56 @@ typedef struct s_FiFoEntry {
         color = 0;
         palette = 0;
         spritePriority = 0;
-        backgroundPriority = 0;   
+        backgroundPriority = 0;
     }
 
 }   FiFoEntry;
 
+/**
+ * @brief The amount of entries are pushed to the FiFo per FiFoPush state.
+ */
+constexpr uint8_t FiFoEntriesPerPush = 8;
+
 using PixelFiFo = std::queue<FiFoEntry>;
+
+typedef struct s_FiFoFetchData {
+    /**
+     * @brief This number represents the number of the tile which to fetch the pixels from.
+     */
+    uint8_t tileNumber;
+
+    /**
+     * @brief The lower byte of additional data being fetched.
+     */
+    uint8_t dataLow;
+
+    /**
+     * @brief The upper byte of additional data being fetched.
+     */
+    uint8_t dataHigh;
+
+    s_FiFoFetchData() : tileNumber(0), dataLow(0), dataHigh(0) {}
+
+    s_FiFoFetchData(uint8_t _tileNumber, uint8_t _dataLow, uint8_t _dataHigh) :
+    tileNumber(_tileNumber), dataLow(_dataLow), dataHigh(_dataHigh) {}
+
+    s_FiFoFetchData(s_FiFoFetchData& other) { *this = other; }
+
+    struct s_FiFoFetchData& operator = (const struct s_FiFoFetchData& rhs)
+    {
+        this->tileNumber = rhs.tileNumber;
+        this->dataLow = rhs.dataLow;
+        this->dataHigh = rhs.dataHigh;
+        return *this;
+    }
+
+    void clear()
+    {
+        tileNumber = 0;
+        dataLow = 0;
+        dataHigh = 0;
+    }
+}   FiFoFetchData;
 
 // These are the default values of the registers after the boot rom has ran it course.
 
@@ -386,6 +434,11 @@ constexpr uint8_t ScanlinesPassedTillVBlank = 144;
  * @note 0 based indexed.
  */
 constexpr uint8_t ScanlinesPerFrame = 153;
+
+/**
+ * @brief The amount of pixels that can be found on a single scanline.
+ */
+constexpr uint8_t PixelsPerScanline = 160;
 
 #define PPU_READ_OUT_OF_RANGE "PPU: Trying to read from an address that is not within range"
 #define PPU_READ_IN_MODE_3 "PPU: Trying to read from a register inaccessible during PPU mode 3 (drawing)"

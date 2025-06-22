@@ -21,7 +21,8 @@
 
 namespace GameBoy {
 
-PPU::PPU(bool cgbEnabled, Cpu* _cpu) : CgbMode(cgbEnabled), cpu(_cpu)
+PPU::PPU(bool cgbEnabled, Cpu* _cpu) :
+        CgbMode(cgbEnabled), cpu(_cpu), backgroundFiFo(_cpu, cgbEnabled), objectFiFo(_cpu, cgbEnabled)
 {
     // TODO:
     // Find the correct default values.
@@ -60,6 +61,8 @@ PPU::PPU(bool cgbEnabled, Cpu* _cpu) : CgbMode(cgbEnabled), cpu(_cpu)
 void    PPU::SetCgbMode(bool enabled)
 {
     CgbMode = enabled;
+    backgroundFiFo.SetCgbMode(enabled);
+    objectFiFo.SetCgbMode(enabled);
 }
 
 void    PPU::InitVram()
@@ -154,8 +157,8 @@ void PPU::TickOamScan()
         // The start of Mode 3 has a draw delay depending on the value inside SCX
         // Both the Pixel FiFos are cleared as well.
         drawDelay = SCXregister % 8;
-        ResetBackgroundFetcher();
-        ResetSpriteFetcher();
+        backgroundFiFo.Clear();
+        objectFiFo.Clear();
     }
 }
 
@@ -164,79 +167,21 @@ uint32_t PPU::PixelMixer()
 
 }
 
-void PPU::ResetBackgroundFetcher()
-{
-    backgroundFetchX = 0;
-    backgroundFetchCycle = 0;
-    backgroundFetchSleepCycles = 0;
-    backgroundFiFo = {}; // clear the queue (no .clear member function)
-    currentBackroundFetch.clear();
-    backgroundFetchState = PixelFetchState::NumberFetch;
-}
 
-void PPU::BackgroundFetchNumber()
+void PPU::TickPixelTransferLCD()
 {
-    if (backgroundFetchCycle == 0)
+    if (backgroundFiFo.GetFiFo().size() >= 8)
     {
-        currentBackroundFetch.color = 
-    }
-    else if (backgroundFetchCycle == 1)
-    {
-        backgroundFetchState = PixelFetchState::DataLowFetch;
-    }
-    else
-    {
-        LOG_FATAL("PPU: background pixel fetch out of sync");
-        assert(false);
-    }
-}
+        // TODO:
 
-void PPU::BackgroundFetchDataLow()
-{
-
-}
-
-void PPU::BackgroundFetchDataHigh()
-{
-
-}
-
-void PPU::BackgroundFetchSleep()
-{
-    if (backgroundFetchSleepCycles)
-        backgroundFetchSleepCycles--;
-    else
-        backgroundFetchState = PixelFetchState::FiFoPush;
-}
-
-void PPU::BackgroundFiFoPush()
-{
-
-}
-
-void PPU::TickBackgroundPixelFetcher()
-{
-    switch (backgroundFetchState)
-    {
-        case PixelFetchState::NumberFetch: BackgroundFetchNumber(); break;
-        case PixelFetchState::DataLowFetch: BackgroundFetchDataLow(); break;
-        case PixelFetchState::DataHighFetch: BackgroundFetchDataHigh(); break;
-        case PixelFetchState::Sleep: BackgroundFetchSleep(); break;
-        case PixelFetchState::FiFoPush: BackgroundFiFoPush(); break;
-        default: break;
+        scanlineX++;
     }
 
-    backgroundFetchCycle++;
-}
-
-void PPU::ResetSpriteFetcher()
-{
-
-}
-
-void PPU::TickSpritePixelFetcher()
-{
-    
+    if (scanlineX == PixelsPerScanline)
+    {
+        state = PixelProcessingState::hBlank;
+        scanlineX = 0;
+    }
 }
 
 void PPU::TickDrawingPixel()
@@ -247,6 +192,15 @@ void PPU::TickDrawingPixel()
         return;
     }
 
+    // Start of the scanline
+    if (scanlineX == 0)
+    {
+
+    }
+
+    backgroundFiFo.TickFetcher(scanlineX);
+    objectFiFo.TickFetcher(scanlineX);
+    TickPixelTransferLCD();
 }
 
 void PPU::TickHorizontalBlank()

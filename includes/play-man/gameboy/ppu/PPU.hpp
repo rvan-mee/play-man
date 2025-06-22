@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <play-man/gameboy/ppu/PixelFiFoFetcher.hpp>
 #include <play-man/gameboy/ppu/PPUDefines.hpp>
 #include <play-man/gameboy/memory/MemoryDefines.hpp>
 #include <stdint.h>
@@ -418,110 +419,33 @@ class PPU
         uint8_t drawDelay;
 
         /**
+         * @brief The fetcher and FiFo for the background and window pixels.
+         */
+        PixelFiFoFetcher<FiFoType::BackgroundWindow> backgroundFiFo;
+
+        /**
+         * @brief The fetcher and FiFo for the object pixels.
+         */
+        PixelFiFoFetcher<FiFoType::Object> objectFiFo;
+
+        /**
          * @brief chooses and returns the pixel color that should be presented on the LCD
-         * based on what is inside the Background FiFo and Sprite FiFo.
+         * based on what is inside the Background FiFo and Sprite/Object FiFo.
          */
         uint32_t PixelMixer();
 
         /**
-         * @brief Each background fetch state takes 2 T-ticks to complete.
+         * @brief The internal X position used by the fetchers.
          * 
-         * @note After the 3rd state 'DataHighFetch' is completed for the first time in a scanline
-         * the Background Fetcher is reset, causing a delay of a total of 12 T-ticks before the
-         * Background FiFo is filled with pixel data. 
-         * 
-         * @note The last state 'FiFoPush' will only happen when the background FiFo is completely
-         * empty, looping in this state till this is the case.
+         * This value is incremented after every pixel transfer.
          */
-        PixelFetchState backgroundFetchState;
+        uint8_t scanlineX;
 
         /**
-         * @brief The FiFo entry that is fetched inside the background fetcher.
+         * @brief Performs a T-tick that simulates pushing a pixel to the LCD, depending on the
+         * contents of both the FiFos.
          */
-        FiFoEntry currentBackroundFetch;
-
-        /**
-         * @brief The internal cycle of the current fetch tick.
-         */
-        uint8_t backgroundFetchCycle;
-
-        /**
-         * @brief The amount of cycles the background fetcher should be stalling.
-         */
-        uint8_t backgroundFetchSleepCycles;
-
-        /**
-         * @brief The internal X position used by the background fetcher.
-         * 
-         * This value is incremented after every FiFoPush.
-         */
-        uint8_t backgroundFetchX;
-
-        /**
-         * @brief The background pixel FiFo.
-         * 
-         * The FiFo can hold 16 pixels at a time, where 8 pixels are required for the rendering to take place.
-         */
-        PixelFiFo   backgroundFiFo;
-
-        /**
-         * @brief Resets the background fetcher.
-         */
-        void ResetBackgroundFetcher();
-
-        /**
-         * @brief
-         */
-        void BackgroundFetchNumber();
-
-        /**
-         * @brief 
-         */
-        void BackgroundFetchDataLow();
-
-        /**
-         * @brief 
-         */
-        void BackgroundFetchDataHigh();
-
-        /**
-         * @brief 
-         */
-        void BackgroundFetchSleep();
-
-        /**
-         * @brief 
-         */
-        void BackgroundFiFoPush();
-
-        /**
-         * @brief Performs a T-tick for the background pixel fetcher, used in Mode 3.
-         * 
-         * The fetcher goes in 5 different steps, where the first 4 steps each take 2 T-ticks.
-         * The final step is attempted every dot till it succeeds.
-         * 
-         *    NumberFetch: Fetches the number of the tile the pixels are taken from.  
-         *    DataLowFetch: 
-         *    DataHighFetch:
-         *    Sleep:
-         *    FiFoPush:
-         */
-        void TickBackgroundPixelFetcher();
-
-        /**
-         * @brief Resets the sprite fetcher.
-         */
-        void ResetSpriteFetcher();
-
-        /**
-         * @brief Performs a T-tick for the sprite pixel fetcher, used in Mode 3.
-         */
-        void TickSpritePixelFetcher();
-
-        /**
-         * @brief Keeps track of the current state inside Mode 3.
-         */
-        DrawingState drawingState;
+        void TickPixelTransferLCD();
 
         /**
          * @brief Performs a T-tick for the Drawing Pixel (Mode 3). 
