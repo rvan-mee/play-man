@@ -42,6 +42,11 @@ class PPU
         protected:
 
             /**
+             * @brief The Y position of the current tile being fetched.
+             */
+            uint8_t fetcherTileY;
+
+            /**
              * @brief In background/window mode the address of the tile number, in object mode the address
              * of the object inside OAM.
              */
@@ -103,7 +108,7 @@ class PPU
             /**
              * @brief Fetches the lower byte of the fetch data.
              */
-            virtual void TickDataLowFetch() = 0;
+            virtual void TickDataLowFetch(uint8_t scanlineX) = 0;
 
             /**
              * @brief This functions the same as the TickDataLow() except the tile address is incremented by 1.
@@ -168,9 +173,17 @@ class PPU
         {
         private:
             void TickTileFetch(uint8_t scanlineX) override;
-            void TickDataLowFetch() override;
+            void TickDataLowFetch(uint8_t scanlineX) override;
             void TickDataHighFetch() override;
             void TickFiFoPush() override;
+
+            /**
+             * @brief Checks if the current tile being rendered is a
+             * window tile or background tile.
+             * 
+             * @return True if the tile is a window tile.
+             */
+            bool RenderingWindow(uint8_t scanlineX);
 
         public:
             BackgroundFiFo() = delete;
@@ -189,7 +202,7 @@ class PPU
         {
         private:
             void TickTileFetch(uint8_t scanlineX) override;
-            void TickDataLowFetch() override;
+            void TickDataLowFetch(uint8_t scanlineX) override;
             void TickDataHighFetch() override;
             void TickFiFoPush() override;
 

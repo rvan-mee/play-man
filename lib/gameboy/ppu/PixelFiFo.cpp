@@ -30,6 +30,7 @@ PPU::FiFoBase::FiFoBase(PPU* _ppu) : ppu(_ppu)
 void    PPU::FiFoBase::Clear()
 {
     sleepCycles = 0;
+    fetcherTileY = 0;
     fetchData.clear();
     tileFetchAddress = 0;
     dataLowFetchAddress = 0;
@@ -58,7 +59,7 @@ void PPU::FiFoBase::TickFetcher(uint8_t currentX)
     switch (fetchState)
     {
         case PixelFetchState::TileFetch: TickTileFetch(currentX); break;
-        case PixelFetchState::DataLowFetch: TickDataLowFetch(); break;
+        case PixelFetchState::DataLowFetch: TickDataLowFetch(currentX); break;
         case PixelFetchState::DataHighFetch: TickDataHighFetch(); break;
         case PixelFetchState::Sleep: TickSleep(); break;
         case PixelFetchState::FiFoPush: TickFiFoPush(); break;
@@ -73,6 +74,21 @@ PixelFiFo& PPU::FiFoBase::GetFiFo()
 
 
 // *************** Background FiFo Functions ***************
+
+bool PPU::BackgroundFiFo::RenderingWindow(uint8_t scanlineX)
+{
+    // The window's top left X coordinate starts at WX - 7.
+    const uint8_t windowX = ppu->WXregister - WindowStartOffset;
+    // To know if we are rendering a window a combination of things need to be checked.
+    // If the LCDC's 5th bit is enabled and the LY is >= WY and
+    // the scanlineX is >= WX we are rendering a window tile.
+    const bool windowEnabled = ppu->LCDCregister & WindowEnableMask;
+    const bool windowWithinY = ppu->LYregister >= ppu->WYregister;
+    const bool windowWithinX = scanlineX >= windowX;
+    // TODO: Some docs mention only the check of an X position, not Y, verify which is the case.
+    const bool renderingWindowTile = windowEnabled && windowWithinY && windowWithinX;
+    return renderingWindowTile;
+}
 
 void PPU::BackgroundFiFo::TickTileFetch(uint8_t scanlineX)
 {
@@ -89,16 +105,7 @@ void PPU::BackgroundFiFo::TickTileFetch(uint8_t scanlineX)
 
         // The window's top left X coordinate starts at WX - 7.
         const uint8_t windowX = ppu->WXregister - WindowStartOffset;
-
-        // We have to decide if we are rendering a Background or a Window tile.
-        // This is done by checking a combination of things, if the LCDC's 5th bit
-        // is enabled and the LY is >= WY and the scanlineX is >= WX we are
-        // rendering a window tile.
-        const bool windowEnabled = ppu->LCDCregister & WindowEnableMask;
-        const bool windowWithinY = ppu->LYregister >= ppu->WYregister;
-        const bool windowWithinX = scanlineX >= windowX;
-        // TODO: Some docs mention only the check of an X position, not Y, verify which is the case.
-        const bool renderingWindowTile = windowEnabled && windowWithinY && windowWithinX;
+        const bool renderingWindowTile = RenderingWindow(scanlineX);
 
         // The base address of the tile data map.
         uint16_t map = TileMapBaseAddress;
@@ -111,27 +118,27 @@ void PPU::BackgroundFiFo::TickTileFetch(uint8_t scanlineX)
         else if (ppu->LCDCregister & WindowTileMapAreaMask && renderingWindowTile)
             map += TileMapBaseAddressOffset;
 
-        // The X and Y positions inside the tile.
+        // The X position inside the tile, the Y position is stored inside the fetcher because it is needed
+        // in some of the next states.
         uint8_t x;
-        uint8_t y;
 
         if (renderingWindowTile)
         {
             x = windowX;
-            y = ppu->WYregister;
+            fetcherTileY = ppu->WYregister;
         }
         else
         {
             // Rendering a background tile requires some calculations of the X and Y positions,
             // since the scroll registers can change them.
             x = (scanlineX + (ppu->SCXregister / TileWidth)) & TilePositionLimiterX;
-            y = (ppu->LYregister + ppu->SCYregister) & TilePositionLimiterY;
+            fetcherTileY = (ppu->LYregister + ppu->SCYregister) & TilePositionLimiterY;
         }
 
         // To get the correct address we take the current base pointer, offset it by the tile's x position
         // now we have to offset using the y position, we divide it by the width of a tile and multiply
         // that value by 32 (since there are 32x32 tiles inside the tile map).
-        tileFetchAddress = map + x + ((y / TileWidth) * 32);
+        tileFetchAddress = map + x + ((fetcherTileY / TileWidth) * 32);
 
         innerFetchState = InnerPixelFetchState::IO;
     }
@@ -140,20 +147,40 @@ void PPU::BackgroundFiFo::TickTileFetch(uint8_t scanlineX)
         assert(tileFetchAddress >= AddressTileMapStart && tileFetchAddress <= AddressTileMapEnd);
         fetchData.tileNumber = ppu->ReadByte(tileFetchAddress);
 
+        assert(!ppu->CgbMode && "Not fetching tile attributes for CGB mode yet.");
+
         innerFetchState = InnerPixelFetchState::Computing;
         fetchState = PixelFetchState::DataLowFetch;
     }
 }
 
-void PPU::BackgroundFiFo::TickDataLowFetch()
+void PPU::BackgroundFiFo::TickDataLowFetch(uint8_t scanlineX)
 {
     if (innerFetchState == InnerPixelFetchState::Computing)
     {
+        // The base address can be changed through the LCDC register.
+        uint16_t tileMapBaseAddress = PrimaryTileAddressingMethod;
+        if (!(ppu->LCDCregister & BackgroundWindowTileDataAreaMask))
+            tileMapBaseAddress = SecondaryTileAddressingMethod;
+
+        // Since every pixel line in a sprite consists of 2 bytes (low and high data)
+        // we can extract the Y offset by getting the Y of the tile and then multiplying that by 2.
+        const uint8_t offsetY = (fetcherTileY % TileHeight) * BytesPerTileLine;
+        // TODO: Is this offset correct? https://hacktix.github.io/GBEDG/ppu/#oam-scan-mode-2 mentions a different calculation.
+
+        assert(!ppu->CgbMode && "Cannot perform Y flips since the CGB attributes are not fetched yet.");
+
+        // The way the pixel data address is calculated is done by getting the correct base address for
+        // the tile map first, then offsetting that by the tile size amount of times the tile number we have
+        // fetched in the previous step and then offsetting that once more by adding the calculated Y offset.
+        dataLowFetchAddress = tileMapBaseAddress + ((fetchData.tileNumber * TileSize) + offsetY);
 
         innerFetchState = InnerPixelFetchState::IO;
     }
     else if (innerFetchState == InnerPixelFetchState::IO)
     {
+        assert(dataLowFetchAddress >= AddressTileDataStart && dataLowFetchAddress <= AddressTileDataEnd);
+        fetchData.dataLow = ppu->ReadByte(dataLowFetchAddress);
 
         innerFetchState = InnerPixelFetchState::Computing;
         fetchState = PixelFetchState::DataHighFetch;
@@ -164,11 +191,15 @@ void PPU::BackgroundFiFo::TickDataHighFetch()
 {
     if (innerFetchState == InnerPixelFetchState::Computing)
     {
+        // The second pixel data values are found right after the first ones.
+        dataHighFetchAddress = dataLowFetchAddress + 1;
 
         innerFetchState = InnerPixelFetchState::IO;
     }
     else if (innerFetchState == InnerPixelFetchState::IO)
     {
+        assert(dataHighFetchAddress >= AddressTileDataStart && dataHighFetchAddress <= AddressTileDataEnd);
+        fetchData.dataHigh = ppu->ReadByte(dataHighFetchAddress);
 
         innerFetchState = InnerPixelFetchState::Computing;
         fetchState = PixelFetchState::Sleep;
@@ -194,7 +225,7 @@ void PPU::BackgroundFiFo::TickFiFoPush()
 
 void PPU::ObjectFiFo::TickTileFetch(uint8_t scanlineX)
 {
-    (void) scanlineX;
+    (void) scanlineX; // Used inside the BackgroundFiFo.
     if (innerFetchState == InnerPixelFetchState::Computing)
     {
 
@@ -208,8 +239,9 @@ void PPU::ObjectFiFo::TickTileFetch(uint8_t scanlineX)
     }
 }
 
-void PPU::ObjectFiFo::TickDataLowFetch()
+void PPU::ObjectFiFo::TickDataLowFetch(uint8_t scanlineX)
 {
+    (void) scanlineX; // Used inside the BackgroundFiFo.
     if (innerFetchState == InnerPixelFetchState::Computing)
     {
 

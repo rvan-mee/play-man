@@ -204,6 +204,9 @@ constexpr uint16_t AddressVramEnd = 0x9FFF;
 constexpr uint16_t AddressTileMapStart = 0x9800;
 constexpr uint16_t AddressTileMapEnd = 0x9FFF;
 
+constexpr uint16_t AddressTileDataStart = 0x8000;
+constexpr uint16_t AddressTileDataEnd = 0x9800;
+
 // The address range for the OAM
 constexpr uint16_t AddressOamStart = 0xFE00;
 constexpr uint16_t AddressOamEnd = 0xFE9F;
@@ -462,14 +465,26 @@ constexpr uint8_t TilePositionLimiterX = 0x1F;
 constexpr uint8_t TilePositionLimiterY = 0xFF; 
 
 /**
- * @brief The width of a tile.
+ * @brief The amount of bytes used for all the pixels in a tile.
+ * 
+ * Each line of a tile consists of 2 bytes, using 2 bits per pixel. 
+ */
+constexpr uint8_t TileSize = 16;
+
+/**
+ * @brief The amount of bytes used for the pixels in a single tile line.
+ */
+constexpr uint8_t BytesPerTileLine = 2;
+
+/**
+ * @brief The pixel width of a tile.
  */
 constexpr uint8_t TileWidth = 8;
 
 /**
- * @brief The length of a tile.
+ * @brief The pixel length of a tile.
  */
-constexpr uint8_t TileLength = 8;
+constexpr uint8_t TileHeight = 8;
 
 /**
  * @brief The window's topleft X coordinate starts off at WX - 7, so the offset
