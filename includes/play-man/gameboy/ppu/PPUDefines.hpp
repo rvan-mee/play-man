@@ -201,6 +201,9 @@ constexpr uint8_t DefaultDrawDelay = 0;
 constexpr uint16_t AddressVramStart = 0x8000;
 constexpr uint16_t AddressVramEnd = 0x9FFF;
 
+constexpr uint16_t AddressTileMapStart = 0x9800;
+constexpr uint16_t AddressTileMapEnd = 0x9FFF;
+
 // The address range for the OAM
 constexpr uint16_t AddressOamStart = 0xFE00;
 constexpr uint16_t AddressOamEnd = 0xFE9F;
@@ -426,6 +429,53 @@ constexpr uint16_t PrimaryTileAddressingMethod = 0x8000;
  * @note For addressing objects the PrimaryTileAddressingMethod is used as the base pointer.
  */
 constexpr uint16_t SecondaryTileAddressingMethod = 0x8800;
+
+/**
+ * @brief The base address used inside the PPU for fetching the tile number used for
+ * rendering the current background/window pixel.
+ * 
+ * @note A visual overview of the tile map can be found here: https://gbdev.io/pandocs/Memory_Map.html
+ */
+constexpr uint16_t TileMapBaseAddress = 0x9800;
+
+/**
+ * @brief Depending on the state of the LCDC register the way the tile map is addressed
+ * can be done with a different base address (0x9C00 instead of 0x9800). This offset is
+ * applied to the base address to get there.
+ * 
+ * @note A visual overview of the tile map can be found here: https://gbdev.io/pandocs/Memory_Map.html
+ */
+constexpr uint16_t TileMapBaseAddressOffset = 0x400;
+
+/**
+ * @brief When calculating the tile's X position inside the FiFo we need to make sure
+ * that its value is between 0 and 31 when using the scroll registers, this limiter
+ * can be AND with the value to get a wrapping X position.
+ */
+constexpr uint8_t TilePositionLimiterX = 0x1F;
+
+/**
+ * @brief When calculating the tile's Y position inside the FiFo we need to make sure
+ * that its value is between 0 and 255 when using the scroll registers, this limiter
+ * can be AND with the value to get a wrapping Y position.
+ */
+constexpr uint8_t TilePositionLimiterY = 0xFF; 
+
+/**
+ * @brief The width of a tile.
+ */
+constexpr uint8_t TileWidth = 8;
+
+/**
+ * @brief The length of a tile.
+ */
+constexpr uint8_t TileLength = 8;
+
+/**
+ * @brief The window's topleft X coordinate starts off at WX - 7, so the offset
+ * to get the X coordinate to be 0 is this number.
+ */
+constexpr uint8_t WindowStartOffset = 7;
 
 /**
  * @brief The amount of scanlines that have to be passed when rendering a frame for the PPU to reach
