@@ -22,7 +22,7 @@
 namespace GameBoy {
 
 PPU::PPU(bool cgbEnabled, Cpu* _cpu) :
-        CgbMode(cgbEnabled), cpu(_cpu), backgroundFiFo(_cpu, cgbEnabled), objectFiFo(_cpu, cgbEnabled)
+        backgroundFiFo(this), objectFiFo(this), CgbMode(cgbEnabled), cpu(_cpu)
 {
     // TODO:
     // Find the correct default values.
@@ -61,8 +61,6 @@ PPU::PPU(bool cgbEnabled, Cpu* _cpu) :
 void    PPU::SetCgbMode(bool enabled)
 {
     CgbMode = enabled;
-    backgroundFiFo.SetCgbMode(enabled);
-    objectFiFo.SetCgbMode(enabled);
 }
 
 void    PPU::InitVram()
@@ -164,7 +162,7 @@ void PPU::TickOamScan()
 
 uint32_t PPU::PixelMixer()
 {
-
+    return 0xFF;
 }
 
 

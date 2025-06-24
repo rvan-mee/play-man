@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include <play-man/gameboy/ppu/PixelFiFoFetcher.hpp>
 #include <play-man/gameboy/ppu/PPUDefines.hpp>
 #include <play-man/gameboy/memory/MemoryDefines.hpp>
 #include <stdint.h>
@@ -31,6 +30,179 @@ class Cpu;
 class PPU
 {
     private:
+
+        /**
+         * @brief The base class for the Pixel FiFos.
+         * 
+         * Both the Background and Object FiFos share the same pipeline, the main differences
+         * being what memory is accessed and how it is addressed.
+         */
+        class FiFoBase
+        {
+        protected:
+
+            /**
+             * @brief In background/window mode the address of the tile number, in object mode the address
+             * of the object inside OAM.
+             */
+            uint16_t tileFetchAddress;
+
+            /**
+             * @brief Depending on the FiFo type, the address of the lower byte of fetched data in VRAM or the OAM.
+             */
+            uint16_t dataLowFetchAddress;
+
+            /**
+             * @brief Depending on the FiFo type, the address of the upper byte of fetched data in VRAM or the OAM.
+             */
+            uint16_t dataHighFetchAddress;
+
+            /**
+             * @brief Each fetch state takes 2 T-ticks to complete.
+             * 
+             * @note After the 3rd state, 'DataHighFetch' is completed for the first time in a scanline
+             * the Background Fetcher is reset, causing a delay of a total of 12 T-ticks before the
+             * Background FiFo is filled with pixel data. 
+             * 
+             * @note The last state 'FiFoPush' will only happen when the background FiFo is completely
+             * empty, it will loop till it is empty.
+             */
+            PixelFetchState fetchState;
+
+            /**
+             * @brief The data currently being fetched.
+             */
+            FiFoFetchData fetchData;
+
+            /**
+             * @brief The FiFo entries that are fetched.
+             */
+            FiFoEntry currentFetchEntries[8];
+
+            /**
+             * @brief The state of the current fetch.
+             * 
+             * Every fetch takes 2 T-ticks.
+             * 
+             * @note It is not very well documented what specifically happens on each tick of the fetch, though it
+             * does seem that reads from memory take 1 T-tick. The way we implement the individual cycles is by computing
+             * the read address the first tick and then reading the actual value on that address the next tick.
+             */
+            InnerPixelFetchState innerFetchState;
+
+            /**
+             * @brief The amount of cycles the fetcher should be stalling.
+             */
+            uint8_t sleepCycles;
+
+            /**
+             * @brief Fetches and stores the tile number from which the pixels should be retrieved.
+             */
+            virtual void TickTileFetch(uint8_t scanlineX) = 0;
+
+            /**
+             * @brief Fetches the lower byte of the fetch data.
+             */
+            virtual void TickDataLowFetch() = 0;
+
+            /**
+             * @brief This functions the same as the TickDataLow() except the tile address is incremented by 1.
+             */
+            virtual void TickDataHighFetch() = 0;
+
+            /**
+             * @brief Sleeps for sleepCycles amount of T-ticks.
+             */
+            void TickSleep();
+
+            /**
+             * @brief Computes the correct pixel values and then attempts to push those entries to the FiFo.
+             */
+            virtual void TickFiFoPush() = 0;
+
+            /**
+             * @brief Pointer to the PPU this FiFo is apart of.
+             */
+            PPU* ppu;
+
+            /**
+             * @brief The Pixel FiFo.
+             */
+            PixelFiFo   fifo;
+
+        public:
+
+            FiFoBase() = delete;
+            FiFoBase(PPU* _ppu);
+            virtual ~FiFoBase() = default;
+
+            /**
+             * @brief Resets the FiFo and fetch data.
+             */
+            void Clear();
+
+            /**
+             * @brief Performs a T-tick for the FiFo pixel fetcher, used in Mode 3.
+             * 
+             * The fetcher goes in 5 different steps, where the first 4 steps each take 2 T-ticks.
+             * The final step is attempted every dot till it succeeds.
+             * 
+             *    NumberFetch: Fetches the number of the tile the pixels are taken from.
+             *    DataLowFetch: Fetches the lower byte of data.
+             *    DataHighFetch: Fetches the higher byte of data.
+             *    Sleep: Does as it says, nothing.
+             *    FiFoPush: Attempts the push the fetched pixels inside the FiFo.
+             */
+            void TickFetcher(uint8_t currentX);
+
+            /**
+             * @brief Returns a reference to the Pixel FiFo.
+             */
+            PixelFiFo& GetFiFo();
+        };
+
+        /**
+         * @brief The Background pixel FiFo and fetcher.
+         */
+        class BackgroundFiFo : public FiFoBase
+        {
+        private:
+            void TickTileFetch(uint8_t scanlineX) override;
+            void TickDataLowFetch() override;
+            void TickDataHighFetch() override;
+            void TickFiFoPush() override;
+
+        public:
+            BackgroundFiFo() = delete;
+            BackgroundFiFo(PPU* _ppu) : PPU::FiFoBase(_ppu) {};
+            ~BackgroundFiFo() = default;
+        };
+
+        // The FiFos are apart of the PPU, hence the friend.
+        friend class BackgroundFiFo;
+        BackgroundFiFo  backgroundFiFo;
+
+        /**
+         * @brief The Object pixel FiFo and fetcher.
+         */
+        class ObjectFiFo : public FiFoBase
+        {
+        private:
+            void TickTileFetch(uint8_t scanlineX) override;
+            void TickDataLowFetch() override;
+            void TickDataHighFetch() override;
+            void TickFiFoPush() override;
+
+        public:
+            ObjectFiFo() = delete;
+            ObjectFiFo(PPU* _ppu): PPU::FiFoBase(_ppu) {};
+            ~ObjectFiFo() = default;
+        };
+
+        // The FiFos are apart of the PPU, hence the friend.
+        friend class ObjectFiFo;
+        ObjectFiFo  objectFiFo;
+
         /**
          * @brief Writing to this register will start a DMA transfer from ROM or RAM to the OAM.
          * 
@@ -417,16 +589,6 @@ class PPU
          * Each drawn object causes a 6 to 11 dot delay.
          */
         uint8_t drawDelay;
-
-        /**
-         * @brief The fetcher and FiFo for the background and window pixels.
-         */
-        PixelFiFoFetcher<FiFoType::BackgroundWindow> backgroundFiFo;
-
-        /**
-         * @brief The fetcher and FiFo for the object pixels.
-         */
-        PixelFiFoFetcher<FiFoType::Object> objectFiFo;
 
         /**
          * @brief chooses and returns the pixel color that should be presented on the LCD

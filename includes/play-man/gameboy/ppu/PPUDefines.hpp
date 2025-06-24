@@ -38,9 +38,14 @@ CREATE_ENUM_WITH_UTILS(PpuStateSeq, PixelProcessingState);
 CREATE_ENUM_WITH_UTILS(OamScanStateSeq, OamScanState);
 #undef OamScanStateSeq
 
+/**
+ * @note The inner states of the PPU's FiFo fetchers all take 2 cycles for each state.
+ * The way we emulate this is in the first cycle compute the address for the Read/Write and
+ * in the second cycle perform the IO instruction since these seem to take a full tick.
+ */
 #define PpuInnerPixelFetchStateSeq(x, n) \
-    x(n, Computing)                \
-    x(n, Reading)                   \
+    x(n, Computing)                      \
+    x(n, IO)                             \
 
 CREATE_ENUM_WITH_UTILS(PpuInnerPixelFetchStateSeq, InnerPixelFetchState);
 #undef PpuInnerPixelFetchStateSeq
