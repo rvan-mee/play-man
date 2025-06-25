@@ -38,10 +38,6 @@ void    PPU::FiFoBase::Clear()
     fetchState = PixelFetchState::TileFetch;
     innerFetchState = InnerPixelFetchState::Computing;
     fifo = {}; // clear the queue (no .clear member function)
-
-    // clear any fetched entries
-    for (uint8_t i = 0; i < FiFoEntriesPerPush; i++)
-        currentFetchEntries[i].clear();
 }
 
 void    PPU::FiFoBase::TickSleep()
@@ -59,7 +55,7 @@ void PPU::FiFoBase::TickFetcher(uint8_t currentX)
     switch (fetchState)
     {
         case PixelFetchState::TileFetch: TickTileFetch(currentX); break;
-        case PixelFetchState::DataLowFetch: TickDataLowFetch(currentX); break;
+        case PixelFetchState::DataLowFetch: TickDataLowFetch(); break;
         case PixelFetchState::DataHighFetch: TickDataHighFetch(); break;
         case PixelFetchState::Sleep: TickSleep(); break;
         case PixelFetchState::FiFoPush: TickFiFoPush(); break;
@@ -154,7 +150,7 @@ void PPU::BackgroundFiFo::TickTileFetch(uint8_t scanlineX)
     }
 }
 
-void PPU::BackgroundFiFo::TickDataLowFetch(uint8_t scanlineX)
+void PPU::BackgroundFiFo::TickDataLowFetch()
 {
     if (innerFetchState == InnerPixelFetchState::Computing)
     {
@@ -203,22 +199,37 @@ void PPU::BackgroundFiFo::TickDataHighFetch()
 
         innerFetchState = InnerPixelFetchState::Computing;
         fetchState = PixelFetchState::Sleep;
+        sleepCycles = 2;
+    }
+}
+
+void PPU::BackgroundFiFo::PushBackgroundPixels(uint8_t lowPixelData, uint8_t highPixelData)
+{
+    for (uint8_t i = 0; i < FiFoEntriesPerPush; i++)
+    {
+        // The color value (0-3) is calculated by taking 1 bit from the low and 1 bit from the high data.
+        // We start with the left-most bit and take the bits on the right from there.
+        const uint8_t shiftAmount = 7 - i;
+        const uint8_t lowBit = (lowPixelData >> shiftAmount) & 1;
+        const uint8_t highBit = (highPixelData >> shiftAmount) & 1;
+        const uint8_t colorIndex = lowBit | (highBit << 1);
+        fifo.push({colorIndex, UnusedFiFoEntryValue, UnusedFiFoEntryValue, UnusedFiFoEntryValue}); 
     }
 }
 
 void PPU::BackgroundFiFo::TickFiFoPush()
 {
-    if (innerFetchState == InnerPixelFetchState::Computing)
-    {
+    // Pixels are only pushed to the background FiFo if its empty.
+    if (fifo.size() != 0)
+        return ;
 
-        innerFetchState = InnerPixelFetchState::IO;
-    }
-    else if (innerFetchState == InnerPixelFetchState::IO)
-    {
+    if (!ppu->CgbMode)
+        PushBackgroundPixels(fetchData.dataLow, fetchData.dataHigh);
+    else
+        assert(false && "Unable to push CGB pixels to the FiFo at the moment.");
 
-        innerFetchState = InnerPixelFetchState::Computing;
-        fetchState = PixelFetchState::TileFetch;
-    }
+    innerFetchState = InnerPixelFetchState::Computing;
+    fetchState = PixelFetchState::TileFetch;
 }
 
 // *************** Object FiFo Functions ***************
@@ -239,9 +250,8 @@ void PPU::ObjectFiFo::TickTileFetch(uint8_t scanlineX)
     }
 }
 
-void PPU::ObjectFiFo::TickDataLowFetch(uint8_t scanlineX)
+void PPU::ObjectFiFo::TickDataLowFetch()
 {
-    (void) scanlineX; // Used inside the BackgroundFiFo.
     if (innerFetchState == InnerPixelFetchState::Computing)
     {
 

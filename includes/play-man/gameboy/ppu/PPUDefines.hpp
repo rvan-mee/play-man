@@ -76,6 +76,8 @@ typedef struct s_FiFoEntry {
     /**
      * @brief on CGB: A value between 0 and 7 representing the palette.
      *        on DMG: Represents the OBP0 or OBP1 palette.
+     * 
+     * @note Unused for DMG backgroundFiFo entries.
      */
     uint8_t palette;
 
@@ -96,10 +98,12 @@ typedef struct s_FiFoEntry {
 
     s_FiFoEntry() : color(0), palette(0), spritePriority(0), backgroundPriority(0) {}
 
-    s_FiFoEntry(uint8_t _color, uint8_t _palette, uint8_t _sPriority, uint8_t bPriority) :
-    color(_color), palette(_palette), spritePriority(_sPriority), backgroundPriority(bPriority) {}
+    s_FiFoEntry(uint8_t _color, uint8_t _palette, uint8_t _sPriority, uint8_t _bPriority) :
+    color(_color), palette(_palette), spritePriority(_sPriority), backgroundPriority(_bPriority) {}
 
     s_FiFoEntry(s_FiFoEntry& other) { *this = other; }
+
+    s_FiFoEntry(s_FiFoEntry&& other) { *this = other; }
 
     struct s_FiFoEntry& operator = (const struct s_FiFoEntry& rhs)
     {
@@ -124,6 +128,12 @@ typedef struct s_FiFoEntry {
  * @brief The amount of entries are pushed to the FiFo per FiFoPush state.
  */
 constexpr uint8_t FiFoEntriesPerPush = 8;
+
+/**
+ * @brief Some FiFo entry values are unused depending on if they are background/object
+ * entries or if we are in CGB mode or not. This define exist to prevent a magic number.
+ */
+constexpr uint8_t UnusedFiFoEntryValue = 0;
 
 using PixelFiFo = std::queue<FiFoEntry>;
 

@@ -80,11 +80,6 @@ class PPU
             FiFoFetchData fetchData;
 
             /**
-             * @brief The FiFo entries that are fetched.
-             */
-            FiFoEntry currentFetchEntries[8];
-
-            /**
              * @brief The state of the current fetch.
              * 
              * Every fetch takes 2 T-ticks.
@@ -108,7 +103,7 @@ class PPU
             /**
              * @brief Fetches the lower byte of the fetch data.
              */
-            virtual void TickDataLowFetch(uint8_t scanlineX) = 0;
+            virtual void TickDataLowFetch() = 0;
 
             /**
              * @brief This functions the same as the TickDataLow() except the tile address is incremented by 1.
@@ -173,9 +168,14 @@ class PPU
         {
         private:
             void TickTileFetch(uint8_t scanlineX) override;
-            void TickDataLowFetch(uint8_t scanlineX) override;
+            void TickDataLowFetch() override;
             void TickDataHighFetch() override;
             void TickFiFoPush() override;
+
+            /**
+             * @brief Pushes an entire row of 8 pixels into the background FiFo.
+             */
+            void PushBackgroundPixels(uint8_t lowPixelData, uint8_t highPixelData);
 
             /**
              * @brief Checks if the current tile being rendered is a
@@ -202,7 +202,7 @@ class PPU
         {
         private:
             void TickTileFetch(uint8_t scanlineX) override;
-            void TickDataLowFetch(uint8_t scanlineX) override;
+            void TickDataLowFetch() override;
             void TickDataHighFetch() override;
             void TickFiFoPush() override;
 
