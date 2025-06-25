@@ -520,6 +520,50 @@ constexpr uint8_t ScanlinesPerFrame = 153;
  */
 constexpr uint8_t PixelsPerScanline = 160;
 
+/**
+ * @brief The color values used when displaying DMG pixels. 
+ * 
+ * 2 separate color types can be used, black and white or green.
+ * 
+ * @note Can be indexed using 'BlackAndWhitePixelsDMG' and 'GreenPixelsDMG'.
+ */
+constexpr uint32_t ColorsDMG[2][4] = {
+    { // Black and White pixel values
+        0xFFFFFFFF, // White
+        0xFFD3D3D3, // Light Gray
+        0xFF808080, // Dark Gray
+        0xFF000000, // Black
+    },
+    { // Green pixel values
+        0xFF9BBC0F, // Lightest Green
+        0xFF8BAC0F, // Light Green
+        0xFF306230, // Dark Green
+        0xFF0F380F, // Darkest Green
+    }
+};
+
+/**
+ * @brief Used to index into the 'ColorsDMG' array to get the desired colors.
+ */
+constexpr uint8_t BlackAndWhitePixelsDMG = 0;
+
+/**
+ * @brief Used to index into the 'ColorsDMG' array to get the desired colors.
+ */
+constexpr uint8_t GreenPixelsDMG = 1;
+
+/**
+ * @brief The mask used to get the shade of the retrieved color ID from the
+ * background palette register.
+ */
+constexpr uint8_t BackgroundShadeMaskDMG = 0b11; 
+
+/**
+ * @brief A single shift is not enough to move to the next index within the
+ * background palette, to move from one index to the next 2 shifts need to be performed.
+ */
+constexpr uint8_t BackgroundPaletteIndexShiftSize = 2;
+
 #define PPU_READ_OUT_OF_RANGE "PPU: Trying to read from an address that is not within range"
 #define PPU_READ_IN_MODE_3 "PPU: Trying to read from a register inaccessible during PPU mode 3 (drawing)"
 #define PPU_READ_IN_CGB_MODE "PPU: Trying to perform a read from a register that is not accessible when the CgbMode is enabled"

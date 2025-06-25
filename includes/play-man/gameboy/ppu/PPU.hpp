@@ -604,6 +604,23 @@ class PPU
         uint8_t drawDelay;
 
         /**
+         * @brief The color mode used for displaying DMG pixels.
+         * 
+         * @note Values should be 'BlackAndWhitePixelsDMG' or 'GreenPixelsDMG'.
+         */
+        uint8_t colorModeDMG;
+
+        /**
+         * @brief Returns the color to be displayed on the screen based on the pixel data.
+         */
+        uint32_t GetBackgroundPixelColor(FiFoEntry pixelData);
+
+        /**
+         * @brief Returns the color to be displayed on the screen based on the pixel data.
+         */
+        uint32_t GetObjectPixelColor(FiFoEntry pixelData);
+
+        /**
          * @brief chooses and returns the pixel color that should be presented on the LCD
          * based on what is inside the Background FiFo and Sprite/Object FiFo.
          */

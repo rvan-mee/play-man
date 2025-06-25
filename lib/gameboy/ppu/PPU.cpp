@@ -52,6 +52,7 @@ PPU::PPU(bool cgbEnabled, Cpu* _cpu) :
 
     // Drawing related values
     drawDelay = DefaultDrawDelay;
+    colorModeDMG = GreenPixelsDMG;
 
     state = DefaultStateValue;
 
@@ -160,8 +161,47 @@ void PPU::TickOamScan()
     }
 }
 
+uint32_t PPU::GetBackgroundPixelColor(FiFoEntry pixelData)
+{
+    if (!CgbMode)
+    {
+        // To get the correct shade from the palette we use the retrieved color ID from
+        // the FiFo entry and 'index' into the background palette to get the right shade.
+        // Check the BGPregister's comment for more info.
+        const uint8_t colorIndex = pixelData.color;
+        const uint8_t shade = (BGPregister >> (colorIndex * BackgroundPaletteIndexShiftSize)) & BackgroundShadeMaskDMG;
+
+        assert(colorModeDMG == BlackAndWhitePixelsDMG || colorModeDMG == GreenPixelsDMG);
+        assert(shade >= 0 && shade <= 4);
+
+        return ColorsDMG[colorModeDMG][shade];
+    }
+    else
+    {
+        assert(false && "Cannot get CGB colors.");
+    }
+    return 0xFFFFFFFF;
+}
+
+uint32_t PPU::GetObjectPixelColor(FiFoEntry pixelData)
+{
+    (void) pixelData;
+    if (!CgbMode)
+    {
+        assert(false && "Sprites are not implemented yet");
+    }
+    else
+    {
+        assert(false && "Cannot get CGB colors.");
+    }
+    return 0xFFFFFFFF;
+}
+
 uint32_t PPU::PixelMixer()
 {
+    FiFoEntry backgroundEntry;
+    FiFoEntry objectEntry;
+
     return 0xFF;
 }
 
