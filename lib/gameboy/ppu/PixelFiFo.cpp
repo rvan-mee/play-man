@@ -29,7 +29,6 @@ PPU::FiFoBase::FiFoBase(PPU* _ppu) : ppu(_ppu)
 
 void    PPU::FiFoBase::Clear()
 {
-    sleepCycles = 0;
     fetcherTileY = 0;
     fetchData.clear();
     tileFetchAddress = 0;
@@ -40,16 +39,6 @@ void    PPU::FiFoBase::Clear()
     fifo = {}; // clear the queue (no .clear member function)
 }
 
-void    PPU::FiFoBase::TickSleep()
-{
-    if (sleepCycles)
-        sleepCycles--;
-
-    // To be in the correct mode for the next tick.
-    if (sleepCycles == 0)
-        fetchState = PixelFetchState::FiFoPush;
-}
-
 void PPU::FiFoBase::TickFetcher(uint8_t currentX)
 {
     switch (fetchState)
@@ -57,7 +46,6 @@ void PPU::FiFoBase::TickFetcher(uint8_t currentX)
         case PixelFetchState::TileFetch: TickTileFetch(currentX); break;
         case PixelFetchState::DataLowFetch: TickDataLowFetch(); break;
         case PixelFetchState::DataHighFetch: TickDataHighFetch(); break;
-        case PixelFetchState::Sleep: TickSleep(); break;
         case PixelFetchState::FiFoPush: TickFiFoPush(); break;
         default: break;
     }
@@ -198,8 +186,7 @@ void PPU::BackgroundFiFo::TickDataHighFetch()
         fetchData.dataHigh = ppu->ReadByte(dataHighFetchAddress);
 
         innerFetchState = InnerPixelFetchState::Computing;
-        fetchState = PixelFetchState::Sleep;
-        sleepCycles = 2;
+        fetchState = PixelFetchState::FiFoPush;
     }
 }
 
@@ -219,8 +206,10 @@ void PPU::BackgroundFiFo::PushBackgroundPixels(uint8_t lowPixelData, uint8_t hig
 
 void PPU::BackgroundFiFo::TickFiFoPush()
 {
-    // Pixels are only pushed to the background FiFo if its empty.
-    if (fifo.size() != 0)
+    // Pixels are only pushed to the background FiFo if there is space.
+    // The FiFo has a size of 16 and attempts to push 8 at a time, meaning the current
+    // FiFo size has to be smaller than 8 for this many pixels to fit.
+    if (fifo.size() > 8)
         return ;
 
     if (!ppu->CgbMode)
@@ -276,7 +265,7 @@ void PPU::ObjectFiFo::TickDataHighFetch()
     {
 
         innerFetchState = InnerPixelFetchState::Computing;
-        fetchState = PixelFetchState::Sleep;
+        fetchState = PixelFetchState::FiFoPush;
     }
 }
 

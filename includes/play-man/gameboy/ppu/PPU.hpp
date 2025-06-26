@@ -91,11 +91,6 @@ class PPU
             InnerPixelFetchState innerFetchState;
 
             /**
-             * @brief The amount of cycles the fetcher should be stalling.
-             */
-            uint8_t sleepCycles;
-
-            /**
              * @brief Fetches and stores the tile number from which the pixels should be retrieved.
              */
             virtual void TickTileFetch(uint8_t scanlineX) = 0;

@@ -61,7 +61,6 @@ CREATE_ENUM_WITH_UTILS(PpuFiFoTypeSeq, FiFoType);
     x(n, TileFetch)                   \
     x(n, DataLowFetch)                \
     x(n, DataHighFetch)               \
-    x(n, Sleep)                       \
     x(n, FiFoPush)                    \
 
 CREATE_ENUM_WITH_UTILS(PixelFetchStateSeq, PixelFetchState);
