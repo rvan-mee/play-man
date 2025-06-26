@@ -16,6 +16,7 @@
 // ****************************************************************************** //
 
 #include <play-man/gameboy/cpu/CycleDefines.hpp>
+#include <play-man/graphics/UserInterface.hpp>
 #include <play-man/gameboy/ppu/PPU.hpp>
 #include <play-man/logger/Logger.hpp>
 
@@ -199,22 +200,45 @@ uint32_t PPU::GetObjectPixelColor(FiFoEntry pixelData)
 
 uint32_t PPU::PixelMixer()
 {
-    FiFoEntry backgroundEntry;
-    FiFoEntry objectEntry;
+    FiFoEntry backgroundEntry = backgroundFiFo.GetFiFo().front();
+    backgroundFiFo.GetFiFo().pop();
 
-    return 0xFF;
+    if (objectFiFo.GetFiFo().empty())
+        return GetBackgroundPixelColor(backgroundEntry);
+
+    FiFoEntry objectEntry = objectFiFo.GetFiFo().front();
+    objectFiFo.GetFiFo().pop();
+
+    // Decide the priority:
+    // TODO: Set the priority rules
+    bool backgroundPriority = true;
+
+    if (backgroundPriority)
+        return GetBackgroundPixelColor(backgroundEntry);
+    return GetObjectPixelColor(objectEntry);
 }
 
 
 void PPU::TickPixelTransferLCD()
 {
-    if (backgroundFiFo.GetFiFo().size() >= 8)
-    {
-        // TODO:
+    // If the background FiFo is empty no pixel is pushed
+    // and we have to wait till there are pixels in it.
+    if (backgroundFiFo.GetFiFo().empty())
+        return ;
 
-        scanlineX++;
-    }
+    const size_t scale = cpu->settings->screenScaleGameBoy;
+    uint32_t pixelColor = PixelMixer();
+    SDL_Rect pixel;
 
+    pixel.h = scale;
+    pixel.w = scale;
+    pixel.x = scanlineX * scale;
+    pixel.y = LYregister * scale;
+
+    Graphics::UserInterface::PushRectangle(pixel, pixelColor);
+
+    // Move to the next pixel.
+    scanlineX++;
     if (scanlineX == PixelsPerScanline)
     {
         state = PixelProcessingState::hBlank;
@@ -233,7 +257,7 @@ void PPU::TickDrawingPixel()
     // Start of the scanline
     if (scanlineX == 0)
     {
-
+        // TODO: Shift pixels using SCX, add delay
     }
 
     backgroundFiFo.TickFetcher(scanlineX);
