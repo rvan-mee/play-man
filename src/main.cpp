@@ -18,6 +18,7 @@
 #define SDL_MAIN_USE_CALLBACKS
 
 #include <play-man/graphics/UserInterface.hpp>
+#include <play-man/graphics/UserInterfaceDefines.hpp>
 #include <play-man/gameboy/cartridge/Cartridge.hpp>
 #include <play-man/settings/PlayManSettings.hpp>
 #include <play-man/gameboy/opcodes/Opcodes.hpp>
@@ -39,6 +40,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
 {
 	(void)argc;
 	(void)argv;
+
+    std::shared_ptr<PlayManSettings> settings = PlayManSettings::ReadFromFile("settings.json");
     Logger::LogInterface::Initialize("Logging", Logger::LogLevel::Debug);
     Graphics::UserInterface::Initialize();
 
@@ -54,7 +57,10 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
 
         std::cout << *cartridge;
         // For now we can store a single CPU, we can wrap this around an application class later on.
-        *appstate = new GameBoy::Cpu(cartridge);
+        *appstate = new GameBoy::Cpu(cartridge, settings);
+
+        const size_t scale = settings->screenScaleGameBoy;
+        Graphics::UserInterface::Resize(GameBoyWindowWidth * scale, GameBoyWindowWidth * scale);
     }
     catch(const std::exception& e)
     {

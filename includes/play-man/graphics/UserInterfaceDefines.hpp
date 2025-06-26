@@ -24,6 +24,9 @@ constexpr char const* AppWindowName = "Play-Man";
 constexpr size_t DefaultAppWindowWidth = 1920;
 constexpr size_t DefaultAppWindowHeight = 1080;
 
+constexpr size_t GameBoyWindowWidth = 160;
+constexpr size_t GameBoyWindowHeight = 144;
+
 #define SDL_COLORS_SEQ(x, n)   \
 x(n, White, 0xFFFFFFFF)         \
 x(n, Black, 0xFF000000)         \

@@ -60,6 +60,17 @@ void UserInterface::ClearScreen()
     SDL_UpdateWindowSurface(AppWindow);
 }
 
+void UserInterface::Resize(uint32_t width, uint32_t height)
+{
+    SDL_SetWindowFullscreen(AppWindow, false);
+    SDL_SetWindowSize(AppWindow, width, height);
+}
+
+void UserInterface::PushRectangle(SDL_Rect rect, uint32_t color)
+{
+    SDL_FillSurfaceRect(AppSurface, &rect, color);
+}
+
 void UserInterface::Initialize()
 {
     auto& ui = GetInstance();

@@ -35,7 +35,11 @@ struct PlayManSettings : public ISettings<PlayManSettings>
 	/**
 	 * @brief -.
 	 */
-	PlayManSettings();
+	PlayManSettings()
+		: logLevel(defaultLogLevel)
+		, logDirectory(defaultLogDirectory)
+		, screenScaleGameBoy(defaultScreenScaleGameBoy)
+	{}
 
 	/**
 	 * @brief -.
@@ -50,7 +54,22 @@ struct PlayManSettings : public ISettings<PlayManSettings>
 	 * @param rhs 
 	 * @return
 	 */
-	PlayManSettings& operator = (const PlayManSettings& rhs);
+	PlayManSettings& operator = (const PlayManSettings& rhs)
+	{
+		logLevel = rhs.logLevel;
+		logDirectory = rhs.logDirectory;
+		screenScaleGameBoy = rhs.screenScaleGameBoy;
+		return *this;
+	}
+	
+	Logger::LogLevel logLevel;
+	static constexpr Logger::LogLevel defaultLogLevel = Logger::LogLevel::Normal;
+
+	std::filesystem::path logDirectory;
+	static constexpr std::string_view defaultLogDirectory = "Logging";
+
+	size_t screenScaleGameBoy;
+	static constexpr size_t defaultScreenScaleGameBoy = 4;
 };
 
 /**

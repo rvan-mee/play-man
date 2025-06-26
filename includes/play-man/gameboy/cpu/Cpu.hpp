@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <play-man/settings/PlayManSettings.hpp>
 #include <play-man/gameboy/cartridge/Cartridge.hpp>
 #include <play-man/gameboy/memory/MemoryBus.hpp>
 #include <play-man/gameboy/opcodes/Opcodes.hpp>
@@ -72,22 +73,28 @@ namespace GameBoy
     public:
 
         Cpu() = delete;
-        Cpu(std::shared_ptr<ACartridge> _cartridge) :
+        Cpu(std::shared_ptr<ACartridge> _cartridge, std::shared_ptr<PlayManSettings> _settings) :
             cartridge(_cartridge),
             ppu(cartridge->GetCgbMode(), this),
             memoryBus(this),
             SpeedMultiplier(1),
-            CpuCyclesLeft(0)
+            CpuCyclesLeft(0),
+            settings(_settings)
         {
             InitInstructionTable();
         };
 
         /**
-         * @brief Used for testing, overwrites the current ROM data with the data
-         *        found inside the file at filePath. Also resets all the internal registers.
-         * @param filePath The location of the test rom.
-         */
-        void LoadTestRom(const char *filePath);
+        * @brief The settings of the emulator.
+        */
+       std::shared_ptr<PlayManSettings> settings;
+
+       /**
+        * @brief Used for testing, overwrites the current ROM data with the data
+        *        found inside the file at filePath. Also resets all the internal registers.
+        * @param filePath The location of the test rom.
+        */
+       void LoadTestRom(const char *filePath);
 
         /**
          * @brief -.

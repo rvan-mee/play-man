@@ -64,6 +64,16 @@ public:
     static void Initialize();
 
     /**
+     * @brief Resizes the window.
+     */
+    static void Resize(uint32_t width, uint32_t height);
+
+    /**
+     * @brief Pushes a rectangle of a certain color to the window.
+     */
+    static void PushRectangle(SDL_Rect rect, uint32_t color);
+
+    /**
      * @brief Sets the entire main application window to white.
      */
     static void ClearScreen();
