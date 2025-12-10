@@ -44,11 +44,11 @@ uint8_t PPU::ReadByte(uint16_t address)
     {
         case (AddressLCDC):
         {
-            return LCDCregister; 
+            return LCDCregister;
         }
         case (AddressSTAT):
         {
-            return STATregister; 
+            return STATregister;
         }
         case (AddressSCY):
         {
@@ -199,7 +199,10 @@ void    PPU::WriteByte(uint16_t address, uint8_t value)
     {
         case (AddressLCDC):
         {
-            LCDCregister = value; 
+            LCDCregister = value;
+            // TODO: check if this is correct
+            if (LCDCregister & WindowEnableMask)
+                backgroundFiFo.EnableWindow(scanlineX);
             break;
         }
         case (AddressSTAT):

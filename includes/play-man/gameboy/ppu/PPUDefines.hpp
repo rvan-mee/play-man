@@ -124,7 +124,7 @@ typedef struct s_FiFoEntry {
 }   FiFoEntry;
 
 /**
- * @brief The amount of entries are pushed to the FiFo per FiFoPush state.
+ * @brief The amount of entries that are pushed to the FiFo per FiFoPush state.
  */
 constexpr uint8_t FiFoEntriesPerPush = 8;
 

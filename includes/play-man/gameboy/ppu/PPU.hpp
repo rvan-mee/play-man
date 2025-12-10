@@ -42,9 +42,20 @@ class PPU
         protected:
 
             /**
-             * @brief The Y position of the current tile being fetched.
+             * @brief The internal X position of the pixel being fetched. Gets updated by +8 after every
+             *        tile fetch.
+             */
+            uint8_t fetcherX;
+
+            /**
+             * @brief The Y position inside the current tile being fetched.
              */
             uint8_t fetcherTileY;
+
+            /**
+             * @brief The Y position inside the current tile being fetched.
+             */
+            uint8_t fetcherTileX;
 
             /**
              * @brief In background/window mode the address of the tile number, in object mode the address
@@ -93,7 +104,7 @@ class PPU
             /**
              * @brief Fetches and stores the tile number from which the pixels should be retrieved.
              */
-            virtual void TickTileFetch(uint8_t scanlineX) = 0;
+            virtual void TickTileFetch() = 0;
 
             /**
              * @brief Fetches the lower byte of the fetch data.
@@ -104,11 +115,6 @@ class PPU
              * @brief This functions the same as the TickDataLow() except the tile address is incremented by 1.
              */
             virtual void TickDataHighFetch() = 0;
-
-            /**
-             * @brief Sleeps for sleepCycles amount of T-ticks.
-             */
-            void TickSleep();
 
             /**
              * @brief Computes the correct pixel values and then attempts to push those entries to the FiFo.
@@ -139,16 +145,15 @@ class PPU
             /**
              * @brief Performs a T-tick for the FiFo pixel fetcher, used in Mode 3.
              * 
-             * The fetcher goes in 5 different steps, where the first 4 steps each take 2 T-ticks.
+             * The fetcher goes in 4 different steps, where the first 3 steps each take 2 T-ticks.
              * The final step is attempted every dot till it succeeds.
              * 
              *    NumberFetch: Fetches the number of the tile the pixels are taken from.
              *    DataLowFetch: Fetches the lower byte of data.
              *    DataHighFetch: Fetches the higher byte of data.
-             *    Sleep: Does as it says, nothing.
-             *    FiFoPush: Attempts the push the fetched pixels inside the FiFo.
+             *    FiFoPush: Attempts to push the fetched pixels inside the FiFo.
              */
-            void TickFetcher(uint8_t currentX);
+            void TickFetcher();
 
             /**
              * @brief Returns a reference to the Pixel FiFo.
@@ -162,7 +167,7 @@ class PPU
         class BackgroundFiFo : public FiFoBase
         {
         private:
-            void TickTileFetch(uint8_t scanlineX) override;
+            void TickTileFetch() override;
             void TickDataLowFetch() override;
             void TickDataHighFetch() override;
             void TickFiFoPush() override;
@@ -178,12 +183,58 @@ class PPU
              * 
              * @return True if the tile is a window tile.
              */
-            bool RenderingWindow(uint8_t scanlineX);
+            bool RenderingWindow();
+
+            /**
+             * @brief Which row of tiles inside the window tile map is being drawn from.
+             * 
+             * Represents the amount of scanlines where the window was active and
+             * within the Y position (WY == LY). 
+             */
+            uint8_t windowLineCounter;
+
+            /**
+             * @brief True if the current scanline had any window pixels on it.
+            */
+            bool windowPixelRendered;
+
+            /**
+             * @brief Gets set when the WY == LY and the window is enabled.
+             */
+            bool windowVerticalCondition;
+
+            /**
+             * @brief Gets set when the (WX - 7) == fetcherX and the window is enabled.
+             */
+            bool windowHorizontalCondition;
+
+            /**
+             * @brief This gets set when the window is enabled and both the horizontal and
+             * vertical conditions have been reached.
+             */
+            bool windowRenderingActivated;
 
         public:
             BackgroundFiFo() = delete;
             BackgroundFiFo(PPU* _ppu) : PPU::FiFoBase(_ppu) {};
             ~BackgroundFiFo() = default;
+
+            /**
+             * @brief The background FiFo has to be flushed and restarted if the window gets enabled
+             * and the current fetcherX is within the window.
+             */
+            void UpdateWindow();
+
+            /**
+             * @brief Updates the internal 'windowLineCounter' after a scanline
+             * with a window pixel has been pushed.
+             */
+            void UpdateWindowLineCounter();
+
+            /**
+             * @brief Resets the window line counter and flags.
+             */
+            void ResetWindowLineCounter();
         };
 
         // The FiFos are apart of the PPU, hence the friend.
@@ -196,7 +247,7 @@ class PPU
         class ObjectFiFo : public FiFoBase
         {
         private:
-            void TickTileFetch(uint8_t scanlineX) override;
+            void TickTileFetch() override;
             void TickDataLowFetch() override;
             void TickDataHighFetch() override;
             void TickFiFoPush() override;
