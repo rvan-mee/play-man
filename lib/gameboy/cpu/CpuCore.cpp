@@ -40,11 +40,11 @@ namespace GameBoy
     {
         if (enable)
         {
-            AF.SetHighByte(AF.HighByte() | static_cast<uint8_t>(flag));
+            AF.SetLowByte(AF.LowByte() | static_cast<uint8_t>(flag));
         }
         else
         {
-            AF.SetHighByte(AF.HighByte() & ~(static_cast<uint8_t>(flag)));
+            AF.SetLowByte(AF.LowByte() & ~(static_cast<uint8_t>(flag)));
         }
     }
 
@@ -53,10 +53,17 @@ namespace GameBoy
     std::ostream& operator << (std::ostream& lhs, const CpuCore& core)
     {
         lhs << "Register:       Value:\n";
-        lhs << "AF              " << Utility::IntAsHexString(core.AF.LowByte()) << " " << Utility::IntAsHexString(core.AF.HighByte()) << "\n";
-        lhs << "BC              " << Utility::IntAsHexString(core.BC.LowByte()) << " " << Utility::IntAsHexString(core.BC.HighByte()) << "\n";
-        lhs << "DE              " << Utility::IntAsHexString(core.DE.LowByte()) << " " << Utility::IntAsHexString(core.DE.HighByte()) << "\n";
-        lhs << "HL              " << Utility::IntAsHexString(core.HL.LowByte()) << " " << Utility::IntAsHexString(core.HL.HighByte()) << "\n";
+        lhs << "AF              " << Utility::IntAsHexString(core.AF.HighByte()) << " ";
+        // Print the bits of the flag register
+        for (int8_t i = 7; i >= 0; i--)
+        {
+            lhs << (((core.AF.LowByte() >> i) & 1) ? "1" : "0");
+        }
+        lhs << "\n";
+
+        lhs << "BC              " << Utility::IntAsHexString(core.BC.HighByte()) << " " << Utility::IntAsHexString(core.BC.LowByte()) << "\n";
+        lhs << "DE              " << Utility::IntAsHexString(core.DE.HighByte()) << " " << Utility::IntAsHexString(core.DE.LowByte()) << "\n";
+        lhs << "HL              " << Utility::IntAsHexString(core.HL.HighByte()) << " " << Utility::IntAsHexString(core.HL.LowByte()) << "\n";
         lhs << "SP              " << Utility::IntAsHexString(core.SP.Value()) << "\n";
         lhs << "PC              " << Utility::IntAsHexString(core.PC.Value()) << "\n";
         lhs << "IE              " << Utility::IntAsHexString(core.IE) << "\n";
