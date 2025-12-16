@@ -65,17 +65,39 @@ TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "Nop, 0x00")
 
 TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "LD_BC_n16, 0x01")
 {
+	// File containing the bytes 0xF0 0x0F
+	// The first byte should become the lower half of the 16 bit register.
+	LoadTestRom(GB_ROM_PATH "load_immediate_16.gb");
 	const auto pcBefore = PC.Value();
 	const auto numberOfCycles = ExecuteInstruction(GameBoy::OpCode::LD_BC_n16);
 
 	REQUIRE(numberOfCycles == 3);
 	REQUIRE(AF.Value() == 0x00'00);
-	// REQUIRE(BC.Value() == GetEnumAsValue(GameBoy::OpCode::NOP)); // we need test roms for this
+	REQUIRE(BC.Value() == 0x0F'F0);
 	REQUIRE(DE.Value() == 0x00'00);
 	REQUIRE(HL.Value() == 0x00'00);
 	REQUIRE(SP.Value() == 0x00'00);
 
 	const auto expectedPC = pcBefore + 2;
 	REQUIRE(PC.Value() == expectedPC);
+	REQUIRE(IE == 0x00);
+}
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "JP_a16, 0xC3")
+{
+	// File containing the bytes 0xF0 0x0F
+	// The first byte should become the lower half of the 16 bit register.
+	LoadTestRom(GB_ROM_PATH "load_immediate_16.gb");
+	REQUIRE(PC.Value() == 0x00'00);
+
+	const auto numberOfCycles = ExecuteInstruction(GameBoy::OpCode::JP_a16);
+
+	REQUIRE(numberOfCycles == 4);
+	REQUIRE(AF.Value() == 0x00'00);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x0F'F0);
 	REQUIRE(IE == 0x00);
 }

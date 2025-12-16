@@ -17,50 +17,20 @@
 
 #include <play-man/gameboy/cpu/Cpu.hpp>
 
-namespace GameBoy
-{
-	void Cpu::InitInstructionTable()
+namespace GameBoy {
+
+	
+	size_t Cpu::Jump_16bit_ImmediateData()
 	{
-		// 0x0-
-		instructions[OpCode::NOP] = std::bind(&Cpu::NOP, std::placeholders::_1);
-		instructions[OpCode::LD_BC_n16] = std::bind(&Cpu::Load_16bit_ImmediateData, std::placeholders::_1, &CpuCore::BC);
+		Register tmpReg;
 
-		// 0x1-
-		// 0x2-
-		// 0x3-
-		// 0x4-
-		// 0x5-
-		// 0x6-
-		// 0x7-
-		// 0x8-
-		// 0x9-
-		// 0xA-
-		// 0xB-
-		// 0xC-
-		instructions[OpCode::JP_a16] = std::bind(&Cpu::Jump_16bit_ImmediateData, std::placeholders::_1);
+		tmpReg.SetLowByte(FetchPcAddress());
+		tmpReg.SetHighByte(FetchPcAddress());
 
-		// 0xD-
-		// 0xE-
-		// 0xF-
+		core.PC = tmpReg;
 
-
-		/** Prefixed instructions **/
-
-		// 0x0-
-		// 0x1-
-		// 0x2-
-		// 0x3-
-		// 0x4-
-		// 0x5-
-		// 0x6-
-		// 0x7-
-		// 0x8-
-		// 0x9-
-		// 0xA-
-		// 0xB-
-		// 0xC-
-		// 0xD-
-		// 0xE-
-		// 0xF-	
+		constexpr auto numberOfCycles = 4;
+		return numberOfCycles;
 	}
+
 }

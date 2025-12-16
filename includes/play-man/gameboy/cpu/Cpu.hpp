@@ -127,6 +127,12 @@ private:
          */
         size_t Load_16bit_ImmediateData(Register CpuCore::* reg);
 
+        /**
+         * @brief Loads two bytes of immediate date into the PC reg.
+         *        First byte of immediate data is low byte.
+         * @return number of cycles.
+         */
+        size_t Jump_16bit_ImmediateData();
     };
 
 }
