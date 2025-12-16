@@ -21,6 +21,12 @@
 
 namespace GameBoy
 {
+    void Cpu::LoadTestRom(const char* filePath)
+    {
+        core.ClearRegisters();
+        rom.LoadTestRom(filePath);
+    }
+
     void Cpu::ExecuteInstruction(OpCode opCode)
     {
         instructions[opCode](this);
@@ -52,7 +58,7 @@ namespace GameBoy
         }
         catch (const std::exception& e)
         {
-            LOG_FATAL("Failed to exectue instruction " + currentInstruction.OpCodeAsHexString() + ": " + e.what());
+            LOG_FATAL("Failed to execute instruction " + currentInstruction.OpCodeAsHexString() + ": " + e.what());
             abort();
         }
 

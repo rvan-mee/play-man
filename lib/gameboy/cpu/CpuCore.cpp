@@ -20,6 +20,17 @@
 
 namespace GameBoy
 {
+    void CpuCore::ClearRegisters()
+    {
+        AF = 0x00'00;
+        BC = 0x00'00;
+        DE = 0x00'00;
+        HL = 0x00'00;
+        SP = 0x00'00;
+        PC = 0x00'00;
+        IE = 0x00;
+    }
+
     uint8_t	CpuCore::GetInterruptRegister()
     {
         return (IE);

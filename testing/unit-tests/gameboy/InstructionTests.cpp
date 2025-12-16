@@ -3,6 +3,8 @@
 #include <catch2/catch_test_macros.hpp>
 #include "play-man/gameboy/cpu/Cpu.hpp"
 
+#define GB_ROM_PATH "../test-data/custom_gb_test_roms/"
+
 namespace TestFixtures
 {
 	/**
@@ -11,7 +13,7 @@ namespace TestFixtures
 	struct GameBoyCpuFixture
 	{
 		GameBoyCpuFixture()
-			: cpu("/home/king/programming/codam/advanced/play-man/roms/Pokemon_Rouge.gb")
+			: cpu(GB_ROM_PATH "test_rom.gb")
 			, AF(cpu.core.AF)
 			, BC(cpu.core.BC)
 			, DE(cpu.core.DE)
@@ -35,6 +37,11 @@ namespace TestFixtures
 		size_t ExecuteInstruction(GameBoy::OpCode op)
 		{
 			return cpu.instructions.at(op)(&cpu);
+		}
+
+		void LoadTestRom(const char *filePath)
+		{
+			cpu.LoadTestRom(filePath);
 		}
 
 	};

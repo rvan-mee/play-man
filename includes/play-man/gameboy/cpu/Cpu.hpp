@@ -57,6 +57,13 @@ namespace GameBoy
         };
 
         /**
+         * @brief Used for testing, overwrites the current ROM data with the data
+         *        found inside the file at filePath. Also resets all the internal registers.
+         * @param filePath The location of the test rom.
+         */
+        void LoadTestRom(const char *filePath);
+
+        /**
          * @brief -.
          * @param opCode 
          */

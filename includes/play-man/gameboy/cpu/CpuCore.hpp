@@ -61,6 +61,11 @@ namespace GameBoy
 
         // uint16_t	cyclesPassed = 0; /* */
 
+        /**
+         * @brief Sets all registers to the value 0x00'00
+         */
+        void ClearRegisters();
+
     public:
         /**
          * @brief -.
