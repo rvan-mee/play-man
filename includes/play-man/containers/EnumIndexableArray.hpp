@@ -37,8 +37,8 @@ template<
 private:
 
 	using array = std::array<T, N>;
-	using reference = array::reference;
-	using const_reference = array::const_reference;
+	using reference = typename array::reference;
+	using const_reference = typename array::const_reference;
 
 public:
 
