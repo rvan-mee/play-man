@@ -19,28 +19,12 @@
 
 namespace GameBoy
 {
-	size_t Cpu::Increment_8bit_High(Register CpuCore:: *reg)
-	{
-		Register& r = core.*reg;
+    size_t Cpu::Increment_16bit(Register CpuCore::* reg)
+    {
+        Register& r = core.*reg;
 
-		r.SetHighByte(r.HighByte() + 1);
-		constexpr size_t numberOfCycles = 2;
-		return numberOfCycles;
-	}
-
-	size_t Cpu::Compare_8bit_High_ImmediateData(Register CpuCore::*reg)
-	{
-		const uint8_t regContents = (core.*reg).HighByte();
-		const uint8_t data = FetchPcAddress();
-		const uint8_t compareResult = regContents - data;
-
-		core.SetFlag(FlagRegisterFlag::ZERO, compareResult == 0);
-		core.SetFlag(FlagRegisterFlag::ADD_SUB, true);
-		core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((regContents & 0xf) - (data & 0xf)) < 0);
-		core.SetFlag(FlagRegisterFlag::CARRY, regContents < data);
-
-		constexpr size_t numberOfCycles = 2;
-		return numberOfCycles;
-	}
-
-} // namespace GameBoy
+        r++;
+        constexpr size_t numberOfCycles = 2;
+        return numberOfCycles;
+    }
+}

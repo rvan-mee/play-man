@@ -119,13 +119,43 @@ private:
          */
         size_t NOP();
 
+
+        /**                                16 bit instructions                                             **/
+
+		/**
+		 * @brief Loads two bytes of immediate data into reg.
+		 * 		  First byte of immediate data is low byte.
+		 * @param reg 
+		 * @return size_t 
+		 */
+		size_t Load_16bit_ImmediateData(Register CpuCore::* reg);
+
         /**
-         * @brief Loads two bytes of immediate data into reg.
-         * 		  First byte of immediate data is low byte.
-         * @param reg 
-         * @return size_t 
+         * @brief Increments the 16 bit register by 1.
+         * 
+         * @param reg Pointer to the register needing to be incremented.
+         * @return number of cycles.
          */
-        size_t Load_16bit_ImmediateData(Register CpuCore::* reg);
+        size_t Increment_16bit(Register CpuCore::* reg);
+
+        /**
+         * @brief Loads two bytes of immediate date into the PC reg.
+         *        First byte of immediate data is low byte.
+         * @return number of cycles.
+         */
+        size_t Jump_16bit_ImmediateData();
+
+
+        /**                                8 bit instructions                                              **/
+
+        /**
+         * @brief Increments the high part of the register by 1.
+         * 
+         * @param reg Pointer to the register needing to be incremented.
+         * 
+         * @return number of cycles. 
+         */
+        size_t Increment_8bit_High(Register CpuCore:: *reg);
 
         /**
          * @brief Stores the byte found in the high register of dataReg to the addres
@@ -137,13 +167,6 @@ private:
          * @return number of cycles.
          */
         size_t Store_8bit_High_Addr(Register CpuCore::* addrReg, Register CpuCore::* dataReg);
-
-        /**
-         * @brief Loads two bytes of immediate date into the PC reg.
-         *        First byte of immediate data is low byte.
-         * @return number of cycles.
-         */
-        size_t Jump_16bit_ImmediateData();
 
         /**
          * @brief Compares the 8 bit immediate data to the high register by calculating (reg - data).
