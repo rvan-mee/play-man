@@ -53,8 +53,10 @@ namespace GameBoy
     std::ostream& operator << (std::ostream& lhs, const CpuCore& core)
     {
         lhs << "Register:       Value:\n";
-        lhs << "AF              " << Utility::IntAsHexString(core.AF.HighByte()) << " ";
+        lhs << "AF              " << Utility::IntAsHexString(core.AF.HighByte()) << " " << Utility::IntAsHexString(core.AF.LowByte());
+        
         // Print the bits of the flag register
+        lhs << " Flags: 0b";
         for (int8_t i = 7; i >= 0; i--)
         {
             lhs << (((core.AF.LowByte() >> i) & 1) ? "1" : "0");
