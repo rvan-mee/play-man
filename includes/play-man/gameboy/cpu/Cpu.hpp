@@ -133,6 +133,18 @@ private:
          * @return number of cycles.
          */
         size_t Jump_16bit_ImmediateData();
+
+        /**
+         * @brief Compares the 8 bit immediate data to the high register by calculating (reg - data).
+         * 
+         * @note The Z flag is set if they are equal.
+         * @note The S flag is set to true.
+         * @note The H flag is set according to the calculation.
+         * @note The C flag is set according to the calculation.
+         * 
+         * @return number of cycles.
+         */
+        size_t Compare_8bit_High_ImmediateData(Register CpuCore::* reg);
     };
 
 }

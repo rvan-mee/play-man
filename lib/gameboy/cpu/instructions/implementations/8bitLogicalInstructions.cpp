@@ -17,51 +17,21 @@
 
 #include <play-man/gameboy/cpu/Cpu.hpp>
 
-namespace GameBoy
-{
-	void Cpu::InitInstructionTable()
+namespace GameBoy {
+
+	size_t Cpu::Compare_8bit_High_ImmediateData(Register CpuCore::*reg)
 	{
-		// 0x0-
-		instructions[OpCode::NOP] = std::bind(&Cpu::NOP, std::placeholders::_1);
-		instructions[OpCode::LD_BC_n16] = std::bind(&Cpu::Load_16bit_ImmediateData, std::placeholders::_1, &CpuCore::BC);
+		const uint8_t regContents = (core.*reg).HighByte();
+		const uint8_t data = FetchPcAddress();
+		const uint8_t compareResult = regContents - data;
 
-		// 0x1-
-		// 0x2-
-		// 0x3-
-		// 0x4-
-		// 0x5-
-		// 0x6-
-		// 0x7-
-		// 0x8-
-		// 0x9-
-		// 0xA-
-		// 0xB-
-		// 0xC-
-		instructions[OpCode::JP_a16] = std::bind(&Cpu::Jump_16bit_ImmediateData, std::placeholders::_1);
+		core.SetFlag(FlagRegisterFlag::ZERO, compareResult == 0);
+		core.SetFlag(FlagRegisterFlag::ADD_SUB, true);
+		core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((regContents & 0xf) - (data & 0xf)) < 0);
+		core.SetFlag(FlagRegisterFlag::CARRY, regContents < data);
 
-		// 0xD-
-		// 0xE-
-		// 0xF-
-		instructions[OpCode::CP_A_n8] = std::bind(&Cpu::Compare_8bit_High_ImmediateData, std::placeholders::_1, &CpuCore::AF);
-
-
-		/** Prefixed instructions **/
-
-		// 0x0-
-		// 0x1-
-		// 0x2-
-		// 0x3-
-		// 0x4-
-		// 0x5-
-		// 0x6-
-		// 0x7-
-		// 0x8-
-		// 0x9-
-		// 0xA-
-		// 0xB-
-		// 0xC-
-		// 0xD-
-		// 0xE-
-		// 0xF-	
+		constexpr size_t numberOfCycles = 2;
+		return numberOfCycles;
 	}
-}
+
+} // namespace GameBoy

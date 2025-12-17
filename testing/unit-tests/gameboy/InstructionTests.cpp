@@ -101,3 +101,41 @@ TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "JP_a16, 0xC3")
 	REQUIRE(PC.Value() == 0x0F'F0);
 	REQUIRE(IE == 0x00);
 }
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "CP_A_n8, 0xFE")
+{
+	// File containing the byte 0x0F
+	LoadTestRom(GB_ROM_PATH "load_immediate_8.gb");
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(AF.Value() == 0x00'00);
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::OpCode::CP_A_n8);
+
+	REQUIRE(numberOfCycles == 2);
+	REQUIRE(AF.Value() == 0b00000000'01110000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'01);
+	REQUIRE(IE == 0x00);
+
+	// Test equal
+	LoadTestRom(GB_ROM_PATH "load_immediate_8.gb");
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(AF.Value() == 0x00'00);
+
+	AF.SetHighByte(0x0F);
+	REQUIRE(AF.Value() == 0x0F'00);
+
+	numberOfCycles = ExecuteInstruction(GameBoy::OpCode::CP_A_n8);
+
+	REQUIRE(numberOfCycles == 2);
+	REQUIRE(AF.Value() == 0b00001111'11000000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'01);
+	REQUIRE(IE == 0x00);
+}
