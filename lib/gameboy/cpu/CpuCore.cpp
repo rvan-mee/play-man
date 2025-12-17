@@ -36,6 +36,11 @@ namespace GameBoy
         return (IE);
     }
 
+    void	CpuCore::SetInterruptRegister(const uint8_t value)
+    {
+        IE = value;
+    }
+
     void CpuCore::SetFlag(FlagRegisterFlag flag, bool enable)
     {
         if (enable)

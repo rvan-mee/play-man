@@ -73,6 +73,11 @@ namespace GameBoy
         uint8_t GetInterruptRegister();
 
         /**
+         * @brief -.
+         */
+        void    SetInterruptRegister(const uint8_t value);
+
+        /**
          * @brief Used to set a bit inside the flag register
          * @param flag The flag to be changed
          * @param enable Enable or disable the targeted flag

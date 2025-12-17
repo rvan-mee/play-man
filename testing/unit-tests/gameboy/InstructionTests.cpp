@@ -5,6 +5,9 @@
 
 #define GB_ROM_PATH "../test-data/custom_gb_test_roms/"
 
+// Address for the interrupt register 
+constexpr uint16_t interruptAddress = 0xFFFF;
+
 namespace TestFixtures
 {
 	/**
@@ -44,6 +47,17 @@ namespace TestFixtures
 			cpu.LoadTestRom(filePath);
 		}
 
+		void ClearRegisters()
+		{
+			AF.SetValue(0x0000);
+			BC.SetValue(0x0000);
+			DE.SetValue(0x0000);
+			HL.SetValue(0x0000);
+			SP.SetValue(0x0000);
+			PC.SetValue(0x0000);
+			IE = 0x00;
+		}
+
 	};
 }
 
@@ -81,6 +95,26 @@ TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "LD_BC_n16, 0x01")
 	const auto expectedPC = pcBefore + 2;
 	REQUIRE(PC.Value() == expectedPC);
 	REQUIRE(IE == 0x00);
+}
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "LD_BC_NI_A, 0x02")
+{
+	ClearRegisters();
+
+	// Set the address inside the BC register and the value in A
+	BC.SetValue(interruptAddress);
+	AF.SetHighByte(0xF0);
+
+	const auto numberOfCycles = ExecuteInstruction(GameBoy::OpCode::LD_BC_NI_A);
+
+	REQUIRE(numberOfCycles == 2);
+	REQUIRE(AF.Value() == 0xF0'00);
+	REQUIRE(BC.Value() == interruptAddress);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0xF0);
 }
 
 TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "JP_a16, 0xC3")

@@ -17,7 +17,8 @@
 
 #include <play-man/gameboy/cpu/Cpu.hpp>
 
-namespace GameBoy {
+namespace GameBoy
+{
 
 	size_t Cpu::Compare_8bit_High_ImmediateData(Register CpuCore::*reg)
 	{
