@@ -240,6 +240,37 @@ TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "LD_B_n8, 0x06")
 	REQUIRE(IE == 0x00);
 }
 
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RLCA, 0x07")
+{
+	ClearRegisters();
+	AF.SetHighByte(0b10000001);
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::OpCode::RLCA);
+
+	REQUIRE(numberOfCycles == 1);
+	REQUIRE(AF.Value() == 0b00000011'00010000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+
+	ClearRegisters();
+	AF.SetHighByte(0b01010101);
+
+	numberOfCycles = ExecuteInstruction(GameBoy::OpCode::RLCA);
+
+	REQUIRE(numberOfCycles == 1);
+	REQUIRE(AF.Value() == 0b10101010'00000000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+}
+
 TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "JP_a16, 0xC3")
 {
 	// File containing the bytes 0xF0 0x0F
