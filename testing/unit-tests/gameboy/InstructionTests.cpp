@@ -139,7 +139,7 @@ TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "INC_B, 0x04")
 
 	auto numberOfCycles = ExecuteInstruction(GameBoy::OpCode::INC_B);
 
-	REQUIRE(numberOfCycles == 2);
+	REQUIRE(numberOfCycles == 1);
 	REQUIRE(AF.Value() == 0b00000000'00000000);
 	REQUIRE(BC.Value() == 0x01'00);
 	REQUIRE(DE.Value() == 0x00'00);
@@ -153,7 +153,7 @@ TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "INC_B, 0x04")
 
 	numberOfCycles = ExecuteInstruction(GameBoy::OpCode::INC_B);
 
-	REQUIRE(numberOfCycles == 2);
+	REQUIRE(numberOfCycles == 1);
 	REQUIRE(AF.Value() == 0b00000000'00100000);
 	REQUIRE(BC.Value() == 0x10'00);
 	REQUIRE(DE.Value() == 0x00'00);
@@ -167,9 +167,53 @@ TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "INC_B, 0x04")
 
 	numberOfCycles = ExecuteInstruction(GameBoy::OpCode::INC_B);
 
-	REQUIRE(numberOfCycles == 2);
+	REQUIRE(numberOfCycles == 1);
 	REQUIRE(AF.Value() == 0b00000000'10100000);
 	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+}
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "DEC_B, 0x05")
+{
+	ClearRegisters();
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::OpCode::DEC_B);
+
+	REQUIRE(numberOfCycles == 1);
+	REQUIRE(AF.Value() == 0b00000000'01100000);
+	REQUIRE(BC.Value() == 0xFF'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+
+	ClearRegisters();
+	BC.SetHighByte(0x01);
+
+	numberOfCycles = ExecuteInstruction(GameBoy::OpCode::DEC_B);
+
+	REQUIRE(numberOfCycles == 1);
+	REQUIRE(AF.Value() == 0b00000000'11000000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+
+	ClearRegisters();
+	BC.SetHighByte(0xF0);
+
+	numberOfCycles = ExecuteInstruction(GameBoy::OpCode::DEC_B);
+
+	REQUIRE(numberOfCycles == 1);
+	REQUIRE(AF.Value() == 0b00000000'01100000);
+	REQUIRE(BC.Value() == 0xEF'00);
 	REQUIRE(DE.Value() == 0x00'00);
 	REQUIRE(HL.Value() == 0x00'00);
 	REQUIRE(SP.Value() == 0x00'00);

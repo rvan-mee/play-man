@@ -27,6 +27,7 @@ namespace GameBoy
 		instructions[OpCode::LD_BC_NI_A] = std::bind(&Cpu::Store_8bit_Addr_High, std::placeholders::_1, &CpuCore::BC, &CpuCore::AF);
 		instructions[OpCode::INC_BC] = std::bind(&Cpu::Increment_16bit, std::placeholders::_1, &CpuCore::BC);
 		instructions[OpCode::INC_B] = std::bind(&Cpu::Increment_8bit_High, std::placeholders::_1, &CpuCore::BC);
+		instructions[OpCode::DEC_B] = std::bind(&Cpu::Decrement_8bit_High, std::placeholders::_1, &CpuCore::BC);
 
 		// 0x1-
 		// 0x2-

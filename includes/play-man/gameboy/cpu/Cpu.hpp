@@ -158,9 +158,26 @@ private:
          * 
          * @param reg Pointer to the register needing to be incremented.
          * 
+         * @note The Z flag is set if the incrementation results in a 0.
+         * @note The S flag is set to false.
+         * @note The H flag is set according to the calculation.
+         * 
          * @return number of cycles. 
          */
         size_t Increment_8bit_High(Register CpuCore:: *reg);
+
+        /**
+         * @brief Decrements the high part of the register by 1.
+         * 
+         * @param reg Pointer to the register needing to be decremented.
+         * 
+         * @note The Z flag is set if the decrementation results in a 0.
+         * @note The S flag is set to true.
+         * @note The H flag is set according to the calculation.
+         * 
+         * @return number of cycles. 
+         */
+        size_t Decrement_8bit_High(Register CpuCore:: *reg);
 
         /**
          * @brief Stores the byte found in the high register of dataReg to the addres
