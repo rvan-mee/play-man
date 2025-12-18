@@ -165,6 +165,18 @@ private:
          */
         size_t Load_16bit_RegToImmediateAddr(Register CpuCore::* reg);
 
+        /**
+         * @brief Adds the contents from fromReg to the toReg.
+         * 
+         * @note Sets the S flag to false.
+         * @note Sets the H flag according to the calculation.
+         * @note Sets the C flag according to the calculation.
+         * 
+         * @return number of cycles.
+         */
+        size_t Add_16bit(Register CpuCore::* toReg, Register CpuCore::* fromReg);
+
+
         /**                                8 bit instructions                                              **/
 
         /**

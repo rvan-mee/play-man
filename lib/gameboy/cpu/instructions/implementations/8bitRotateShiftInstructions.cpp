@@ -31,7 +31,7 @@ namespace GameBoy
         r.SetHighByte(value << 1 | shiftedBit);
 
         core.SetFlag(FlagRegisterFlag::ZERO, false);
-        core.SetFlag(FlagRegisterFlag::ADD_SUB, false);
+        core.SetFlag(FlagRegisterFlag::SUB, false);
         core.SetFlag(FlagRegisterFlag::HALF_CARRY, false);
         core.SetFlag(FlagRegisterFlag::CARRY, shiftedBit != 0);
 

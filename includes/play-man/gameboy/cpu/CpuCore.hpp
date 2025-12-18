@@ -36,7 +36,7 @@ namespace GameBoy
 	 */
 	#define F_REGISTER_FLAGS_SEQ(x, n) \
 		x(n, ZERO,       0b10000000)   \
-		x(n, ADD_SUB,    0b01000000)   \
+		x(n, SUB,        0b01000000)   \
 		x(n, HALF_CARRY, 0b00100000)   \
 		x(n, CARRY,      0b00010000)
 

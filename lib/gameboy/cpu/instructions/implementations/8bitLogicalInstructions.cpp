@@ -28,7 +28,7 @@ namespace GameBoy
 		r.SetHighByte(res);
 
 		core.SetFlag(FlagRegisterFlag::ZERO, res == 0);
-		core.SetFlag(FlagRegisterFlag::ADD_SUB, false);
+		core.SetFlag(FlagRegisterFlag::SUB, false);
 		core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((val & 0xF) + 1 > 0xF));
 
 		constexpr size_t numberOfCycles = 1;
@@ -44,7 +44,7 @@ namespace GameBoy
 		r.SetHighByte(res);
 
 		core.SetFlag(FlagRegisterFlag::ZERO, res == 0);
-		core.SetFlag(FlagRegisterFlag::ADD_SUB, true);
+		core.SetFlag(FlagRegisterFlag::SUB, true);
 		core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((val & 0xF) == 0));	
 
 		constexpr size_t numberOfCycles = 1;
@@ -58,7 +58,7 @@ namespace GameBoy
 		const uint8_t compareResult = regContents - data;
 
 		core.SetFlag(FlagRegisterFlag::ZERO, compareResult == 0);
-		core.SetFlag(FlagRegisterFlag::ADD_SUB, true);
+		core.SetFlag(FlagRegisterFlag::SUB, true);
 		core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((regContents & 0xF) - (data & 0xF)) < 0);
 		core.SetFlag(FlagRegisterFlag::CARRY, regContents < data);
 
