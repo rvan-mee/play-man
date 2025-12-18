@@ -114,9 +114,14 @@ namespace GameBoy
 private:
 
         /**
-         * @brief
-         * @return number of cycles.
+         * @brief Invalid OpCodes result in the CPU hard-locking itself until powered off
          */
+        size_t HardLock();
+
+        /**
+		 * @brief
+		 * @return number of cycles.
+		 */
         size_t NOP();
 
 

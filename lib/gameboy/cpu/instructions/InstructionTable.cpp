@@ -43,9 +43,22 @@ namespace GameBoy
 		instructions[OpCode::JP_a16] = std::bind(&Cpu::Jump_16bit_ImmediateData, std::placeholders::_1);
 
 		// 0xD-
+		instructions[OpCode::ILLEGAL_D3] = std::bind(&Cpu::HardLock, std::placeholders::_1);
+		instructions[OpCode::ILLEGAL_DB] = std::bind(&Cpu::HardLock, std::placeholders::_1);
+		instructions[OpCode::ILLEGAL_DD] = std::bind(&Cpu::HardLock, std::placeholders::_1);
+
 		// 0xE-
+		instructions[OpCode::ILLEGAL_E3] = std::bind(&Cpu::HardLock, std::placeholders::_1);
+		instructions[OpCode::ILLEGAL_E4] = std::bind(&Cpu::HardLock, std::placeholders::_1);
+		instructions[OpCode::ILLEGAL_EB] = std::bind(&Cpu::HardLock, std::placeholders::_1);
+		instructions[OpCode::ILLEGAL_EC] = std::bind(&Cpu::HardLock, std::placeholders::_1);
+		instructions[OpCode::ILLEGAL_ED] = std::bind(&Cpu::HardLock, std::placeholders::_1);
+
 		// 0xF-
 		instructions[OpCode::CP_A_n8] = std::bind(&Cpu::Compare_8bit_High_ImmediateData, std::placeholders::_1, &CpuCore::AF);
+		instructions[OpCode::ILLEGAL_F4] = std::bind(&Cpu::HardLock, std::placeholders::_1);
+		instructions[OpCode::ILLEGAL_FC] = std::bind(&Cpu::HardLock, std::placeholders::_1);
+		instructions[OpCode::ILLEGAL_FD] = std::bind(&Cpu::HardLock, std::placeholders::_1);
 
 
 		/** Prefixed instructions **/
