@@ -161,12 +161,12 @@ private:
          * @brief Stores the byte found in the high register of dataReg to the addres
          *        Pointed to by addrReg.
          * 
-         * @param dataReg Pointer to the register where the data will be taken from (high 8 bits).
          * @param addrReg Pointer to the register containing the address where the data needs to be stored. 
+         * @param dataReg Pointer to the register where the data will be taken from (high 8 bits).
          * 
          * @return number of cycles.
          */
-        size_t Store_8bit_High_Addr(Register CpuCore::* addrReg, Register CpuCore::* dataReg);
+        size_t Store_8bit_Addr_High(Register CpuCore::* addrReg, Register CpuCore::* dataReg);
 
         /**
          * @brief Compares the 8 bit immediate data to the high register by calculating (reg - data).

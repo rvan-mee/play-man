@@ -20,7 +20,7 @@
 namespace GameBoy
 {
 
-    size_t Cpu::Store_8bit_High_Addr(Register CpuCore::* addrReg, Register CpuCore::* dataReg)
+    size_t Cpu::Store_8bit_Addr_High(Register CpuCore::* addrReg, Register CpuCore::* dataReg)
     {
         uint8_t data = (core.*dataReg).HighByte();
         uint16_t addr = (core.*addrReg).Value();
