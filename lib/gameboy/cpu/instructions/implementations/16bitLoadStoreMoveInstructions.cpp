@@ -29,4 +29,19 @@ namespace GameBoy
 		return numberOfCycles;
 	}
 
+	size_t Cpu::Load_16bit_RegToImmediateAddr(Register CpuCore::* reg)
+	{
+		const Register& r = core.*reg;
+		const auto lowByte = r.LowByte();
+		const auto highByte = r.HighByte();
+
+		const auto addr = FetchPcAddress16bit();
+
+		memoryBus.WriteByte(addr, lowByte);
+		memoryBus.WriteByte(addr+1, highByte);
+
+		constexpr size_t numberOfCycles = 5;
+		return numberOfCycles;
+	}
+
 } /* namespace GameBoy */

@@ -79,6 +79,14 @@ namespace GameBoy
 		return data;
 	}
 
+    uint16_t Cpu::FetchPcAddress16bit()
+    {
+		const auto data = (Fetch(core.PC.Value()) << 8) | Fetch(core.PC.Value() + 1);
+		core.PC++;
+        core.PC++;
+		return data;
+    }
+
     void Cpu::FetchInstruction()
     {
 		try

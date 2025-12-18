@@ -33,6 +33,9 @@ namespace GameBoy {
             // io module
             // other modules
 
+            // Temp work ram (no banks) so CPU instructions can be tested.
+            std::array<uint8_t, 4096> tmp_work_ram = {};
+
         public:
             MemoryBus() = delete;
             MemoryBus(std::shared_ptr<ACartridge> _cartridge, CpuCore& _core) : cartridge(_cartridge), core(_core) {};

@@ -104,6 +104,12 @@ namespace GameBoy
         uint8_t FetchPcAddress();
 
         /**
+         * @brief Reads two bytes from the memory bus at address contained in PC; increments PC by 2;
+         * @return The 16bit data found at the address contained in PC.
+         */
+        uint16_t FetchPcAddress16bit();
+
+        /**
          * @brief Initializes the instruction array.
          */
         void InitInstructionTable();
@@ -150,6 +156,14 @@ private:
          */
         size_t Jump_16bit_ImmediateData();
 
+        /**
+         * @brief Loads the contents of the 16bit register to the address found at PC.
+         * 
+         * @param reg Pointer to the register where the data is taken from.
+         * 
+         * @return number of cycles.
+         */
+        size_t Load_16bit_RegToImmediateAddr(Register CpuCore::* reg);
 
         /**                                8 bit instructions                                              **/
 

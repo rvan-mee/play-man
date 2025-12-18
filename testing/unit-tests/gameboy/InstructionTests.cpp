@@ -2,11 +2,13 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch_test_macros.hpp>
 #include "play-man/gameboy/cpu/Cpu.hpp"
+#include "play-man/gameboy/memory/MemoryBus.hpp"
 
 #define GB_ROM_PATH "../test-data/custom_gb_test_roms/"
 
 // Address for the interrupt register 
 constexpr uint16_t interruptAddress = 0xFFFF;
+constexpr uint16_t wRamAddressStart = 0xC000;
 
 namespace TestFixtures
 {
@@ -17,6 +19,7 @@ namespace TestFixtures
 	{
 		GameBoyCpuFixture()
 			: cpu(GB_ROM_PATH "test_rom.gb")
+			, memoryBus(cpu.memoryBus)
 			, AF(cpu.core.AF)
 			, BC(cpu.core.BC)
 			, DE(cpu.core.DE)
@@ -29,6 +32,7 @@ namespace TestFixtures
 		}
 
 		GameBoy::Cpu 		cpu;
+		GameBoy::MemoryBus& memoryBus;
 		GameBoy::Register&	AF;
         GameBoy::Register&	BC;
         GameBoy::Register&	DE;
@@ -269,6 +273,27 @@ TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RLCA, 0x07")
 	REQUIRE(SP.Value() == 0x00'00);
 	REQUIRE(PC.Value() == 0x00'00);
 	REQUIRE(IE == 0x00);
+}
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "LD_a16_NI_SP, 0x08")
+{
+	// File containing the address of the work ram
+	LoadTestRom(GB_ROM_PATH "workram_address.gb");
+	SP.SetValue(0xF00F);
+
+	const auto numberOfCycles = ExecuteInstruction(GameBoy::OpCode::LD_a16_NI_SP);
+
+	REQUIRE(numberOfCycles == 5);
+	REQUIRE(AF.Value() == 0x00'00);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0xF0'0F);
+	REQUIRE(PC.Value() == 0x00'02);
+	REQUIRE(IE == 0x00);
+
+	const uint16_t val = memoryBus.ReadByte(wRamAddressStart) | memoryBus.ReadByte(wRamAddressStart + 1) << 8;
+	REQUIRE(SP.Value() == val);
 }
 
 TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "JP_a16, 0xC3")

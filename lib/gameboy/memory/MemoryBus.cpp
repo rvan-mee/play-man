@@ -47,7 +47,7 @@ uint8_t MemoryBus::ReadByte(const uint16_t address)
     }
     else if (address >= wRamAddressStart && address <= wRamAddressEnd)
     {
-        assert(false && "Fetching from this memory address is not supported yet!");
+        return (tmp_work_ram[address - wRamAddressStart]);
     }
     else if (address >= wRamBankAddressStart && address <= wRamBankAddressEnd)
     {
@@ -148,6 +148,10 @@ void MemoryBus::WriteByte(const uint16_t address, const uint8_t value)
     else if (address == interruptAddress)
     {
         assert(false && "Writing to this memory address is not supported yet!");
+    }
+    else if (address >= wRamAddressStart && address <= wRamAddressEnd)
+    {
+        tmp_work_ram[address - wRamAddressStart] = value;
     }
     else
     {
