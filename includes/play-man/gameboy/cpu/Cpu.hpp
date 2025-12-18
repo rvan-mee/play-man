@@ -191,6 +191,15 @@ private:
         size_t Store_8bit_Addr_High(Register CpuCore::* addrReg, Register CpuCore::* dataReg);
 
         /**
+         * @brief Loads the 8bit immediate data into the high register of reg.
+         * 
+         * @param reg Pointer to the register where the data will be loaded into (high 8 bits).
+         * 
+         * @return number of cycles. 
+         */
+        size_t Load_8bit_High_ImmediateData(Register CpuCore::* reg);
+
+        /**
          * @brief Compares the 8 bit immediate data to the high register by calculating (reg - data).
          * 
          * @note The Z flag is set if they are equal.
