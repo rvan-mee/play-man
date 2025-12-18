@@ -23,9 +23,13 @@ namespace GameBoy
 	size_t Cpu::HardLock()
 	{
 		LOG_WARNING("Invalid OpCode called, CPU hard-locked.\nRestart required.");
+
 		// TODO: consider making this optional with a setting
 		while (true)
 			;
+
+		constexpr auto numberOfCycles = 1;
+		return numberOfCycles;
 	}
 
 	size_t Cpu::NOP()

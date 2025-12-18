@@ -137,11 +137,39 @@ TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "INC_B, 0x04")
 {
 	ClearRegisters();
 
-	const auto numberOfCycles = ExecuteInstruction(GameBoy::OpCode::INC_B);
+	auto numberOfCycles = ExecuteInstruction(GameBoy::OpCode::INC_B);
 
 	REQUIRE(numberOfCycles == 2);
-	REQUIRE(AF.Value() == 0x00'00);
+	REQUIRE(AF.Value() == 0b00000000'00000000);
 	REQUIRE(BC.Value() == 0x01'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+
+	ClearRegisters();
+	BC.SetHighByte(0x0F);
+
+	numberOfCycles = ExecuteInstruction(GameBoy::OpCode::INC_B);
+
+	REQUIRE(numberOfCycles == 2);
+	REQUIRE(AF.Value() == 0b00000000'00100000);
+	REQUIRE(BC.Value() == 0x10'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+
+	ClearRegisters();
+	BC.SetHighByte(0xFF);
+
+	numberOfCycles = ExecuteInstruction(GameBoy::OpCode::INC_B);
+
+	REQUIRE(numberOfCycles == 2);
+	REQUIRE(AF.Value() == 0b00000000'10100000);
+	REQUIRE(BC.Value() == 0x00'00);
 	REQUIRE(DE.Value() == 0x00'00);
 	REQUIRE(HL.Value() == 0x00'00);
 	REQUIRE(SP.Value() == 0x00'00);
