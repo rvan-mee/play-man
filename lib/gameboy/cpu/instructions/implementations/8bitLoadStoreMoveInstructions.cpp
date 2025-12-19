@@ -42,6 +42,17 @@ namespace GameBoy
         return numberOfCycles;
     }
 
+    size_t Cpu::Load_8bit_Low_ImmediateData(Register CpuCore::* reg)
+    {
+        Register& r = core.*reg;
+        const uint8_t data = FetchPcAddress();
+
+        r.SetLowByte(data);
+
+        constexpr size_t numberOfCycles = 2;
+        return numberOfCycles;
+    }
+
     size_t Cpu::Load_8bit_High_Addr(Register CpuCore::* destReg, Register CpuCore::* addrReg)
     {
         const uint16_t address = (core.*addrReg).Value();

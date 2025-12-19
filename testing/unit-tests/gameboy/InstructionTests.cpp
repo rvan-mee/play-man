@@ -503,6 +503,25 @@ TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "DEC_C, 0x0D")
 	REQUIRE(IE == 0x00);
 }
 
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "LD_C_n8, 0x0E")
+{
+	// File containing the byte 0x0F
+	LoadTestRom(GB_ROM_PATH "load_immediate_8.gb");
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(BC.Value() == 0x00'00);
+
+	const auto numberOfCycles = ExecuteInstruction(GameBoy::OpCode::LD_C_n8);
+
+	REQUIRE(numberOfCycles == 2);
+	REQUIRE(AF.Value() == 0x00'00);
+	REQUIRE(BC.Value() == 0x00'0F);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'01);
+	REQUIRE(IE == 0x00);
+}
+
 TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "JP_a16, 0xC3")
 {
 	// File containing the bytes 0xF0 0x0F

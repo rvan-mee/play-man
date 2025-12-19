@@ -260,6 +260,15 @@ private:
         size_t Load_8bit_High_ImmediateData(Register CpuCore::* reg);
 
         /**
+         * @brief Loads the 8bit immediate data into the low register of reg.
+         * 
+         * @param reg Pointer to the register where the data will be loaded into (low 8 bits).
+         * 
+         * @return number of cycles. 
+         */
+        size_t Load_8bit_Low_ImmediateData(Register CpuCore::* reg);
+
+        /**
          * @brief Loads the 8bits of data found at the addrReg into destReg.
          * 
          * @param destReg Pointer to the register where the data is loaded into the high 8 bits.
