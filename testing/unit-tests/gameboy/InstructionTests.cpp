@@ -62,6 +62,16 @@ namespace TestFixtures
 			IE = 0x00;
 		}
 
+		void PrintRegs()
+		{
+			std::cout << "Register AF: " << std::to_string( AF.Value() ) << std::endl;
+			std::cout << "Register BC: " << std::to_string( BC.Value() ) << std::endl;
+			std::cout << "Register DE: " << std::to_string( DE.Value() ) << std::endl;
+			std::cout << "Register HL: " << std::to_string( HL.Value() ) << std::endl;
+			std::cout << "Register SP: " << std::to_string( SP.Value() ) << std::endl;
+			std::cout << "Register PC: " << std::to_string( PC.Value() ) << std::endl;
+			std::cout << "Register IE: " << std::to_string( IE ) << std::endl;
+		}
 	};
 }
 
@@ -339,6 +349,25 @@ TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "ADD_HL_BC, 0x09")
 	REQUIRE(BC.Value() == 0x00'01);
 	REQUIRE(DE.Value() == 0x00'00);
 	REQUIRE(HL.Value() == 0x00'02);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+}
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "LD_A_BC_NI, 0x0A")
+{
+	ClearRegisters();
+
+	BC.SetValue(wRamAddressStart);
+	memoryBus.WriteByte(wRamAddressStart, 0x69);
+
+	const auto numberOfCycles = ExecuteInstruction(GameBoy::OpCode::LD_A_BC_NI);
+
+	REQUIRE(numberOfCycles == 2);
+	REQUIRE(AF.Value() == 0x69'00);
+	REQUIRE(BC.Value() == wRamAddressStart);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
 	REQUIRE(SP.Value() == 0x00'00);
 	REQUIRE(PC.Value() == 0x00'00);
 	REQUIRE(IE == 0x00);

@@ -226,6 +226,16 @@ private:
         size_t Load_8bit_High_ImmediateData(Register CpuCore::* reg);
 
         /**
+         * @brief Loads the 8bits of data found at the addrReg into destReg.
+         * 
+         * @param destReg Pointer to the register where the data is loaded into the high 8 bits.
+         * @param addrReg Pointer to the register containing the address where the data is located.
+         * 
+         * @return number of cycles. 
+         */
+        size_t Load_8bit_High_Addr(Register CpuCore::* destReg, Register CpuCore::* addrReg);
+
+        /**
          * @brief Compares the 8 bit immediate data to the high register by calculating (reg - data).
          * 
          * @note The Z flag is set if they are equal.
