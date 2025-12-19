@@ -25,10 +25,27 @@ namespace GameBoy
     size_t Cpu::Rotate_8bit_High_Left(Register CpuCore::* reg)
     {
         Register& r = core.*reg;
-        const uint8_t shiftedBit = ((r.HighByte() & HIGH_BIT) != 0) ? 0x1 : 0x0;
+        const uint8_t shiftedBit = ((r.HighByte() & HIGH_BIT) != 0) ? LOW_BIT : 0x0;
         const uint8_t value = r.HighByte();
 
         r.SetHighByte(value << 1 | shiftedBit);
+
+        core.SetFlag(FlagRegisterFlag::ZERO, false);
+        core.SetFlag(FlagRegisterFlag::SUB, false);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, false);
+        core.SetFlag(FlagRegisterFlag::CARRY, shiftedBit != 0);
+
+        constexpr size_t numberOfCycles = 1;
+        return numberOfCycles;
+    }
+
+    size_t Cpu::Rotate_8bit_Low_Right(Register CpuCore::* reg)
+    {
+        Register& r = core.*reg;
+        const uint8_t shiftedBit = ((r.LowByte() & LOW_BIT) != 0) ? HIGH_BIT : 0x0;
+        const uint8_t value = r.LowByte();
+
+        r.SetLowByte(shiftedBit | (value >> 1));
 
         core.SetFlag(FlagRegisterFlag::ZERO, false);
         core.SetFlag(FlagRegisterFlag::SUB, false);

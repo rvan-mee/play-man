@@ -302,6 +302,19 @@ private:
          * @return number of cycles.
          */
         size_t Rotate_8bit_High_Left(Register CpuCore::* reg);
+
+        /**
+         * @brief Rotates the given register's low part to the right by 1,
+         *        appending the shifted-out bit to the left of that same register.
+         * 
+         * @note The Z flag is set to false.
+         * @note The S flag is set to false.
+         * @note The H flag is set to false.
+         * @note The C flag is set to the shifted-out bit.
+         * 
+         * @return number of cycles.
+         */
+        size_t Rotate_8bit_Low_Right(Register CpuCore::* reg);
     };
 
 }
