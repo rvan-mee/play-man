@@ -201,6 +201,19 @@ private:
         size_t Increment_8bit_High(Register CpuCore:: *reg);
 
         /**
+         * @brief Increments the low part of the register by 1.
+         * 
+         * @param reg Pointer to the register needing to be incremented.
+         * 
+         * @note The Z flag is set if the incrementation results in a 0.
+         * @note The S flag is set to false.
+         * @note The H flag is set according to the calculation.
+         * 
+         * @return number of cycles. 
+         */
+        size_t Increment_8bit_Low(Register CpuCore:: *reg);
+
+        /**
          * @brief Decrements the high part of the register by 1.
          * 
          * @param reg Pointer to the register needing to be decremented.
