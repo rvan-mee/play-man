@@ -130,6 +130,19 @@ private:
 		 */
         size_t NOP();
 
+        /**
+         * @brief Adjusts the A register to a binary-coded decimal number.
+         * 
+         * @note binary-coded decimal number utilizes 4 bits for the numbers 0 through 9.
+         *       This allows the 8 bit register to go from 0 to 99, using the lower half
+         *       of the register for the x9 numbers and the top half 9x numbers.
+         * 
+         * @note https://blog.ollien.com/posts/gb-daa/
+         * 
+         * @return number of cycles.
+         */
+        size_t DDA();
+
 
         /**                               Jmp/call instructions                                             **/
 
@@ -146,6 +159,12 @@ private:
          */
         size_t Jump_Relative_8bit_SignedImmediateData();
 
+        /**
+         * @brief Checks the Z flag, if set increments the PC register
+         *        by the signed 8 bit value of the immediate data.
+         * @return number of cycles.
+         */
+        size_t Jump_Relative_NotZero_8bit_SignedImmediateData();
 
         /**                                16 bit instructions                                             **/
 
@@ -258,6 +277,17 @@ private:
          * @return number of cycles.
          */
         size_t Store_8bit_Addr_High(Register CpuCore::* addrReg, Register CpuCore::* dataReg);
+
+        /**
+         * @brief Stores the byte found in the high register of dataReg to the addres
+         *        pointed to by addrReg after wich the contents of addrReg gets incremented by 1.
+         * 
+         * @param addrReg Pointer to the register containing the address where the data needs to be stored. 
+         * @param dataReg Pointer to the register where the data will be taken from (high 8 bits).
+         * 
+         * @return number of cycles.
+         */
+        size_t Store_8bit_AddrIncrement_High(Register CpuCore::* addrReg, Register CpuCore::* dataReg);
 
         /**
          * @brief Loads the 8bit immediate data into the high register of reg.

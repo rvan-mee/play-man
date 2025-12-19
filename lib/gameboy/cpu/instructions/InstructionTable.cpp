@@ -25,44 +25,53 @@ namespace GameBoy
 		auto& table = instructions;
 
 		// 0x0-
-		table[OpCode::NOP]          = std::bind(&Cpu::NOP, thisPtr);
-		table[OpCode::LD_BC_n16]    = std::bind(&Cpu::Load_16bit_ImmediateData, thisPtr, &CpuCore::BC);
-		table[OpCode::LD_BC_NI_A]   = std::bind(&Cpu::Store_8bit_Addr_High, thisPtr, &CpuCore::BC, &CpuCore::AF);
-		table[OpCode::INC_BC]       = std::bind(&Cpu::Increment_16bit, thisPtr, &CpuCore::BC);
-		table[OpCode::INC_B]        = std::bind(&Cpu::Increment_8bit_High, thisPtr, &CpuCore::BC);
-		table[OpCode::DEC_B]        = std::bind(&Cpu::Decrement_8bit_High, thisPtr, &CpuCore::BC);
-		table[OpCode::LD_B_n8]      = std::bind(&Cpu::Load_8bit_High_ImmediateData, thisPtr, &CpuCore::BC);
-		table[OpCode::RLCA]         = std::bind(&Cpu::Rotate_8bit_High_Left, thisPtr, &CpuCore::AF);
-		table[OpCode::LD_a16_NI_SP] = std::bind(&Cpu::Load_16bit_RegToImmediateAddr, thisPtr, &CpuCore::SP);
-		table[OpCode::ADD_HL_BC]    = std::bind(&Cpu::Add_16bit, thisPtr, &CpuCore::HL, &CpuCore::BC);
-		table[OpCode::LD_A_BC_NI]   = std::bind(&Cpu::Load_8bit_High_Addr, thisPtr, &CpuCore::AF, &CpuCore::BC);
-		table[OpCode::DEC_BC]       = std::bind(&Cpu::Decrement_16bit, thisPtr, &CpuCore::BC);
-		table[OpCode::INC_C]        = std::bind(&Cpu::Increment_8bit_Low, thisPtr, &CpuCore::BC);
-		table[OpCode::DEC_C]        = std::bind(&Cpu::Decrement_8bit_Low, thisPtr, &CpuCore::BC);
-		table[OpCode::LD_C_n8]      = std::bind(&Cpu::Load_8bit_Low_ImmediateData, thisPtr, &CpuCore::BC);
-		table[OpCode::RRCA]         = std::bind(&Cpu::Rotate_8bit_Low_Right, thisPtr, &CpuCore::BC);
+		table[OpCode::NOP]            = std::bind(&Cpu::NOP, thisPtr);
+		table[OpCode::LD_BC_n16]      = std::bind(&Cpu::Load_16bit_ImmediateData, thisPtr, &CpuCore::BC);
+		table[OpCode::LD_BC_NI_A]     = std::bind(&Cpu::Store_8bit_Addr_High, thisPtr, &CpuCore::BC, &CpuCore::AF);
+		table[OpCode::INC_BC]         = std::bind(&Cpu::Increment_16bit, thisPtr, &CpuCore::BC);
+		table[OpCode::INC_B]          = std::bind(&Cpu::Increment_8bit_High, thisPtr, &CpuCore::BC);
+		table[OpCode::DEC_B]          = std::bind(&Cpu::Decrement_8bit_High, thisPtr, &CpuCore::BC);
+		table[OpCode::LD_B_n8]        = std::bind(&Cpu::Load_8bit_High_ImmediateData, thisPtr, &CpuCore::BC);
+		table[OpCode::RLCA]           = std::bind(&Cpu::Rotate_8bit_High_Left, thisPtr, &CpuCore::AF);
+		table[OpCode::LD_a16_NI_SP]   = std::bind(&Cpu::Load_16bit_RegToImmediateAddr, thisPtr, &CpuCore::SP);
+		table[OpCode::ADD_HL_BC]      = std::bind(&Cpu::Add_16bit, thisPtr, &CpuCore::HL, &CpuCore::BC);
+		table[OpCode::LD_A_BC_NI]     = std::bind(&Cpu::Load_8bit_High_Addr, thisPtr, &CpuCore::AF, &CpuCore::BC);
+		table[OpCode::DEC_BC]         = std::bind(&Cpu::Decrement_16bit, thisPtr, &CpuCore::BC);
+		table[OpCode::INC_C]          = std::bind(&Cpu::Increment_8bit_Low, thisPtr, &CpuCore::BC);
+		table[OpCode::DEC_C]          = std::bind(&Cpu::Decrement_8bit_Low, thisPtr, &CpuCore::BC);
+		table[OpCode::LD_C_n8]        = std::bind(&Cpu::Load_8bit_Low_ImmediateData, thisPtr, &CpuCore::BC);
+		table[OpCode::RRCA]           = std::bind(&Cpu::Rotate_8bit_Low_Right, thisPtr, &CpuCore::BC);
 
 		// 0x1-
 			// 0x10
 			// TODO: STOP, implement when PPU/LCD and input register have been implemented;
 			// https://gbdev.io/pandocs/Reducing_Power_Consumption.html#using-the-stop-instruction
-		table[OpCode::LD_DE_n16]    = std::bind(&Cpu::Load_16bit_ImmediateData, thisPtr, &CpuCore::DE);
-		table[OpCode::LD_DE_NI_A]   = std::bind(&Cpu::Store_8bit_Addr_High, thisPtr, &CpuCore::DE, &CpuCore::AF);
-		table[OpCode::INC_DE]       = std::bind(&Cpu::Increment_16bit, thisPtr, &CpuCore::DE);
-		table[OpCode::INC_D]        = std::bind(&Cpu::Increment_8bit_High, thisPtr, &CpuCore::DE);
-		table[OpCode::DEC_D]        = std::bind(&Cpu::Decrement_8bit_High, thisPtr, &CpuCore::DE);
-		table[OpCode::LD_D_n8]      = std::bind(&Cpu::Load_8bit_High_ImmediateData, thisPtr, &CpuCore::DE);
-		table[OpCode::RLA]          = std::bind(&Cpu::Rotate_8bit_High_Left_Carry, thisPtr, &CpuCore::AF);
-		table[OpCode::JR_e8]        = std::bind(&Cpu::Jump_Relative_8bit_SignedImmediateData, thisPtr);
-		table[OpCode::ADD_HL_DE]    = std::bind(&Cpu::Add_16bit, thisPtr, &CpuCore::HL, &CpuCore::DE);
-		table[OpCode::LD_A_DE_NI]   = std::bind(&Cpu::Load_8bit_High_Addr, thisPtr, &CpuCore::AF, &CpuCore::DE);
-		table[OpCode::DEC_DE]       = std::bind(&Cpu::Decrement_16bit, thisPtr, &CpuCore::DE);
-		table[OpCode::INC_E]        = std::bind(&Cpu::Increment_8bit_Low, thisPtr, &CpuCore::DE);
-		table[OpCode::DEC_E]        = std::bind(&Cpu::Decrement_8bit_Low, thisPtr, &CpuCore::DE);
-		table[OpCode::LD_E_n8]      = std::bind(&Cpu::Load_8bit_Low_ImmediateData, thisPtr, &CpuCore::DE);
-		table[OpCode::RRA]          = std::bind(&Cpu::Rotate_8bit_High_Right_Carry, thisPtr, &CpuCore::AF);
+		table[OpCode::LD_DE_n16]      = std::bind(&Cpu::Load_16bit_ImmediateData, thisPtr, &CpuCore::DE);
+		table[OpCode::LD_DE_NI_A]     = std::bind(&Cpu::Store_8bit_Addr_High, thisPtr, &CpuCore::DE, &CpuCore::AF);
+		table[OpCode::INC_DE]         = std::bind(&Cpu::Increment_16bit, thisPtr, &CpuCore::DE);
+		table[OpCode::INC_D]          = std::bind(&Cpu::Increment_8bit_High, thisPtr, &CpuCore::DE);
+		table[OpCode::DEC_D]          = std::bind(&Cpu::Decrement_8bit_High, thisPtr, &CpuCore::DE);
+		table[OpCode::LD_D_n8]        = std::bind(&Cpu::Load_8bit_High_ImmediateData, thisPtr, &CpuCore::DE);
+		table[OpCode::RLA]            = std::bind(&Cpu::Rotate_8bit_High_Left_Carry, thisPtr, &CpuCore::AF);
+		table[OpCode::JR_e8]          = std::bind(&Cpu::Jump_Relative_8bit_SignedImmediateData, thisPtr);
+		table[OpCode::ADD_HL_DE]      = std::bind(&Cpu::Add_16bit, thisPtr, &CpuCore::HL, &CpuCore::DE);
+		table[OpCode::LD_A_DE_NI]     = std::bind(&Cpu::Load_8bit_High_Addr, thisPtr, &CpuCore::AF, &CpuCore::DE);
+		table[OpCode::DEC_DE]         = std::bind(&Cpu::Decrement_16bit, thisPtr, &CpuCore::DE);
+		table[OpCode::INC_E]          = std::bind(&Cpu::Increment_8bit_Low, thisPtr, &CpuCore::DE);
+		table[OpCode::DEC_E]          = std::bind(&Cpu::Decrement_8bit_Low, thisPtr, &CpuCore::DE);
+		table[OpCode::LD_E_n8]        = std::bind(&Cpu::Load_8bit_Low_ImmediateData, thisPtr, &CpuCore::DE);
+		table[OpCode::RRA]            = std::bind(&Cpu::Rotate_8bit_High_Right_Carry, thisPtr, &CpuCore::AF);
 
 		// 0x2-
+		table[OpCode::JR_NZ_e8]       = std::bind(&Cpu::Jump_Relative_NotZero_8bit_SignedImmediateData, thisPtr);
+		table[OpCode::LD_HL_n16]      = std::bind(&Cpu::Load_16bit_ImmediateData, thisPtr, &CpuCore::HL);
+		table[OpCode::LD_HL_INC_NI_A] = std::bind(&Cpu::Store_8bit_AddrIncrement_High, thisPtr, &CpuCore::HL, &CpuCore::AF);
+		table[OpCode::INC_HL]         = std::bind(&Cpu::Increment_16bit, thisPtr, &CpuCore::HL);
+		table[OpCode::INC_H]          = std::bind(&Cpu::Increment_8bit_High, thisPtr, &CpuCore::HL);
+		table[OpCode::DEC_H]          = std::bind(&Cpu::Decrement_8bit_High, thisPtr, &CpuCore::HL);
+		table[OpCode::LD_H_n8]        = std::bind(&Cpu::Load_8bit_High_ImmediateData, thisPtr, &CpuCore::HL);
+		table[OpCode::DAA]            = std::bind(&Cpu::DDA, thisPtr);
+
 		// 0x3-
 		// 0x4-
 		// 0x5-

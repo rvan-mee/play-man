@@ -18,6 +18,14 @@
 #include <play-man/gameboy/cpu/Cpu.hpp>
 #include <play-man/logger/Logger.hpp>
 
+// The offset comes from the difference between binary and hex ie 10 vs 16
+#define DDA_TENTHS_OFFSET 0x60
+#define DDA_UNITDIGIT_OFFSET 0x06
+
+// In binary decimal format the values can only range from 0 to 9 per digit
+#define DDA_TENTHS_CUTOFF 0x99
+#define DDA_UNITDIGIT_CUTOFF 0x09
+
 namespace GameBoy
 {
 	size_t Cpu::HardLock()
@@ -34,6 +42,36 @@ namespace GameBoy
 
 	size_t Cpu::NOP()
 	{
+		constexpr auto numberOfCycles = 1;
+		return numberOfCycles;
+	}
+
+	size_t Cpu::DDA()
+	{
+		const bool subtractionSet = core.GetFlag(FlagRegisterFlag::SUB);
+		const bool halfCarrySet = core.GetFlag(FlagRegisterFlag::HALF_CARRY);
+		const bool carrySet = core.GetFlag(FlagRegisterFlag::CARRY);
+		const auto value = core.AF.HighByte();
+		uint8_t offset = 0;
+
+		if ((!subtractionSet && (value & 0xF) > DDA_UNITDIGIT_CUTOFF) || halfCarrySet)
+		{
+			offset |= DDA_UNITDIGIT_OFFSET;
+		}
+		if ((!subtractionSet && value > DDA_TENTHS_CUTOFF) || carrySet)
+		{
+			offset |= DDA_TENTHS_OFFSET;
+			core.SetFlag(FlagRegisterFlag::CARRY, true);
+		}
+
+		if (subtractionSet)
+			core.AF.SetHighByte(value - offset);
+		else
+			core.AF.SetHighByte(value + offset);
+
+		core.SetFlag(FlagRegisterFlag::ZERO, core.AF.HighByte() == 0);
+		core.SetFlag(FlagRegisterFlag::HALF_CARRY, false);
+		
 		constexpr auto numberOfCycles = 1;
 		return numberOfCycles;
 	}

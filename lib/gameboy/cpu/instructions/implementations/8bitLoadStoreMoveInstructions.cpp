@@ -31,6 +31,18 @@ namespace GameBoy
         return numberOfCycles;
     }
 
+    size_t Cpu::Store_8bit_AddrIncrement_High(Register CpuCore::* addrReg, Register CpuCore::* dataReg)
+    {
+        uint8_t data = (core.*dataReg).HighByte();
+        Register& addr = (core.*addrReg);
+
+        memoryBus.WriteByte(addr.Value(), data);
+        addr++;
+
+        constexpr size_t numberOfCycles = 2;
+        return numberOfCycles; 
+    }
+
     size_t Cpu::Load_8bit_High_ImmediateData(Register CpuCore::* reg)
     {
         Register& r = core.*reg;
