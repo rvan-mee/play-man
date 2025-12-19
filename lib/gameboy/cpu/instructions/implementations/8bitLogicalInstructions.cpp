@@ -67,6 +67,22 @@ namespace GameBoy
 		return numberOfCycles;
 	}
 
+	size_t Cpu::Decrement_8bit_Low(Register CpuCore::* reg)
+	{
+		Register& r = core.*reg;
+		const uint8_t val = r.LowByte();
+		const uint8_t res = val - 1;
+
+		r.SetLowByte(res);
+
+		core.SetFlag(FlagRegisterFlag::ZERO, res == 0);
+		core.SetFlag(FlagRegisterFlag::SUB, true);
+		core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((val & 0xF) == 0));	
+
+		constexpr size_t numberOfCycles = 1;
+		return numberOfCycles;
+	}
+
 	size_t Cpu::Compare_8bit_High_ImmediateData(Register CpuCore::*reg)
 	{
 		const uint8_t regContents = (core.*reg).HighByte();

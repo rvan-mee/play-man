@@ -459,6 +459,50 @@ TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "INC_C, 0x0C")
 	REQUIRE(IE == 0x00);
 }
 
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "DEC_C, 0x0D")
+{
+	ClearRegisters();
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::OpCode::DEC_C);
+
+	REQUIRE(numberOfCycles == 1);
+	REQUIRE(AF.Value() == 0b00000000'0110'0000);
+	REQUIRE(BC.Value() == 0x00'FF);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+
+	ClearRegisters();
+	BC.SetLowByte(0x01);
+
+	numberOfCycles = ExecuteInstruction(GameBoy::OpCode::DEC_C);
+
+	REQUIRE(numberOfCycles == 1);
+	REQUIRE(AF.Value() == 0b00000000'1100'0000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+
+	ClearRegisters();
+	BC.SetLowByte(0xF0);
+
+	numberOfCycles = ExecuteInstruction(GameBoy::OpCode::DEC_C);
+
+	REQUIRE(numberOfCycles == 1);
+	REQUIRE(AF.Value() == 0b00000000'0110'0000);
+	REQUIRE(BC.Value() == 0x00'EF);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+}
+
 TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "JP_a16, 0xC3")
 {
 	// File containing the bytes 0xF0 0x0F
