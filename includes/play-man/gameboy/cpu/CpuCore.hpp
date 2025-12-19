@@ -84,6 +84,13 @@ namespace GameBoy
          */
         void SetFlag(FlagRegisterFlag flag, bool enable);
 
+        /**
+         * @brief Used to retrieve the status of a flag inside teh flag register.
+         * @param flag The flag to be returned.
+         * @return true/false depending if the flag is set or not.
+         */
+        bool GetFlag(FlagRegisterFlag flag);
+
         friend std::ostream& operator << (std::ostream& lhs, const CpuCore& rom);
     };
 

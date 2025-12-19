@@ -33,4 +33,17 @@ namespace GameBoy {
 		return numberOfCycles;
 	}
 
+	size_t Cpu::Jump_Relative_8bit_SignedImmediateData()
+	{
+		const uint8_t dist = FetchPcAddress();
+
+		if (dist > 127)
+			core.PC -= dist;
+		else
+			core.PC += dist;
+
+		constexpr auto numberOfCycles = 3;
+		return numberOfCycles;
+	}
+
 }

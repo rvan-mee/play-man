@@ -131,6 +131,22 @@ private:
         size_t NOP();
 
 
+        /**                               Jmp/call instructions                                             **/
+
+        /**
+         * @brief Loads two bytes of immediate date into the PC reg.
+         *        First byte of immediate data is low byte.
+         * @return number of cycles.
+         */
+        size_t Jump_16bit_ImmediateData();
+
+        /**
+         * @brief Increments the PC register by the 8 bit value of the immediate data.
+         * @return number of cycles.
+         */
+        size_t Jump_Relative_8bit_SignedImmediateData();
+
+
         /**                                16 bit instructions                                             **/
 
 		/**
@@ -156,13 +172,6 @@ private:
          * @return number of cycles.
          */
         size_t Decrement_16bit(Register CpuCore::* reg);
-
-        /**
-         * @brief Loads two bytes of immediate date into the PC reg.
-         *        First byte of immediate data is low byte.
-         * @return number of cycles.
-         */
-        size_t Jump_16bit_ImmediateData();
 
         /**
          * @brief Loads the contents of the 16bit register to the address found at PC.
@@ -304,6 +313,20 @@ private:
         size_t Rotate_8bit_High_Left(Register CpuCore::* reg);
 
         /**
+         * @brief Rotats the given register's high part to the left by 1,
+         *        appending the state of the carry flag bit to the right of the same register.
+         *        The shifted-out bit will become the new state of the carry flag.
+         * 
+         * @note The Z flag is set to false.
+         * @note The S flag is set to false.
+         * @note The H flag is set to false.
+         * @note The C flag is set to the shifted-out bit.
+         * 
+         * @return number of cycles.
+         */
+        size_t Rotate_8bit_High_Left_Carry(Register CpuCore::* reg);
+
+        /**
          * @brief Rotates the given register's low part to the right by 1,
          *        appending the shifted-out bit to the left of that same register.
          * 
@@ -315,6 +338,20 @@ private:
          * @return number of cycles.
          */
         size_t Rotate_8bit_Low_Right(Register CpuCore::* reg);
+
+        /**
+         * @brief Rotates the given register's high part to the right by 1,
+         *        appending the state of the carry flag bit to the left of the same register. 
+         *        The shifted-out bit will become the new state of the carry flag.
+         * 
+         * @note The Z flag is set to false.
+         * @note The S flag is set to false.
+         * @note The H flag is set to false.
+         * @note The C flag is set to the shifted-out bit.
+         * 
+         * @return number of cycles.
+         */
+        size_t Rotate_8bit_High_Right_Carry(Register CpuCore::* reg);
     };
 
 }

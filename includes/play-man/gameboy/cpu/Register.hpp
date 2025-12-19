@@ -112,6 +112,13 @@ namespace GameBoy
 			internalRegister.value = internalRegister.value + rhs;
 			return *this;
 		}
+
+		// Compound assignment
+		Register& operator-=(uint16_t rhs)
+		{
+			internalRegister.value = internalRegister.value - rhs;
+			return *this;
+		}
 	};
 
 

@@ -53,6 +53,11 @@ namespace GameBoy
         }
     }
 
+    bool CpuCore::GetFlag(FlagRegisterFlag flag)
+    {
+        return (AF.LowByte() & static_cast<uint8_t>(flag)) > 0;
+    }
+
     /*           ostream overload           */
 
     std::ostream& operator << (std::ostream& lhs, const CpuCore& core)
