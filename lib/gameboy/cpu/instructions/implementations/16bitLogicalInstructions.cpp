@@ -28,6 +28,15 @@ namespace GameBoy
         return numberOfCycles;
     }
 
+    size_t Cpu::Decrement_16bit(Register CpuCore::* reg)
+    {
+        Register& r = core.*reg;
+
+        r--;
+        constexpr size_t numberOfCycles = 2;
+        return numberOfCycles;
+    }
+
     size_t Cpu::Add_16bit(Register CpuCore::* toReg, Register CpuCore::* fromReg)
     {
         Register& to = core.*toReg;

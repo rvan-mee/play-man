@@ -98,6 +98,20 @@ namespace GameBoy
 			return (temp);
 		}
 
+		// Postfix decrement
+		Register operator--(int)
+		{
+			Register temp = *this;
+			internalRegister.value--;
+			return (temp);
+		}
+
+		// Compound assignment
+		Register& operator+=(uint16_t rhs)
+		{
+			internalRegister.value = internalRegister.value + rhs;
+			return *this;
+		}
 	};
 
 

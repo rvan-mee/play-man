@@ -150,6 +150,14 @@ private:
         size_t Increment_16bit(Register CpuCore::* reg);
 
         /**
+         * @brief Decrements the 16 bit register by 1.
+         * 
+         * @param reg Pointer to the register needing to be decremented.
+         * @return number of cycles.
+         */
+        size_t Decrement_16bit(Register CpuCore::* reg);
+
+        /**
          * @brief Loads two bytes of immediate date into the PC reg.
          *        First byte of immediate data is low byte.
          * @return number of cycles.
