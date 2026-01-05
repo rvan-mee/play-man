@@ -143,6 +143,13 @@ private:
          */
         size_t DDA();
 
+        /**
+         * @brief Applies the one's complement on register A.
+         *        (flips all the bits).
+         * 
+         * @return number of cycles.
+         */
+        size_t CPL();
 
         /**                               Jmp/call instructions                                             **/
 
@@ -160,11 +167,19 @@ private:
         size_t Jump_Relative_8bit_SignedImmediateData();
 
         /**
-         * @brief Checks the Z flag, if set increments the PC register
+         * @brief Checks the Z flag, if not set increments the PC register
          *        by the signed 8 bit value of the immediate data.
          * @return number of cycles.
          */
         size_t Jump_Relative_NotZero_8bit_SignedImmediateData();
+
+        /**
+         * @brief Checks the Z flag, if set increments the PC register
+         *        by the signed 8 bit value of the immediate data.
+         * @return number of cycles.
+         */
+	    size_t Jump_Relative_Zero_8bit_SignedImmediateData();
+
 
         /**                                16 bit instructions                                             **/
 
@@ -280,7 +295,7 @@ private:
 
         /**
          * @brief Stores the byte found in the high register of dataReg to the addres
-         *        pointed to by addrReg after wich the contents of addrReg gets incremented by 1.
+         *        pointed to by addrReg after which the contents of addrReg gets incremented by 1.
          * 
          * @param addrReg Pointer to the register containing the address where the data needs to be stored. 
          * @param dataReg Pointer to the register where the data will be taken from (high 8 bits).
@@ -316,6 +331,16 @@ private:
          * @return number of cycles. 
          */
         size_t Load_8bit_High_Addr(Register CpuCore::* destReg, Register CpuCore::* addrReg);
+
+        /**
+         * @brief Loads the 8 bits of data found at addrReg into destReg, after which the pointer inside
+         *        addrReg gets incremented.
+         * 
+         * @param destReg Pointer to the register where the data is loaded into the high 8 bits.
+         * @param addrReg Pointer to the register containing the address where the data is located.
+         *                Will get incremented after the data is retrieved.
+         */
+        size_t Load_8bit_High_AddrIncrement(Register CpuCore::* destReg, Register CpuCore::* addrReg);
 
         /**
          * @brief Compares the 8 bit immediate data to the high register by calculating (reg - data).

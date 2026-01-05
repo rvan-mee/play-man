@@ -63,4 +63,21 @@ namespace GameBoy {
 		return numberOfCycles;
 	}
 
+	size_t Cpu::Jump_Relative_Zero_8bit_SignedImmediateData()
+	{
+		const bool zeroFlag = core.GetFlag(FlagRegisterFlag::ZERO);
+		const auto dist = FetchPcAddress();
+		auto numberOfCycles = 2;
+
+		if (zeroFlag)
+		{
+			numberOfCycles += 1;
+			if (dist > 127)
+				core.PC -= dist;
+			else
+				core.PC += dist;
+		}
+		return numberOfCycles;
+	}
+
 }

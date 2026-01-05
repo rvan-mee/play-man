@@ -75,4 +75,17 @@ namespace GameBoy
 		constexpr auto numberOfCycles = 1;
 		return numberOfCycles;
 	}
+
+	size_t Cpu::CPL()
+	{
+		const uint8_t valueA = core.AF.HighByte();
+
+		core.AF.SetHighByte(~valueA);
+
+		core.SetFlag(FlagRegisterFlag::SUB, true);
+		core.SetFlag(FlagRegisterFlag::HALF_CARRY, true);
+
+		constexpr auto numberOfCycles = 1;
+		return numberOfCycles;
+	}
 }
