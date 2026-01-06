@@ -167,19 +167,18 @@ private:
         size_t Jump_Relative_8bit_SignedImmediateData();
 
         /**
-         * @brief Checks the Z flag, if not set increments the PC register
+         * @brief Check if the flag is set, if it is not, increments the PC register
          *        by the signed 8 bit value of the immediate data.
          * @return number of cycles.
          */
-        size_t Jump_Relative_NotZero_8bit_SignedImmediateData();
+	    size_t Jump_Relative_FlagNotSet_8bit_SignedImmediateData(FlagRegisterFlag flag);
 
         /**
-         * @brief Checks the Z flag, if set increments the PC register
+         * @brief Check if the flag is set, if it is, increments the PC register
          *        by the signed 8 bit value of the immediate data.
          * @return number of cycles.
          */
-	    size_t Jump_Relative_Zero_8bit_SignedImmediateData();
-
+        size_t Jump_Relative_FlagSet_8bit_SignedImmediateData(FlagRegisterFlag flag);
 
         /**                                16 bit instructions                                             **/
 

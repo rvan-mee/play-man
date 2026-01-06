@@ -1608,6 +1608,52 @@ TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "CPL, 0x2F")
 	REQUIRE(IE == 0x00);
 }
 
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "JR_NC_e8, 0x30")
+{
+	LoadTestRom(GB_ROM_PATH "jump_relative_test.gb");
+	AF.SetLowByte(0b0001'0000);
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::OpCode::JR_NC_e8);
+
+	REQUIRE(numberOfCycles == 2);
+	REQUIRE(AF.Value() == 0b00000000'0001'0000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'01);
+	REQUIRE(IE == 0x00);
+
+	LoadTestRom(GB_ROM_PATH "jump_relative_test.gb");
+	AF.SetLowByte(0b0000'0000);
+
+	numberOfCycles = ExecuteInstruction(GameBoy::OpCode::JR_NC_e8);
+
+	REQUIRE(numberOfCycles == 3);
+	REQUIRE(AF.Value() == 0b00000000'0000'0000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'02);
+	REQUIRE(IE == 0x00);
+
+	LoadTestRom(GB_ROM_PATH "jump_relative_test.gb");
+	PC.SetValue(1024);
+	AF.SetLowByte(0b0000'0000);
+
+	numberOfCycles = ExecuteInstruction(GameBoy::OpCode::JR_NC_e8);
+
+	REQUIRE(numberOfCycles == 3);
+	REQUIRE(AF.Value() == 0b00000000'0000'0000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x03'02);
+	REQUIRE(IE == 0x00);
+}
+
 TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "ADD_HL_SP, 0x39")
 {
 	ClearRegisters();

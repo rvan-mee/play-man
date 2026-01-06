@@ -46,13 +46,13 @@ namespace GameBoy {
 		return numberOfCycles;
 	}
 
-	size_t Cpu::Jump_Relative_NotZero_8bit_SignedImmediateData()
+	size_t Cpu::Jump_Relative_FlagNotSet_8bit_SignedImmediateData(FlagRegisterFlag flag)
 	{
-		const bool zeroFlag = core.GetFlag(FlagRegisterFlag::ZERO);
+		const bool flagSet = core.GetFlag(flag);
 		const auto dist = FetchPcAddress();
 		auto numberOfCycles = 2;
 
-		if (!zeroFlag)
+		if (!flagSet)
 		{
 			numberOfCycles += 1;
 			if (dist > 127)
@@ -63,13 +63,13 @@ namespace GameBoy {
 		return numberOfCycles;
 	}
 
-	size_t Cpu::Jump_Relative_Zero_8bit_SignedImmediateData()
+	size_t Cpu::Jump_Relative_FlagSet_8bit_SignedImmediateData(FlagRegisterFlag flag)
 	{
-		const bool zeroFlag = core.GetFlag(FlagRegisterFlag::ZERO);
+		const bool flagSet = core.GetFlag(flag);
 		const auto dist = FetchPcAddress();
 		auto numberOfCycles = 2;
 
-		if (zeroFlag)
+		if (flagSet)
 		{
 			numberOfCycles += 1;
 			if (dist > 127)

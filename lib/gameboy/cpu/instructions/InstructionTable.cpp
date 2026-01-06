@@ -63,7 +63,7 @@ namespace GameBoy
 		table[OpCode::RRA]            = std::bind(&Cpu::Rotate_8bit_High_Right_Carry, thisPtr, &CpuCore::AF);
 
 		// 0x2-
-		table[OpCode::JR_NZ_e8]       = std::bind(&Cpu::Jump_Relative_NotZero_8bit_SignedImmediateData, thisPtr);
+		table[OpCode::JR_NZ_e8]       = std::bind(&Cpu::Jump_Relative_FlagNotSet_8bit_SignedImmediateData, thisPtr, FlagRegisterFlag::ZERO);
 		table[OpCode::LD_HL_n16]      = std::bind(&Cpu::Load_16bit_ImmediateData, thisPtr, &CpuCore::HL);
 		table[OpCode::LD_HL_INC_NI_A] = std::bind(&Cpu::Store_8bit_AddrIncrement_High, thisPtr, &CpuCore::HL, &CpuCore::AF);
 		table[OpCode::INC_HL]         = std::bind(&Cpu::Increment_16bit, thisPtr, &CpuCore::HL);
@@ -71,7 +71,7 @@ namespace GameBoy
 		table[OpCode::DEC_H]          = std::bind(&Cpu::Decrement_8bit_High, thisPtr, &CpuCore::HL);
 		table[OpCode::LD_H_n8]        = std::bind(&Cpu::Load_8bit_High_ImmediateData, thisPtr, &CpuCore::HL);
 		table[OpCode::DAA]            = std::bind(&Cpu::DDA, thisPtr);
-		table[OpCode::JR_Z_e8]        = std::bind(&Cpu::Jump_Relative_Zero_8bit_SignedImmediateData, thisPtr);
+		table[OpCode::JR_Z_e8]        = std::bind(&Cpu::Jump_Relative_FlagSet_8bit_SignedImmediateData, thisPtr, FlagRegisterFlag::ZERO);
 		table[OpCode::ADD_HL_HL]      = std::bind(&Cpu::Add_16bit, thisPtr, &CpuCore::HL, &CpuCore::HL);
 		table[OpCode::LD_A_HL_INC_NI] = std::bind(&Cpu::Load_8bit_High_AddrIncrement, thisPtr, &CpuCore::AF, &CpuCore::HL);
 		table[OpCode::DEC_HL]         = std::bind(&Cpu::Decrement_16bit, thisPtr, &CpuCore::HL);
@@ -81,6 +81,7 @@ namespace GameBoy
 		table[OpCode::CPL]            = std::bind(&Cpu::CPL, thisPtr);
 
 		// 0x3-
+		table[OpCode::JR_NC_e8]       = std::bind(&Cpu::Jump_Relative_FlagNotSet_8bit_SignedImmediateData, thisPtr, FlagRegisterFlag::CARRY);
 		table[OpCode::ADD_HL_SP]      = std::bind(&Cpu::Add_16bit, thisPtr, &CpuCore::HL, &CpuCore::SP);
 
 		// 0x4-
