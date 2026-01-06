@@ -390,6 +390,16 @@ private:
         /**
          * @brief Loads the 8bits of data found at the addrReg into destReg.
          * 
+         * @param destReg Pointer to the register where the data is loaded into the low 8 bits.
+         * @param addrReg Pointer to the register containing the address where the data is located.
+         * 
+         * @return number of cycles. 
+         */
+        size_t Load_8bit_Low_Addr(Register CpuCore::* destReg, Register CpuCore::* addrReg);
+
+        /**
+         * @brief Loads the 8bits of data found at the addrReg into destReg.
+         * 
          * @param destReg Pointer to the register where the data is loaded into the high 8 bits.
          * @param addrReg Pointer to the register containing the address where the data is located.
          * 
@@ -420,6 +430,46 @@ private:
          * @return number of cycles.
          */
         size_t Load_8bit_High_AddrDecrement(Register CpuCore::* destReg, Register CpuCore::* addrReg);
+
+        /**
+         * @brief Loads the contents of the high part of fromReg into the high part of toReg.
+         * 
+         * @param toReg Register where the high part the value will be loaded into.
+         * @param fromReg Register where the high part's value will be loaded from.
+         * 
+         * @return number of cycles.
+         */
+        size_t Load_8bit_High_High(Register CpuCore::* toReg, Register CpuCore::* fromReg);
+
+        /**
+         * @brief Loads the contents of the low part of fromReg into the high part of toReg.
+         * 
+         * @param toReg Register where the high part the value will be loaded into.
+         * @param fromReg Register where the low part's value will be loaded from.
+         * 
+         * @return number of cycles.
+         */
+        size_t Load_8bit_High_Low(Register CpuCore::* toReg, Register CpuCore::* fromReg);
+
+        /**
+         * @brief Loads the contents of the high part of fromReg into the low part of toReg.
+         * 
+         * @param toReg Register where the low part the value will be loaded into.
+         * @param fromReg Register where the high part's value will be loaded from.
+         * 
+         * @return number of cycles.
+         */
+        size_t Load_8bit_Low_High(Register CpuCore::* toReg, Register CpuCore::* fromReg);
+
+        /**
+         * @brief Loads the contents of the low part of fromReg into the low part of toReg.
+         * 
+         * @param toReg Register where the low part the value will be loaded into.
+         * @param fromReg Register where the low part's value will be loaded from.
+         * 
+         * @return number of cycles.
+         */
+        size_t Load_8bit_Low_Low(Register CpuCore::* toReg, Register CpuCore::* fromReg);
 
         /**
          * @brief Compares the 8 bit immediate data to the high register by calculating (reg - data).

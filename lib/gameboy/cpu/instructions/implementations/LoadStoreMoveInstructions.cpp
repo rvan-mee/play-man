@@ -88,6 +88,17 @@ namespace GameBoy
         return numberOfCycles;
     }
 
+    size_t Cpu::Load_8bit_Low_Addr(Register CpuCore::* destReg, Register CpuCore::* addrReg)
+    {
+        const uint16_t address = (core.*addrReg).Value();
+        Register& dest = core.*destReg;
+
+        dest.SetLowByte(memoryBus.ReadByte(address));
+
+        constexpr size_t numberOfCycles = 2;
+        return numberOfCycles;
+    }
+
     size_t Cpu::Load_8bit_High_Addr(Register CpuCore::* destReg, Register CpuCore::* addrReg)
     {
         const uint16_t address = (core.*addrReg).Value();
@@ -121,6 +132,50 @@ namespace GameBoy
 
         constexpr size_t numberOfCycles = 2;
         return numberOfCycles;   
+    }
+
+    size_t Cpu::Load_8bit_High_High(Register CpuCore::* toReg, Register CpuCore::* fromReg)
+    {
+        Register& to = core.*toReg;
+        Register& from = core.*fromReg;
+
+        to.SetHighByte(from.HighByte());
+
+        constexpr size_t numberOfCycles = 1;
+        return numberOfCycles;
+    }
+
+    size_t Cpu::Load_8bit_High_Low(Register CpuCore::* toReg, Register CpuCore::* fromReg)
+    {
+        Register& to = core.*toReg;
+        Register& from = core.*fromReg;
+
+        to.SetHighByte(from.LowByte());
+
+        constexpr size_t numberOfCycles = 1;
+        return numberOfCycles;
+    }
+
+    size_t Cpu::Load_8bit_Low_High(Register CpuCore::* toReg, Register CpuCore::* fromReg)
+    {
+        Register& to = core.*toReg;
+        Register& from = core.*fromReg;
+
+        to.SetLowByte(from.HighByte());
+
+        constexpr size_t numberOfCycles = 1;
+        return numberOfCycles;
+    }
+
+    size_t Cpu::Load_8bit_Low_Low(Register CpuCore::* toReg, Register CpuCore::* fromReg)
+    {
+        Register& to = core.*toReg;
+        Register& from = core.*fromReg;
+
+        to.SetLowByte(from.LowByte());
+
+        constexpr size_t numberOfCycles = 1;
+        return numberOfCycles;
     }
 
 	size_t Cpu::Load_16bit_ImmediateData(Register CpuCore::* reg)
