@@ -338,6 +338,17 @@ private:
         size_t Store_8bit_Addr_High(Register CpuCore::* addrReg, Register CpuCore::* dataReg);
 
         /**
+         * @brief Stores the byte found in the low register of dataReg to the addres
+         *        pointed to by addrReg.
+         * 
+         * @param addrReg Pointer to the register containing the address where the data needs to be stored. 
+         * @param dataReg Pointer to the register where the data will be taken from (low 8 bits).
+         * 
+         * @return number of cycles.
+         */
+        size_t Store_8bit_Addr_Low(Register CpuCore::* addrReg, Register CpuCore::* dataReg);
+
+        /**
          * @brief Stores the byte found in the high register of dataReg to the addres
          *        pointed to by addrReg after which the contents of addrReg gets incremented by 1.
          * 

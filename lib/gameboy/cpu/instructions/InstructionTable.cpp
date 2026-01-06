@@ -153,6 +153,24 @@ namespace GameBoy
 		table[OpCode::LD_L_A]         = std::bind(&Cpu::Load_8bit_Low_High, thisPtr, &CpuCore::HL, &CpuCore::AF);
 
 		// 0x7-
+		table[OpCode::LD_HL_NI_B]     = std::bind(&Cpu::Store_8bit_Addr_High, thisPtr, &CpuCore::HL, &CpuCore::BC);
+		table[OpCode::LD_HL_NI_C]     = std::bind(&Cpu::Store_8bit_Addr_Low, thisPtr, &CpuCore::HL, &CpuCore::BC);
+		table[OpCode::LD_HL_NI_D]     = std::bind(&Cpu::Store_8bit_Addr_High, thisPtr, &CpuCore::HL, &CpuCore::DE);
+		table[OpCode::LD_HL_NI_E]     = std::bind(&Cpu::Store_8bit_Addr_Low, thisPtr, &CpuCore::HL, &CpuCore::DE);
+		table[OpCode::LD_HL_NI_H]     = std::bind(&Cpu::Store_8bit_Addr_High, thisPtr, &CpuCore::HL, &CpuCore::HL);
+		table[OpCode::LD_HL_NI_L]     = std::bind(&Cpu::Store_8bit_Addr_Low, thisPtr, &CpuCore::HL, &CpuCore::HL);
+			// 0x76
+			// TODO: HALT, implement when the interrupts are handled properly
+		table[OpCode::LD_HL_NI_A]     = std::bind(&Cpu::Store_8bit_Addr_High, thisPtr, &CpuCore::HL, &CpuCore::AF);
+		table[OpCode::LD_A_B]         = std::bind(&Cpu::Load_8bit_High_High, thisPtr, &CpuCore::AF, &CpuCore::BC);
+		table[OpCode::LD_A_C]         = std::bind(&Cpu::Load_8bit_High_Low, thisPtr, &CpuCore::AF, &CpuCore::BC);
+		table[OpCode::LD_A_D]         = std::bind(&Cpu::Load_8bit_High_High, thisPtr, &CpuCore::AF, &CpuCore::DE);
+		table[OpCode::LD_A_E]         = std::bind(&Cpu::Load_8bit_High_Low, thisPtr, &CpuCore::AF, &CpuCore::DE);
+		table[OpCode::LD_A_H]         = std::bind(&Cpu::Load_8bit_High_High, thisPtr, &CpuCore::AF, &CpuCore::HL);
+		table[OpCode::LD_A_L]         = std::bind(&Cpu::Load_8bit_High_Low, thisPtr, &CpuCore::AF, &CpuCore::HL);
+		table[OpCode::LD_A_HL_NI]     = std::bind(&Cpu::Load_8bit_High_Addr, thisPtr, &CpuCore::AF, &CpuCore::HL);
+		table[OpCode::LD_A_A]         = std::bind(&Cpu::Load_8bit_High_High, thisPtr, &CpuCore::AF, &CpuCore::AF);
+
 		// 0x8-
 		// 0x9-
 		// 0xA-
