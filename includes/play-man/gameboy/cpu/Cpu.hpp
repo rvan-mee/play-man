@@ -105,6 +105,9 @@ namespace GameBoy
 
         /**
          * @brief Reads two bytes from the memory bus at address contained in PC; increments PC by 2;
+         * 
+         * @note The first byte will be the upper byte of the final 16 bit value.
+         * 
          * @return The 16bit data found at the address contained in PC.
          */
         uint16_t FetchPcAddress16bit();
@@ -150,6 +153,24 @@ private:
          * @return number of cycles.
          */
         size_t CPL();
+
+        /**
+         * @brief Sets the carry flag inside the F register.
+         * 
+         * @note Also sets the SUB and HALF_CARRY flags to false.
+         * 
+         * @return number of cycles.
+         */
+        size_t SCF();
+
+        /**
+         * @brief Flips the carry flag.
+         * 
+         * @note Also sets the SUB and HALF_CARRY flags to false.
+         * 
+         * @return number of cycles.
+         */
+        size_t CCF();
 
         /**                               Jmp/call instructions                                             **/
 
@@ -256,6 +277,18 @@ private:
         size_t Increment_8bit_Low(Register CpuCore:: *reg);
 
         /**
+         * @brief Increments the value pointed to by addrReg by one.
+         * 
+         * @param addrReg Pointer the the register containing the address of the value
+         *                that needs to be incremented.
+         * 
+         * @note The Z flag is set if the increment results in a 0.
+         * @note the S flag is set to false.
+         * @note the H flag is set according to the calculation.
+         */
+        size_t Increment_Dereferenced(Register CpuCore:: *addrReg);
+
+        /**
          * @brief Decrements the high part of the register by 1.
          * 
          * @param reg Pointer to the register needing to be decremented.
@@ -282,6 +315,18 @@ private:
         size_t Decrement_8bit_Low(Register CpuCore:: *reg);
 
         /**
+         * @brief Decrements the value pointed to by addrReg by one.
+         * 
+         * @param addrReg Pointer the the register containing the address of the value
+         *                that needs to be decremented.
+         * 
+         * @note The Z flag is set if the decrement results in a 0.
+         * @note the S flag is set to true.
+         * @note the H flag is set according to the calculation.
+         */
+        size_t Decrement_Dereferenced(Register CpuCore::* addrReg);
+
+        /**
          * @brief Stores the byte found in the high register of dataReg to the addres
          *        Pointed to by addrReg.
          * 
@@ -302,6 +347,27 @@ private:
          * @return number of cycles.
          */
         size_t Store_8bit_AddrIncrement_High(Register CpuCore::* addrReg, Register CpuCore::* dataReg);
+
+        /**
+         * @brief Stores the byte found in the high register of dataReg to the addres
+         *        pointed to by addrReg after which the contents of addrReg gets decremented by 1.
+         * 
+         * @param addrReg Pointer to the register containing the address where the data needs to be stored. 
+         * @param dataReg Pointer to the register where the data will be taken from (high 8 bits).
+         * 
+         * @return number of cycles.
+         */
+        size_t Store_8bit_AddrDecrement_High(Register CpuCore::* addrReg, Register CpuCore::* dataReg);
+
+        /**
+         * @brief Stores the byte found at the current PC register location to the destination
+         *        pointed to by addrReg.
+         * 
+         * @param addrReg pointer to the register containing the address where the data needs to be stored.
+         * 
+         * @return number of cycles.
+         */
+        size_t Store_8bit_Addr_ImmediateData(Register CpuCore::* addrReg);
 
         /**
          * @brief Loads the 8bit immediate data into the high register of reg.
@@ -333,13 +399,27 @@ private:
 
         /**
          * @brief Loads the 8 bits of data found at addrReg into destReg, after which the pointer inside
-         *        addrReg gets incremented.
+         *        addrReg gets incremented by 1.
          * 
          * @param destReg Pointer to the register where the data is loaded into the high 8 bits.
          * @param addrReg Pointer to the register containing the address where the data is located.
-         *                Will get incremented after the data is retrieved.
+         *                Will get incremented by 1 after the data is retrieved.
+         * 
+         * @return number of cycles.
          */
         size_t Load_8bit_High_AddrIncrement(Register CpuCore::* destReg, Register CpuCore::* addrReg);
+
+        /**
+         * @brief Loads the 8 bits of data found at addrReg into destReg, after which the pointer inside
+         *        addrReg gets decremented by 1.
+         * 
+         * @param destReg Pointer to the register where the data is loaded into the high 8 bits.
+         * @param addrReg Pointer to the register containing the address where the data is located.
+         *                Will get decremented by 1 after the data is retrieved.
+         * 
+         * @return number of cycles.
+         */
+        size_t Load_8bit_High_AddrDecrement(Register CpuCore::* destReg, Register CpuCore::* addrReg);
 
         /**
          * @brief Compares the 8 bit immediate data to the high register by calculating (reg - data).

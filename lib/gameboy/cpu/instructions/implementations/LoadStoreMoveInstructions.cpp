@@ -43,6 +43,29 @@ namespace GameBoy
         return numberOfCycles; 
     }
 
+    size_t Cpu::Store_8bit_AddrDecrement_High(Register CpuCore::* addrReg, Register CpuCore::* dataReg)
+    {
+        uint8_t data = (core.*dataReg).HighByte();
+        Register& addr = (core.*addrReg);
+
+        memoryBus.WriteByte(addr.Value(), data);
+        addr--;
+
+        constexpr size_t numberOfCycles = 2;
+        return numberOfCycles; 
+    }
+
+    size_t Cpu::Store_8bit_Addr_ImmediateData(Register CpuCore::* addrReg)
+    {
+        const uint8_t data = FetchPcAddress();
+        const uint16_t addr = (core.*addrReg).Value();
+
+        memoryBus.WriteByte(addr, data);
+
+        constexpr size_t numberOfCycles = 3;
+        return numberOfCycles;
+    }
+
     size_t Cpu::Load_8bit_High_ImmediateData(Register CpuCore::* reg)
     {
         Register& r = core.*reg;
@@ -87,5 +110,42 @@ namespace GameBoy
         constexpr size_t numberOfCycles = 2;
         return numberOfCycles;
     }
+
+    size_t Cpu::Load_8bit_High_AddrDecrement(Register CpuCore::* destReg, Register CpuCore::* addrReg)
+    {
+        Register& dest = core.*destReg;
+        Register& addr = core.*addrReg;
+
+        dest.SetHighByte(memoryBus.ReadByte(addr.Value()));
+        addr--;
+
+        constexpr size_t numberOfCycles = 2;
+        return numberOfCycles;   
+    }
+
+	size_t Cpu::Load_16bit_ImmediateData(Register CpuCore::* reg)
+	{
+		Register& r = core.*reg;
+		r.SetLowByte(FetchPcAddress());
+		r.SetHighByte(FetchPcAddress());
+
+		constexpr auto numberOfCycles = 3;
+		return numberOfCycles;
+	}
+
+	size_t Cpu::Load_16bit_RegToImmediateAddr(Register CpuCore::* reg)
+	{
+		const Register& r = core.*reg;
+		const auto lowByte = r.LowByte();
+		const auto highByte = r.HighByte();
+
+		const auto addr = FetchPcAddress16bit();
+
+		memoryBus.WriteByte(addr, lowByte);
+		memoryBus.WriteByte(addr+1, highByte);
+
+		constexpr size_t numberOfCycles = 5;
+		return numberOfCycles;
+	}
 
 }

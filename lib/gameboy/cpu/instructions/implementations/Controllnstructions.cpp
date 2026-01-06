@@ -88,4 +88,25 @@ namespace GameBoy
 		constexpr auto numberOfCycles = 1;
 		return numberOfCycles;
 	}
+
+	size_t Cpu::SCF()
+	{
+		core.SetFlag(FlagRegisterFlag::SUB, false);
+		core.SetFlag(FlagRegisterFlag::HALF_CARRY, false);
+		core.SetFlag(FlagRegisterFlag::CARRY, true);
+
+		constexpr auto numberOfCycles = 1;
+		return numberOfCycles;
+	}
+
+	size_t Cpu::CCF()
+	{
+		const bool flagState = core.GetFlag(FlagRegisterFlag::CARRY);
+		core.SetFlag(FlagRegisterFlag::SUB, false);
+		core.SetFlag(FlagRegisterFlag::HALF_CARRY, false);
+		core.SetFlag(FlagRegisterFlag::CARRY, !flagState);
+
+		constexpr auto numberOfCycles = 1;
+		return numberOfCycles;
+	}
 }
