@@ -251,6 +251,52 @@ private:
         /**                                8 bit instructions                                              **/
 
         /**
+         * @brief Adds the contents from fromReg to the toReg.
+         * 
+         * @param fromReg Pointer to the register where the high part will be used to add.
+         * @param toReg Pointer to the register where the high part will be added to.
+         * 
+         * @note Sets the Z flag according to the calculation.
+         * @note Sets the S flag to false.
+         * @note Sets the H flag according to the calculation.
+         * @note Sets the C flag according to the calculation.
+         * 
+         * @return number of cycles.
+         */
+        size_t Add_8bit_High_High(Register CpuCore:: *toReg, Register CpuCore:: *fromReg);
+
+        /**
+         * @brief Adds the contents from fromReg to the toReg.
+         * 
+         * @param fromReg Pointer to the register where the low part will be used to add.
+         * @param toReg Pointer to the register where the high part will be added to.
+         * 
+         * @note Sets the Z flag according to the calculation.
+         * @note Sets the S flag to false.
+         * @note Sets the H flag according to the calculation.
+         * @note Sets the C flag according to the calculation.
+         * 
+         * @return number of cycles.
+         */
+        size_t Add_8bit_High_Low(Register CpuCore:: *toReg, Register CpuCore:: *fromReg);
+
+        /**
+         * @brief Adds the contents from memory location addrReg to the toReg.
+         * 
+         * @param addrReg Pointer to the register which contains the location of 
+         *                the memory that will be used for the addition.
+         * @param toReg Pointer to the register where the high part will be added to.
+         * 
+         * @note Sets the Z flag according to the calculation.
+         * @note Sets the S flag to false.
+         * @note Sets the H flag according to the calculation.
+         * @note Sets the C flag according to the calculation.
+         * 
+         * @return number of cycles.
+         */
+        size_t Add_8bit_High_Addr(Register CpuCore:: *toReg, Register CpuCore:: *addrReg);
+
+        /**
          * @brief Increments the high part of the register by 1.
          * 
          * @param reg Pointer to the register needing to be incremented.
