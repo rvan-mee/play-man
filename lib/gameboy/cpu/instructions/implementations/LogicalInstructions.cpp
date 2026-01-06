@@ -130,7 +130,7 @@ namespace GameBoy
 		return numberOfCycles;
 	}
 
-	    size_t Cpu::Increment_16bit(Register CpuCore::* reg)
+	size_t Cpu::Increment_16bit(Register CpuCore::* reg)
     {
         Register& r = core.*reg;
 
