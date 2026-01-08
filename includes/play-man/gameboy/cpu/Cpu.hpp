@@ -251,10 +251,9 @@ private:
         /**                                8 bit instructions                                              **/
 
         /**
-         * @brief Adds the contents from fromReg to the toReg.
+         * @brief Adds the contents from fromReg to the accumulator register.
          * 
          * @param fromReg Pointer to the register where the high part will be used to add.
-         * @param toReg Pointer to the register where the high part will be added to.
          * 
          * @note Sets the Z flag according to the calculation.
          * @note Sets the S flag to false.
@@ -263,13 +262,12 @@ private:
          * 
          * @return number of cycles.
          */
-        size_t Add_8bit_High_High(Register CpuCore:: *toReg, Register CpuCore:: *fromReg);
+        size_t Add_8bit_High(Register CpuCore:: *fromReg);
 
         /**
-         * @brief Adds the contents from fromReg to the toReg.
+         * @brief Adds the contents from fromReg to the accumulator register.
          * 
          * @param fromReg Pointer to the register where the low part will be used to add.
-         * @param toReg Pointer to the register where the high part will be added to.
          * 
          * @note Sets the Z flag according to the calculation.
          * @note Sets the S flag to false.
@@ -278,14 +276,13 @@ private:
          * 
          * @return number of cycles.
          */
-        size_t Add_8bit_High_Low(Register CpuCore:: *toReg, Register CpuCore:: *fromReg);
+        size_t Add_8bit_Low(Register CpuCore:: *fromReg);
 
         /**
-         * @brief Adds the contents from memory location addrReg to the toReg.
+         * @brief Adds the contents from memory location addrReg to the accumulator register.
          * 
          * @param addrReg Pointer to the register which contains the location of 
          *                the memory that will be used for the addition.
-         * @param toReg Pointer to the register where the high part will be added to.
          * 
          * @note Sets the Z flag according to the calculation.
          * @note Sets the S flag to false.
@@ -294,7 +291,7 @@ private:
          * 
          * @return number of cycles.
          */
-        size_t Add_8bit_High_Addr(Register CpuCore:: *toReg, Register CpuCore:: *addrReg);
+        size_t Add_8bit_Addr(Register CpuCore:: *addrReg);
 
         /**
          * @brief Increments the high part of the register by 1.

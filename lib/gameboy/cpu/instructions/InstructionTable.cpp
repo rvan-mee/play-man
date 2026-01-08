@@ -172,14 +172,14 @@ namespace GameBoy
 		table[OpCode::LD_A_A]         = std::bind(&Cpu::Load_8bit_High_High, thisPtr, &CpuCore::AF, &CpuCore::AF);
 
 		// 0x8-
-		table[OpCode::ADD_A_B]        = std::bind(&Cpu::Add_8bit_High_High, thisPtr, &CpuCore::AF, &CpuCore::BC);
-		table[OpCode::ADD_A_C]        = std::bind(&Cpu::Add_8bit_High_Low, thisPtr, &CpuCore::AF, &CpuCore::BC);
-		table[OpCode::ADD_A_D]        = std::bind(&Cpu::Add_8bit_High_High, thisPtr, &CpuCore::AF, &CpuCore::DE);
-		table[OpCode::ADD_A_E]        = std::bind(&Cpu::Add_8bit_High_Low, thisPtr, &CpuCore::AF, &CpuCore::DE);
-		table[OpCode::ADD_A_H]        = std::bind(&Cpu::Add_8bit_High_High, thisPtr, &CpuCore::AF, &CpuCore::HL);
-		table[OpCode::ADD_A_L]        = std::bind(&Cpu::Add_8bit_High_Low, thisPtr, &CpuCore::AF, &CpuCore::HL);
-		table[OpCode::ADD_A_HL_NI]    = std::bind(&Cpu::Add_8bit_High_Addr, thisPtr, &CpuCore::AF, &CpuCore::HL);
-		table[OpCode::ADD_A_A]        = std::bind(&Cpu::Add_8bit_High_High, thisPtr, &CpuCore::AF, &CpuCore::AF);
+		table[OpCode::ADD_A_B]        = std::bind(&Cpu::Add_8bit_High, thisPtr, &CpuCore::BC);
+		table[OpCode::ADD_A_C]        = std::bind(&Cpu::Add_8bit_Low, thisPtr, &CpuCore::BC);
+		table[OpCode::ADD_A_D]        = std::bind(&Cpu::Add_8bit_High, thisPtr, &CpuCore::DE);
+		table[OpCode::ADD_A_E]        = std::bind(&Cpu::Add_8bit_Low, thisPtr, &CpuCore::DE);
+		table[OpCode::ADD_A_H]        = std::bind(&Cpu::Add_8bit_High, thisPtr, &CpuCore::HL);
+		table[OpCode::ADD_A_L]        = std::bind(&Cpu::Add_8bit_Low, thisPtr, &CpuCore::HL);
+		table[OpCode::ADD_A_HL_NI]    = std::bind(&Cpu::Add_8bit_Addr, thisPtr, &CpuCore::HL);
+		table[OpCode::ADD_A_A]        = std::bind(&Cpu::Add_8bit_High, thisPtr, &CpuCore::AF);
 
 		// 0x9-
 		// 0xA-
