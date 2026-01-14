@@ -294,6 +294,52 @@ private:
         size_t Add_8bit_Addr(Register CpuCore:: *addrReg);
 
         /**
+         * @brief Adds the contents from fromReg to the accumulator register, combined with the 
+         *        contents of the Carry flag (1 or 0).
+         * 
+         * @param fromReg Pointer to the register where the high part will be used to add.
+         * 
+         * @note Sets the Z flag according to the calculation.
+         * @note Sets the S flag to false.
+         * @note Sets the H flag according to the calculation.
+         * @note Sets the C flag according to the calculation.
+         * 
+         * @return number of cycles.
+         */
+        size_t AddCarry_8bit_High(Register CpuCore:: *addrReg);
+
+        /**
+         * @brief Adds the contents from fromReg to the accumulator register, combined with the 
+         *        contents of the Carry flag (1 or 0).
+         * 
+         * @param fromReg Pointer to the register where the low part will be used to add.
+         * 
+         * @note Sets the Z flag according to the calculation.
+         * @note Sets the S flag to false.
+         * @note Sets the H flag according to the calculation.
+         * @note Sets the C flag according to the calculation.
+         * 
+         * @return number of cycles.
+         */
+        size_t AddCarry_8bit_Low(Register CpuCore:: *addrReg);
+
+        /**
+         * @brief Adds the contents from memory location addrReg to the accumulator register, combined with the 
+         *        contents of the Carry flag (1 or 0).
+         * 
+         * @param addrReg Pointer to the register which contains the location of 
+         *                the memory that will be used for the addition.
+         * 
+         * @note Sets the Z flag according to the calculation.
+         * @note Sets the S flag to false.
+         * @note Sets the H flag according to the calculation.
+         * @note Sets the C flag according to the calculation.
+         * 
+         * @return number of cycles.
+         */
+        size_t AddCarry_8bit_Addr(Register CpuCore:: *addrReg);
+
+        /**
          * @brief Increments the high part of the register by 1.
          * 
          * @param reg Pointer to the register needing to be incremented.
