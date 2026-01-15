@@ -340,6 +340,52 @@ private:
         size_t AddCarry_8bit_Addr(Register CpuCore:: *addrReg);
 
         /**
+         * @brief Subtracts the contents of fromReg from the accumulator register.
+         * 
+         * @param fromReg Pointer to the register wich contains the value used
+         *                to subtract.
+         * 
+         * @note Sets the Z flag according to the calculation.
+         * @note Sets the S flag to true.
+         * @note Sets the H flag according to the calculation.
+         * @note Sets the C flag according to the calculation.
+         * 
+         * @return number of cycles.
+         */
+        size_t Sub_8bit_High(Register CpuCore:: *fromReg);
+
+        /**
+         * @brief Subtracts the contents of fromReg from the accumulator register.
+         * 
+         * @param fromReg Pointer to the register wich contains the value used
+         *                to subtract.
+         * 
+         * @note Sets the Z flag according to the calculation.
+         * @note Sets the S flag to true.
+         * @note Sets the H flag according to the calculation.
+         * @note Sets the C flag according to the calculation.
+         * 
+         * @return number of cycles.
+         */
+        size_t Sub_8bit_Low(Register CpuCore:: *fromReg);
+
+        /**
+         * @brief Subtracts the contents of memory location addrReg
+         *        from the accumulator register.
+         * 
+         * @param addrReg Pointer to the register which contains the location of 
+         *                the memory that will be used for the subtraction.
+         * 
+         * @note Sets the Z flag according to the calculation.
+         * @note Sets the S flag to true.
+         * @note Sets the H flag according to the calculation.
+         * @note Sets the C flag according to the calculation.
+         * 
+         * @return number of cycles.
+         */
+        size_t Sub_8bit_Addr(Register CpuCore:: *addrReg);
+
+        /**
          * @brief Increments the high part of the register by 1.
          * 
          * @param reg Pointer to the register needing to be incremented.

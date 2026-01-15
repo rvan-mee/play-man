@@ -17,6 +17,9 @@
 
 #include <play-man/gameboy/cpu/Cpu.hpp>
 
+#define HALF_CARRY_BIT 0b1'0000
+#define CARRY_BIT 0b1'0000'0000
+
 namespace GameBoy
 {
     size_t Cpu::Increment_8bit_High(Register CpuCore:: *reg)
@@ -29,7 +32,7 @@ namespace GameBoy
 
         core.SetFlag(FlagRegisterFlag::ZERO, res == 0);
         core.SetFlag(FlagRegisterFlag::SUB, false);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((val & 0xF) + 1 > 0xF));
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((val & 0xF) + 1) & HALF_CARRY_BIT);
 
         constexpr size_t numberOfCycles = 1;
         return numberOfCycles;
@@ -45,7 +48,7 @@ namespace GameBoy
 
         core.SetFlag(FlagRegisterFlag::ZERO, res == 0);
         core.SetFlag(FlagRegisterFlag::SUB, false);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((val & 0xF) + 1 > 0xF));
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((val & 0xF) + 1) & HALF_CARRY_BIT);
 
         constexpr size_t numberOfCycles = 1;
         return numberOfCycles;
@@ -61,7 +64,7 @@ namespace GameBoy
 
         core.SetFlag(FlagRegisterFlag::ZERO, res == 0);
         core.SetFlag(FlagRegisterFlag::SUB, false);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((val & 0xF) + 1 > 0xF));
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((val & 0xF) + 1) & HALF_CARRY_BIT);
 
         constexpr size_t numberOfCycles = 3;
         return numberOfCycles;
@@ -77,7 +80,7 @@ namespace GameBoy
 
         core.SetFlag(FlagRegisterFlag::ZERO, res == 0);
         core.SetFlag(FlagRegisterFlag::SUB, true);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((val & 0xF) == 0));	
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((val & 0xF) - 1) & HALF_CARRY_BIT);	
 
         constexpr size_t numberOfCycles = 1;
         return numberOfCycles;
@@ -93,7 +96,7 @@ namespace GameBoy
 
         core.SetFlag(FlagRegisterFlag::ZERO, res == 0);
         core.SetFlag(FlagRegisterFlag::SUB, true);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((val & 0xF) == 0));	
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((val & 0xF) - 1) & HALF_CARRY_BIT);	
 
         constexpr size_t numberOfCycles = 1;
         return numberOfCycles;
@@ -109,7 +112,7 @@ namespace GameBoy
 
         core.SetFlag(FlagRegisterFlag::ZERO, res == 0);
         core.SetFlag(FlagRegisterFlag::SUB, true);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((val & 0xF) == 0));
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((val & 0xF) - 1) & HALF_CARRY_BIT);
 
         constexpr size_t numberOfCycles = 3;
         return numberOfCycles;
@@ -123,8 +126,8 @@ namespace GameBoy
 
         core.SetFlag(FlagRegisterFlag::ZERO, compareResult == 0);
         core.SetFlag(FlagRegisterFlag::SUB, true);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((regContents & 0xF) - (data & 0xF)) < 0);
-        core.SetFlag(FlagRegisterFlag::CARRY, regContents < data);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((regContents & 0xF) - (data & 0xF)) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::CARRY, (regContents - data) & CARRY_BIT);
 
         constexpr size_t numberOfCycles = 2;
         return numberOfCycles;
@@ -176,8 +179,8 @@ namespace GameBoy
 
         core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
         core.SetFlag(FlagRegisterFlag::SUB, false);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, (baseValue & 0xF) + (fromValue & 0xF) > 0xF);
-        core.SetFlag(FlagRegisterFlag::CARRY, result > 0xFF);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) + (fromValue & 0xF)) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
 
         constexpr size_t numberOfCycles = 1;
         return numberOfCycles;
@@ -194,8 +197,8 @@ namespace GameBoy
 
         core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
         core.SetFlag(FlagRegisterFlag::SUB, false);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, (baseValue & 0xF) + (fromValue & 0xF) > 0xF);
-        core.SetFlag(FlagRegisterFlag::CARRY, result > 0xFF);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) + (fromValue & 0xF)) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
 
         constexpr size_t numberOfCycles = 1;
         return numberOfCycles;
@@ -212,8 +215,8 @@ namespace GameBoy
 
         core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
         core.SetFlag(FlagRegisterFlag::SUB, false);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, (baseValue & 0xF) + (fromValue & 0xF) > 0xF);
-        core.SetFlag(FlagRegisterFlag::CARRY, result > 0xFF);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) + (fromValue & 0xF)) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
 
         constexpr size_t numberOfCycles = 2;
         return numberOfCycles;
@@ -231,8 +234,8 @@ namespace GameBoy
 
         core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
         core.SetFlag(FlagRegisterFlag::SUB, false);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, (baseValue & 0xF) + (fromValue & 0xF) + carryValue > 0xF);
-        core.SetFlag(FlagRegisterFlag::CARRY,result > 0xFF);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) + (fromValue & 0xF) + carryValue) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
 
         constexpr size_t numberOfCycles = 1;
         return numberOfCycles;
@@ -250,8 +253,8 @@ namespace GameBoy
 
         core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
         core.SetFlag(FlagRegisterFlag::SUB, false);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, (baseValue & 0xF) + (fromValue & 0xF) + carryValue > 0xF);
-        core.SetFlag(FlagRegisterFlag::CARRY, result > 0xFF);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) + (fromValue & 0xF) + carryValue) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
 
         constexpr size_t numberOfCycles = 1;
         return numberOfCycles;
@@ -270,10 +273,63 @@ namespace GameBoy
         core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
         core.SetFlag(FlagRegisterFlag::SUB, false);
         core.SetFlag(FlagRegisterFlag::HALF_CARRY, (baseValue & 0xF) + (fromValue & 0xF) + carryValue > 0xF);
-        core.SetFlag(FlagRegisterFlag::CARRY, result > 0xFF);
+        core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
 
         constexpr size_t numberOfCycles = 2;
         return numberOfCycles;
     }
+
+    size_t Cpu::Sub_8bit_High(Register CpuCore:: *fromReg)
+    {
+        uint16_t fromValue = (core.*fromReg).HighByte();
+        uint16_t baseValue = core.AF.HighByte();
+        uint16_t result = baseValue - fromValue;
+
+        core.AF.SetHighByte(static_cast<uint8_t>(result));
+
+        core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
+        core.SetFlag(FlagRegisterFlag::SUB, true);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) - (fromValue & 0xF)) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
+
+        constexpr size_t numberOfCycles = 1;
+        return numberOfCycles;
+    }
+
+    size_t Cpu::Sub_8bit_Low(Register CpuCore:: *fromReg)
+    {
+        uint16_t fromValue = (core.*fromReg).LowByte();
+        uint16_t baseValue = core.AF.HighByte();
+        uint16_t result = baseValue - fromValue;
+
+        core.AF.SetHighByte(static_cast<uint8_t>(result));
+
+        core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
+        core.SetFlag(FlagRegisterFlag::SUB, true);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) - (fromValue & 0xF)) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
+
+        constexpr size_t numberOfCycles = 1;
+        return numberOfCycles;
+    }
+
+    size_t Cpu::Sub_8bit_Addr(Register CpuCore:: *addrReg)
+    {
+        uint16_t addr = (core.*addrReg).Value();
+        uint16_t fromValue = memoryBus.ReadByte(addr);
+        uint16_t baseValue = core.AF.HighByte();
+        uint16_t result = baseValue - fromValue;
+
+        core.AF.SetHighByte(static_cast<uint8_t>(result));
+
+        core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
+        core.SetFlag(FlagRegisterFlag::SUB, true);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) - (fromValue & 0xF)) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
+
+        constexpr size_t numberOfCycles = 2;
+        return numberOfCycles;
+    }
+
 
 } // namespace GameBoy

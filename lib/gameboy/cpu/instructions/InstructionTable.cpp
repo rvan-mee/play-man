@@ -190,6 +190,15 @@ namespace GameBoy
 		table[OpCode::ADC_A_A]        = std::bind(&Cpu::AddCarry_8bit_High, thisPtr, &CpuCore::AF);
 
 		// 0x9-
+		table[OpCode::SUB_A_B]        = std::bind(&Cpu::Sub_8bit_High, thisPtr, &CpuCore::BC);
+		table[OpCode::SUB_A_C]        = std::bind(&Cpu::Sub_8bit_Low, thisPtr, &CpuCore::BC);
+		table[OpCode::SUB_A_D]        = std::bind(&Cpu::Sub_8bit_High, thisPtr, &CpuCore::DE);
+		table[OpCode::SUB_A_E]        = std::bind(&Cpu::Sub_8bit_Low, thisPtr, &CpuCore::DE);
+		table[OpCode::SUB_A_H]        = std::bind(&Cpu::Sub_8bit_High, thisPtr, &CpuCore::HL);
+		table[OpCode::SUB_A_L]        = std::bind(&Cpu::Sub_8bit_Low, thisPtr, &CpuCore::HL);
+		table[OpCode::SUB_A_HL_NI]    = std::bind(&Cpu::Sub_8bit_Addr, thisPtr, &CpuCore::HL);
+		table[OpCode::SUB_A_A]        = std::bind(&Cpu::Sub_8bit_High, thisPtr, &CpuCore::AF);
+
 		// 0xA-
 		// 0xB-
 		// 0xC-
