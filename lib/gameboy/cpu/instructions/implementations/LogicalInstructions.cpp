@@ -281,9 +281,9 @@ namespace GameBoy
 
     size_t Cpu::Sub_8bit_High(Register CpuCore:: *fromReg)
     {
-        uint16_t fromValue = (core.*fromReg).HighByte();
-        uint16_t baseValue = core.AF.HighByte();
-        uint16_t result = baseValue - fromValue;
+        const uint16_t fromValue = (core.*fromReg).HighByte();
+        const uint16_t baseValue = core.AF.HighByte();
+        const uint16_t result = baseValue - fromValue;
 
         core.AF.SetHighByte(static_cast<uint8_t>(result));
 
@@ -298,9 +298,9 @@ namespace GameBoy
 
     size_t Cpu::Sub_8bit_Low(Register CpuCore:: *fromReg)
     {
-        uint16_t fromValue = (core.*fromReg).LowByte();
-        uint16_t baseValue = core.AF.HighByte();
-        uint16_t result = baseValue - fromValue;
+        const uint16_t fromValue = (core.*fromReg).LowByte();
+        const uint16_t baseValue = core.AF.HighByte();
+        const uint16_t result = baseValue - fromValue;
 
         core.AF.SetHighByte(static_cast<uint8_t>(result));
 
@@ -315,10 +315,10 @@ namespace GameBoy
 
     size_t Cpu::Sub_8bit_Addr(Register CpuCore:: *addrReg)
     {
-        uint16_t addr = (core.*addrReg).Value();
-        uint16_t fromValue = memoryBus.ReadByte(addr);
-        uint16_t baseValue = core.AF.HighByte();
-        uint16_t result = baseValue - fromValue;
+        const uint16_t addr = (core.*addrReg).Value();
+        const uint16_t fromValue = memoryBus.ReadByte(addr);
+        const uint16_t baseValue = core.AF.HighByte();
+        const uint16_t result = baseValue - fromValue;
 
         core.AF.SetHighByte(static_cast<uint8_t>(result));
 
@@ -331,5 +331,59 @@ namespace GameBoy
         return numberOfCycles;
     }
 
+    size_t Cpu::SubCarry_8bit_High(Register CpuCore:: *fromReg)
+    {
+        const uint16_t carryValue = 1 * core.GetFlag(FlagRegisterFlag::CARRY);
+        const uint16_t fromValue = (core.*fromReg).HighByte();
+        const uint16_t baseValue = core.AF.HighByte();
+        const uint16_t result = baseValue - fromValue - carryValue;
+
+        core.AF.SetHighByte(static_cast<uint8_t>(result));
+
+        core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
+        core.SetFlag(FlagRegisterFlag::SUB, true);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) - (fromValue & 0xF) - carryValue) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
+
+        constexpr size_t numberOfCycles = 1;
+        return numberOfCycles;
+    }
+
+    size_t Cpu::SubCarry_8bit_Low(Register CpuCore:: *fromReg)
+    {
+        const uint16_t carryValue = 1 * core.GetFlag(FlagRegisterFlag::CARRY);
+        const uint16_t fromValue = (core.*fromReg).LowByte();
+        const uint16_t baseValue = core.AF.HighByte();
+        const uint16_t result = baseValue - fromValue - carryValue;
+
+        core.AF.SetHighByte(static_cast<uint8_t>(result));
+
+        core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
+        core.SetFlag(FlagRegisterFlag::SUB, true);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) - (fromValue & 0xF) - carryValue) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
+
+        constexpr size_t numberOfCycles = 1;
+        return numberOfCycles;
+    }
+
+    size_t Cpu::SubCarry_8bit_Addr(Register CpuCore:: *addrReg)
+    {
+        const uint16_t carryValue = 1 * core.GetFlag(FlagRegisterFlag::CARRY);
+        uint16_t addr = (core.*addrReg).Value();
+        uint16_t fromValue = memoryBus.ReadByte(addr);
+        uint16_t baseValue = core.AF.HighByte();
+        uint16_t result = baseValue - fromValue - carryValue;
+
+        core.AF.SetHighByte(static_cast<uint8_t>(result));
+
+        core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
+        core.SetFlag(FlagRegisterFlag::SUB, true);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) - (fromValue & 0xF) - carryValue) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
+
+        constexpr size_t numberOfCycles = 2;
+        return numberOfCycles;
+    }
 
 } // namespace GameBoy
