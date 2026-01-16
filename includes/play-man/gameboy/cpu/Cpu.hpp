@@ -500,14 +500,56 @@ private:
         /**
          * @brief Decrements the value pointed to by addrReg by one.
          * 
-         * @param addrReg Pointer the the register containing the address of the value
+         * @param addrReg Pointer to the register containing the address of the value
          *                that needs to be decremented.
          * 
          * @note The Z flag is set if the decrement results in a 0.
-         * @note the S flag is set to true.
-         * @note the H flag is set according to the calculation.
+         * @note The S flag is set to true.
+         * @note The H flag is set according to the calculation.
          */
         size_t Decrement_Dereferenced(Register CpuCore::* addrReg);
+
+        /**
+         * @brief Performs a bitwise AND on the accumulator register with the
+         *        high part of oppReg as the operant.
+         * 
+         * @param oppReg Pointer to the register containing the operant that will be
+         *               used for the bitwise operation.
+         * 
+         * @note The Z flag is set if the AND results in a 0.
+         * @note The S flag is set to false.
+         * @note The H flag is set to true.
+         * @note The C flag is set to false.
+         */
+        size_t BitwiseAnd_High(Register CpuCore::* oppReg);
+
+        /**
+         * @brief Performs a bitwise AND on the accumulator register with the
+         *        low part of oppReg as the operant.
+         * 
+         * @param oppReg Pointer to the register containing the operant that will be
+         *               used for the bitwise operation.
+         * 
+         * @note The Z flag is set if the AND results in a 0.
+         * @note The S flag is set to false.
+         * @note The H flag is set to true.
+         * @note The C flag is set to false.
+         */
+        size_t BitwiseAnd_Low(Register CpuCore::* oppReg);
+
+        /**
+         * @brief Performs a bitwise AND on the accumulator register with the
+         *        memory found at the location isnide of addrReg as the operant.
+         * 
+         * @param adrReg Pointer to the register containing the memory address of the operant
+         *               that will be used for the bitwise operation.
+         * 
+         * @note The Z flag is set if the AND results in a 0.
+         * @note The S flag is set to false.
+         * @note The H flag is set to true.
+         * @note The C flag is set to false.
+         */
+        size_t BitwiseAnd_Addr(Register CpuCore::* addrReg);
 
         /**
          * @brief Stores the byte found in the high register of dataReg to the addres
