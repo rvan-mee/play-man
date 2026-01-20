@@ -94,4 +94,9 @@ namespace GameBoy
         friend std::ostream& operator << (std::ostream& lhs, const CpuCore& rom);
     };
 
+    /**
+     *  @brief Pointer to a full register (16 bits) within a CpuCore.
+     */
+    using RegisterPointer = Register CpuCore::*;
+
 } /* namespace Gameboy */

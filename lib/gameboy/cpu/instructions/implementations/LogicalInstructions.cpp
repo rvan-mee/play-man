@@ -22,118 +22,86 @@
 
 namespace GameBoy
 {
-    size_t Cpu::Increment_8bit_High(Register CpuCore:: *reg)
+    size_t Cpu::Increment_8bit(RegisterPointer opReg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue)
     {
-        Register& r = core.*reg;
-        const uint8_t val = r.HighByte();
-        const uint8_t res = val + 1;
+        Register& operandRegister = core.*opReg;
+        const uint8_t value = (operandRegister.*GetValue)();
+        const uint8_t result = value + 1;
 
-        r.SetHighByte(res);
+        (operandRegister.*SetValue)(result);
 
-        core.SetFlag(FlagRegisterFlag::ZERO, res == 0);
+        core.SetFlag(FlagRegisterFlag::ZERO, result == 0);
         core.SetFlag(FlagRegisterFlag::SUB, false);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((val & 0xF) + 1) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((value & 0xF) + 1) & HALF_CARRY_BIT);
 
         constexpr size_t numberOfCycles = 1;
         return numberOfCycles;
     }
 
-    size_t Cpu::Increment_8bit_Low(Register CpuCore:: *reg)
-    {
-        Register& r = core.*reg;
-        const uint8_t val = r.LowByte();
-        const uint8_t res = val + 1;
-
-        r.SetLowByte(res);
-
-        core.SetFlag(FlagRegisterFlag::ZERO, res == 0);
-        core.SetFlag(FlagRegisterFlag::SUB, false);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((val & 0xF) + 1) & HALF_CARRY_BIT);
-
-        constexpr size_t numberOfCycles = 1;
-        return numberOfCycles;
-    }
-
-    size_t Cpu::Increment_Dereferenced(Register CpuCore::* addrReg)
+    size_t Cpu::Increment_Dereferenced(RegisterPointer addrReg)
     {
         const auto address = (core.*addrReg).Value();
-        const uint8_t val = memoryBus.ReadByte(address);
-        const uint8_t res = val + 1;
+        const uint8_t value = memoryBus.ReadByte(address);
+        const uint8_t result = value + 1;
 
-        memoryBus.WriteByte(address, res);
+        memoryBus.WriteByte(address, result);
 
-        core.SetFlag(FlagRegisterFlag::ZERO, res == 0);
+        core.SetFlag(FlagRegisterFlag::ZERO, result == 0);
         core.SetFlag(FlagRegisterFlag::SUB, false);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((val & 0xF) + 1) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((value & 0xF) + 1) & HALF_CARRY_BIT);
 
         constexpr size_t numberOfCycles = 3;
         return numberOfCycles;
     }
 
-    size_t Cpu::Decrement_8bit_High(Register CpuCore::* reg)
+    size_t Cpu::Decrement_8bit(RegisterPointer opReg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue)
     {
-        Register& r = core.*reg;
-        const uint8_t val = r.HighByte();
-        const uint8_t res = val - 1;
+        Register& operandRegister = core.*opReg;
+        const uint8_t value = (operandRegister.*GetValue)();
+        const uint8_t result = value - 1;
 
-        r.SetHighByte(res);
+        (operandRegister.*SetValue)(result);
 
-        core.SetFlag(FlagRegisterFlag::ZERO, res == 0);
+        core.SetFlag(FlagRegisterFlag::ZERO, result == 0);
         core.SetFlag(FlagRegisterFlag::SUB, true);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((val & 0xF) - 1) & HALF_CARRY_BIT);	
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((value & 0xF) - 1) & HALF_CARRY_BIT);	
 
         constexpr size_t numberOfCycles = 1;
         return numberOfCycles;
     }
 
-    size_t Cpu::Decrement_8bit_Low(Register CpuCore::* reg)
-    {
-        Register& r = core.*reg;
-        const uint8_t val = r.LowByte();
-        const uint8_t res = val - 1;
-
-        r.SetLowByte(res);
-
-        core.SetFlag(FlagRegisterFlag::ZERO, res == 0);
-        core.SetFlag(FlagRegisterFlag::SUB, true);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((val & 0xF) - 1) & HALF_CARRY_BIT);	
-
-        constexpr size_t numberOfCycles = 1;
-        return numberOfCycles;
-    }
-
-    size_t Cpu::Decrement_Dereferenced(Register CpuCore::* addrReg)
+    size_t Cpu::Decrement_Dereferenced(RegisterPointer addrReg)
     {
         const auto address = (core.*addrReg).Value();
-        const uint8_t val = memoryBus.ReadByte(address);
-        const uint8_t res = val - 1;
+        const uint8_t value = memoryBus.ReadByte(address);
+        const uint8_t result = value - 1;
 
-        memoryBus.WriteByte(address, res);
+        memoryBus.WriteByte(address, result);
 
-        core.SetFlag(FlagRegisterFlag::ZERO, res == 0);
+        core.SetFlag(FlagRegisterFlag::ZERO, result == 0);
         core.SetFlag(FlagRegisterFlag::SUB, true);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((val & 0xF) - 1) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((value & 0xF) - 1) & HALF_CARRY_BIT);
 
         constexpr size_t numberOfCycles = 3;
         return numberOfCycles;
     }
 
-    size_t Cpu::Compare_8bit_High_ImmediateData(Register CpuCore::*reg)
+    size_t Cpu::Compare_8bit_ImmediateData(RegisterPointer opReg, RegisterGet8Bit GetValue)
     {
-        const uint8_t regContents = (core.*reg).HighByte();
+        const uint8_t operand = ((core.*opReg).*GetValue)();
         const uint8_t data = FetchPcAddress();
-        const uint8_t compareResult = regContents - data;
+        const uint8_t compareResult = operand - data;
 
         core.SetFlag(FlagRegisterFlag::ZERO, compareResult == 0);
         core.SetFlag(FlagRegisterFlag::SUB, true);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((regContents & 0xF) - (data & 0xF)) & HALF_CARRY_BIT);
-        core.SetFlag(FlagRegisterFlag::CARRY, (regContents - data) & CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((operand & 0xF) - (data & 0xF)) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::CARRY, (operand - data) & CARRY_BIT);
 
         constexpr size_t numberOfCycles = 2;
         return numberOfCycles;
     }
 
-    size_t Cpu::Increment_16bit(Register CpuCore::* reg)
+    size_t Cpu::Increment_16bit(RegisterPointer reg)
     {
         Register& r = core.*reg;
 
@@ -142,7 +110,7 @@ namespace GameBoy
         return numberOfCycles;
     }
 
-    size_t Cpu::Decrement_16bit(Register CpuCore::* reg)
+    size_t Cpu::Decrement_16bit(RegisterPointer reg)
     {
         Register& r = core.*reg;
 
@@ -151,7 +119,7 @@ namespace GameBoy
         return numberOfCycles;
     }
 
-    size_t Cpu::Add_16bit(Register CpuCore::* toReg, Register CpuCore::* fromReg)
+    size_t Cpu::Add_16bit(RegisterPointer toReg, RegisterPointer fromReg)
     {
         Register& to = core.*toReg;
         const Register& from = core.*fromReg;
@@ -168,206 +136,134 @@ namespace GameBoy
         return numberOfCycles;
     }
 
-    size_t Cpu::Add_8bit_High(Register CpuCore:: *fromReg)
+    size_t Cpu::Add_8bit(RegisterPointer opReg, RegisterGet8Bit GetValue)
     {
-        const Register& from = core.*fromReg;
-        const uint16_t fromValue = from.HighByte();
+        const Register& operandRegister = core.*opReg;
+        const uint16_t operandValue = (operandRegister.*GetValue)();
         const uint16_t baseValue = core.AF.HighByte();
-        const uint16_t result = fromValue + baseValue;
+        const uint16_t result = operandValue + baseValue;
 
         core.AF.SetHighByte(result);
 
         core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
         core.SetFlag(FlagRegisterFlag::SUB, false);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) + (fromValue & 0xF)) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) + (operandValue & 0xF)) & HALF_CARRY_BIT);
         core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
 
         constexpr size_t numberOfCycles = 1;
         return numberOfCycles;
     }
 
-    size_t Cpu::Add_8bit_Low(Register CpuCore:: *fromReg)
-    {
-        const Register& from = core.*fromReg;
-        const uint16_t fromValue = from.LowByte();
-        const uint16_t baseValue = core.AF.HighByte();
-        const uint16_t result = fromValue + baseValue;
-
-        core.AF.SetHighByte(result);
-
-        core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
-        core.SetFlag(FlagRegisterFlag::SUB, false);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) + (fromValue & 0xF)) & HALF_CARRY_BIT);
-        core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
-
-        constexpr size_t numberOfCycles = 1;
-        return numberOfCycles;
-    }
-
-    size_t Cpu::Add_8bit_Addr(Register CpuCore:: *addrReg)
+    size_t Cpu::Add_8bit_Addr(RegisterPointer addrReg)
     {
         const uint16_t addr = (core.*addrReg).Value();
-        const uint16_t fromValue = memoryBus.ReadByte(addr);
+        const uint16_t operand = memoryBus.ReadByte(addr);
         const uint16_t baseValue = core.AF.HighByte();
-        const uint16_t result = fromValue + baseValue;
+        const uint16_t result = operand + baseValue;
 
         core.AF.SetHighByte(result);
 
         core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
         core.SetFlag(FlagRegisterFlag::SUB, false);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) + (fromValue & 0xF)) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) + (operand & 0xF)) & HALF_CARRY_BIT);
         core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
 
         constexpr size_t numberOfCycles = 2;
         return numberOfCycles;
     }
 
-    size_t Cpu::AddCarry_8bit_High(Register CpuCore:: *fromReg)
+    size_t Cpu::AddCarry_8bit(RegisterPointer opReg, RegisterGet8Bit GetValue)
     {
-        const Register& from = core.*fromReg;
-        const uint16_t fromValue = from.HighByte();
+        const Register& operandRegister = core.*opReg;
+        const uint16_t operand = (operandRegister.*GetValue)();
         const uint16_t baseValue = core.AF.HighByte();
         const uint16_t carryValue = 1 * core.GetFlag(FlagRegisterFlag::CARRY);
-        const uint16_t result = fromValue + baseValue + carryValue;
+        const uint16_t result = operand + baseValue + carryValue;
 
         core.AF.SetHighByte(result);
 
         core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
         core.SetFlag(FlagRegisterFlag::SUB, false);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) + (fromValue & 0xF) + carryValue) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) + (operand & 0xF) + carryValue) & HALF_CARRY_BIT);
         core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
 
         constexpr size_t numberOfCycles = 1;
         return numberOfCycles;
     }
 
-    size_t Cpu::AddCarry_8bit_Low(Register CpuCore:: *fromReg)
-    {
-        const Register& from = core.*fromReg;
-        const uint16_t fromValue = from.LowByte();
-        const uint16_t baseValue = core.AF.HighByte();
-        const uint16_t carryValue = 1 * core.GetFlag(FlagRegisterFlag::CARRY);
-        const uint16_t result = fromValue + baseValue + carryValue;
-
-        core.AF.SetHighByte(result);
-
-        core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
-        core.SetFlag(FlagRegisterFlag::SUB, false);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) + (fromValue & 0xF) + carryValue) & HALF_CARRY_BIT);
-        core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
-
-        constexpr size_t numberOfCycles = 1;
-        return numberOfCycles;
-    }
-
-    size_t Cpu::AddCarry_8bit_Addr(Register CpuCore:: *addrReg)
+    size_t Cpu::AddCarry_8bit_Addr(RegisterPointer addrReg)
     {
         const uint16_t addr = (core.*addrReg).Value();
-        const uint16_t fromValue = memoryBus.ReadByte(addr);
+        const uint16_t operand = memoryBus.ReadByte(addr);
         const uint16_t baseValue = core.AF.HighByte();
         const uint16_t carryValue = 1 * core.GetFlag(FlagRegisterFlag::CARRY);
-        const uint16_t result = fromValue + baseValue + carryValue;
+        const uint16_t result = operand + baseValue + carryValue;
 
         core.AF.SetHighByte(result);
 
         core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
         core.SetFlag(FlagRegisterFlag::SUB, false);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, (baseValue & 0xF) + (fromValue & 0xF) + carryValue > 0xF);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, (baseValue & 0xF) + (operand & 0xF) + carryValue > 0xF);
         core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
 
         constexpr size_t numberOfCycles = 2;
         return numberOfCycles;
     }
 
-    size_t Cpu::Sub_8bit_High(Register CpuCore:: *fromReg)
+    size_t Cpu::Sub_8bit(RegisterPointer opReg, RegisterGet8Bit GetValue)
     {
-        const uint16_t fromValue = (core.*fromReg).HighByte();
+        const uint16_t operand = ((core.*opReg).*GetValue)();
         const uint16_t baseValue = core.AF.HighByte();
-        const uint16_t result = baseValue - fromValue;
+        const uint16_t result = baseValue - operand;
 
         core.AF.SetHighByte(static_cast<uint8_t>(result));
 
         core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
         core.SetFlag(FlagRegisterFlag::SUB, true);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) - (fromValue & 0xF)) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) - (operand & 0xF)) & HALF_CARRY_BIT);
         core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
 
         constexpr size_t numberOfCycles = 1;
         return numberOfCycles;
     }
 
-    size_t Cpu::Sub_8bit_Low(Register CpuCore:: *fromReg)
-    {
-        const uint16_t fromValue = (core.*fromReg).LowByte();
-        const uint16_t baseValue = core.AF.HighByte();
-        const uint16_t result = baseValue - fromValue;
-
-        core.AF.SetHighByte(static_cast<uint8_t>(result));
-
-        core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
-        core.SetFlag(FlagRegisterFlag::SUB, true);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) - (fromValue & 0xF)) & HALF_CARRY_BIT);
-        core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
-
-        constexpr size_t numberOfCycles = 1;
-        return numberOfCycles;
-    }
-
-    size_t Cpu::Sub_8bit_Addr(Register CpuCore:: *addrReg)
+    size_t Cpu::Sub_8bit_Addr(RegisterPointer addrReg)
     {
         const uint16_t addr = (core.*addrReg).Value();
-        const uint16_t fromValue = memoryBus.ReadByte(addr);
+        const uint16_t operand = memoryBus.ReadByte(addr);
         const uint16_t baseValue = core.AF.HighByte();
-        const uint16_t result = baseValue - fromValue;
+        const uint16_t result = baseValue - operand;
 
         core.AF.SetHighByte(static_cast<uint8_t>(result));
 
         core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
         core.SetFlag(FlagRegisterFlag::SUB, true);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) - (fromValue & 0xF)) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) - (operand & 0xF)) & HALF_CARRY_BIT);
         core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
 
         constexpr size_t numberOfCycles = 2;
         return numberOfCycles;
     }
 
-    size_t Cpu::SubCarry_8bit_High(Register CpuCore:: *fromReg)
+    size_t Cpu::SubCarry_8bit(RegisterPointer opReg, RegisterGet8Bit GetValue)
     {
         const uint16_t carryValue = 1 * core.GetFlag(FlagRegisterFlag::CARRY);
-        const uint16_t fromValue = (core.*fromReg).HighByte();
+        const uint16_t operand = ((core.*opReg).*GetValue)();
         const uint16_t baseValue = core.AF.HighByte();
-        const uint16_t result = baseValue - fromValue - carryValue;
+        const uint16_t result = baseValue - operand - carryValue;
 
         core.AF.SetHighByte(static_cast<uint8_t>(result));
 
         core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
         core.SetFlag(FlagRegisterFlag::SUB, true);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) - (fromValue & 0xF) - carryValue) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) - (operand & 0xF) - carryValue) & HALF_CARRY_BIT);
         core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
 
         constexpr size_t numberOfCycles = 1;
         return numberOfCycles;
     }
 
-    size_t Cpu::SubCarry_8bit_Low(Register CpuCore:: *fromReg)
-    {
-        const uint16_t carryValue = 1 * core.GetFlag(FlagRegisterFlag::CARRY);
-        const uint16_t fromValue = (core.*fromReg).LowByte();
-        const uint16_t baseValue = core.AF.HighByte();
-        const uint16_t result = baseValue - fromValue - carryValue;
-
-        core.AF.SetHighByte(static_cast<uint8_t>(result));
-
-        core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
-        core.SetFlag(FlagRegisterFlag::SUB, true);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) - (fromValue & 0xF) - carryValue) & HALF_CARRY_BIT);
-        core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
-
-        constexpr size_t numberOfCycles = 1;
-        return numberOfCycles;
-    }
-
-    size_t Cpu::SubCarry_8bit_Addr(Register CpuCore:: *addrReg)
+    size_t Cpu::SubCarry_8bit_Addr(RegisterPointer addrReg)
     {
         const uint16_t carryValue = 1 * core.GetFlag(FlagRegisterFlag::CARRY);
         uint16_t addr = (core.*addrReg).Value();

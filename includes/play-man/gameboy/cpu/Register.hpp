@@ -18,6 +18,7 @@
 #pragma once
 
 #include <inttypes.h>
+#include <functional>
 
 namespace GameBoy
 {
@@ -121,5 +122,9 @@ namespace GameBoy
 		}
 	};
 
+	using RegisterGet8Bit = uint8_t (Register::*)(void) const;
+	using RegisterGet16Bit = uint16_t (Register::*)(void) const;
+	using RegisterSet8Bit = void (Register::*)(uint8_t);
+	using RegisterSet16Bit = void (Register::*)(uint16_t);
 
 } /* namespace gameboy */

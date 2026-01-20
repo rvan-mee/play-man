@@ -209,7 +209,7 @@ private:
 		 * @param reg 
 		 * @return size_t 
 		 */
-		size_t Load_16bit_ImmediateData(Register CpuCore::* reg);
+		size_t Load_16bit_ImmediateData(RegisterPointer reg);
 
         /**
          * @brief Increments the 16 bit register by 1.
@@ -217,7 +217,7 @@ private:
          * @param reg Pointer to the register needing to be incremented.
          * @return number of cycles.
          */
-        size_t Increment_16bit(Register CpuCore::* reg);
+        size_t Increment_16bit(RegisterPointer reg);
 
         /**
          * @brief Decrements the 16 bit register by 1.
@@ -225,7 +225,7 @@ private:
          * @param reg Pointer to the register needing to be decremented.
          * @return number of cycles.
          */
-        size_t Decrement_16bit(Register CpuCore::* reg);
+        size_t Decrement_16bit(RegisterPointer reg);
 
         /**
          * @brief Loads the contents of the 16bit register to the address found at PC.
@@ -234,7 +234,7 @@ private:
          * 
          * @return number of cycles.
          */
-        size_t Load_16bit_RegToImmediateAddr(Register CpuCore::* reg);
+        size_t Load_16bit_RegToImmediateAddr(RegisterPointer reg);
 
         /**
          * @brief Adds the contents from fromReg to the toReg.
@@ -245,7 +245,7 @@ private:
          * 
          * @return number of cycles.
          */
-        size_t Add_16bit(Register CpuCore::* toReg, Register CpuCore::* fromReg);
+        size_t Add_16bit(RegisterPointer toReg, RegisterPointer fromReg);
 
 
         /**                                8 bit instructions                                              **/
@@ -253,7 +253,9 @@ private:
         /**
          * @brief Adds the contents from fromReg to the accumulator register.
          * 
-         * @param fromReg Pointer to the register where the high part will be used to add.
+         * @param opReg Pointer to the register that will be used as the operand.
+         * @param GetValue Pointer to the operand register's member function that will take the
+         *                 High or Low part of the register. 
          * 
          * @note Sets the Z flag according to the calculation.
          * @note Sets the S flag to false.
@@ -262,21 +264,7 @@ private:
          * 
          * @return number of cycles.
          */
-        size_t Add_8bit_High(Register CpuCore:: *fromReg);
-
-        /**
-         * @brief Adds the contents from fromReg to the accumulator register.
-         * 
-         * @param fromReg Pointer to the register where the low part will be used to add.
-         * 
-         * @note Sets the Z flag according to the calculation.
-         * @note Sets the S flag to false.
-         * @note Sets the H flag according to the calculation.
-         * @note Sets the C flag according to the calculation.
-         * 
-         * @return number of cycles.
-         */
-        size_t Add_8bit_Low(Register CpuCore:: *fromReg);
+        size_t Add_8bit(RegisterPointer opReg, RegisterGet8Bit GetValue);
 
         /**
          * @brief Adds the contents from memory location addrReg to the accumulator register.
@@ -291,13 +279,15 @@ private:
          * 
          * @return number of cycles.
          */
-        size_t Add_8bit_Addr(Register CpuCore:: *addrReg);
+        size_t Add_8bit_Addr(RegisterPointer addrReg);
 
         /**
-         * @brief Adds the contents from fromReg to the accumulator register, combined with the 
+         * @brief Adds the contents from opReg to the accumulator register, combined with the 
          *        contents of the Carry flag (1 or 0).
          * 
-         * @param fromReg Pointer to the register where the high part will be used to add.
+         * @param opReg Pointer to the register that will be used as the operand.
+         * @param GetValue Pointer to the operand register's member function that will take the
+         *                 High or Low part of the register.
          * 
          * @note Sets the Z flag according to the calculation.
          * @note Sets the S flag to false.
@@ -306,22 +296,7 @@ private:
          * 
          * @return number of cycles.
          */
-        size_t AddCarry_8bit_High(Register CpuCore:: *addrReg);
-
-        /**
-         * @brief Adds the contents from fromReg to the accumulator register, combined with the 
-         *        contents of the Carry flag (1 or 0).
-         * 
-         * @param fromReg Pointer to the register where the low part will be used to add.
-         * 
-         * @note Sets the Z flag according to the calculation.
-         * @note Sets the S flag to false.
-         * @note Sets the H flag according to the calculation.
-         * @note Sets the C flag according to the calculation.
-         * 
-         * @return number of cycles.
-         */
-        size_t AddCarry_8bit_Low(Register CpuCore:: *addrReg);
+        size_t AddCarry_8bit(RegisterPointer opReg, RegisterGet8Bit GetValue);
 
         /**
          * @brief Adds the contents from memory location addrReg to the accumulator register, combined with the 
@@ -337,13 +312,14 @@ private:
          * 
          * @return number of cycles.
          */
-        size_t AddCarry_8bit_Addr(Register CpuCore:: *addrReg);
+        size_t AddCarry_8bit_Addr(RegisterPointer addrReg);
 
         /**
-         * @brief Subtracts the contents of fromReg from the accumulator register.
+         * @brief Subtracts the contents of opReg from the accumulator register.
          * 
-         * @param fromReg Pointer to the register wich contains the value used
-         *                to subtract.
+         * @param opReg Pointer to the register that will be used as the operand.
+         * @param GetValue Pointer to the operand register's member function that will take the
+         *                 High or Low part of the register.
          * 
          * @note Sets the Z flag according to the calculation.
          * @note Sets the S flag to true.
@@ -352,22 +328,7 @@ private:
          * 
          * @return number of cycles.
          */
-        size_t Sub_8bit_High(Register CpuCore:: *fromReg);
-
-        /**
-         * @brief Subtracts the contents of fromReg from the accumulator register.
-         * 
-         * @param fromReg Pointer to the register wich contains the value used
-         *                to subtract.
-         * 
-         * @note Sets the Z flag according to the calculation.
-         * @note Sets the S flag to true.
-         * @note Sets the H flag according to the calculation.
-         * @note Sets the C flag according to the calculation.
-         * 
-         * @return number of cycles.
-         */
-        size_t Sub_8bit_Low(Register CpuCore:: *fromReg);
+        size_t Sub_8bit(RegisterPointer opReg, RegisterGet8Bit GetValue);
 
         /**
          * @brief Subtracts the contents of memory location addrReg
@@ -383,14 +344,15 @@ private:
          * 
          * @return number of cycles.
          */
-        size_t Sub_8bit_Addr(Register CpuCore:: *addrReg);
+        size_t Sub_8bit_Addr(RegisterPointer addrReg);
 
         /**
          * @brief Subtracts the contents of fromReg combined with the contents of
          *        the Carry flag (1 or 0) from the accumulator register.
          * 
-         * @param fromReg Pointer to the register wich contains the value used
-         *                to subtract.
+         * @param opReg Pointer to the register that will be used as the operand.
+         * @param GetValue Pointer to the operand register's member function that will take the
+         *                 High or Low part of the register.
          * 
          * @note Sets the Z flag according to the calculation.
          * @note Sets the S flag to true.
@@ -399,23 +361,7 @@ private:
          * 
          * @return number of cycles.
          */
-        size_t SubCarry_8bit_High(Register CpuCore:: *fromReg);
-
-        /**
-         * @brief Subtracts the contents of fromReg combined with the contents of
-         *        the Carry flag (1 or 0) from the accumulator register.
-         * 
-         * @param fromReg Pointer to the register wich contains the value used
-         *                to subtract.
-         * 
-         * @note Sets the Z flag according to the calculation.
-         * @note Sets the S flag to true.
-         * @note Sets the H flag according to the calculation.
-         * @note Sets the C flag according to the calculation.
-         * 
-         * @return number of cycles.
-         */
-        size_t SubCarry_8bit_Low(Register CpuCore:: *fromReg);
+        size_t SubCarry_8bit(RegisterPointer opReg, RegisterGet8Bit GetValue);
 
         /**
          * @brief Subtracts the contents of memory location addrReg combined
@@ -431,12 +377,15 @@ private:
          * 
          * @return number of cycles.
          */
-        size_t SubCarry_8bit_Addr(Register CpuCore:: *addrReg);
+        size_t SubCarry_8bit_Addr(RegisterPointer addrReg);
 
         /**
-         * @brief Increments the high part of the register by 1.
+         * @brief Increments the data inside the provided register by 1.
          * 
-         * @param reg Pointer to the register needing to be incremented.
+         * @param opReg Pointer to the register that will be used as the operand.
+         * @param GetValue Pointer to the operand register's member function that will take the
+         *                 High or Low part of the register.
+         * @param SetValue Pointer to the register where the resulting value will be set.
          * 
          * @note The Z flag is set if the incrementation results in a 0.
          * @note The S flag is set to false.
@@ -444,20 +393,7 @@ private:
          * 
          * @return number of cycles. 
          */
-        size_t Increment_8bit_High(Register CpuCore:: *reg);
-
-        /**
-         * @brief Increments the low part of the register by 1.
-         * 
-         * @param reg Pointer to the register needing to be incremented.
-         * 
-         * @note The Z flag is set if the incrementation results in a 0.
-         * @note The S flag is set to false.
-         * @note The H flag is set according to the calculation.
-         * 
-         * @return number of cycles. 
-         */
-        size_t Increment_8bit_Low(Register CpuCore:: *reg);
+        size_t Increment_8bit(RegisterPointer opReg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue);
 
         /**
          * @brief Increments the value pointed to by addrReg by one.
@@ -469,12 +405,15 @@ private:
          * @note the S flag is set to false.
          * @note the H flag is set according to the calculation.
          */
-        size_t Increment_Dereferenced(Register CpuCore:: *addrReg);
+        size_t Increment_Dereferenced(RegisterPointer addrReg);
 
         /**
-         * @brief Decrements the high part of the register by 1.
+         * @brief Decrements the data inside the provided register by 1.
          * 
-         * @param reg Pointer to the register needing to be decremented.
+         * @param opReg Pointer to the register that will be used as the operand.
+         * @param GetValue Pointer to the operand register's member function that will take the
+         *                 High or Low part of the register.
+         * @param SetValue Pointer to the register where the resulting value will be set.
          * 
          * @note The Z flag is set if the decrementation results in a 0.
          * @note The S flag is set to true.
@@ -482,20 +421,7 @@ private:
          * 
          * @return number of cycles. 
          */
-        size_t Decrement_8bit_High(Register CpuCore:: *reg);
-
-        /**
-         * @brief Decrements the low part of the register by 1.
-         * 
-         * @param reg Pointer to the register needing to be decremented.
-         * 
-         * @note The Z flag is set if the decrementation results in a 0.
-         * @note The S flag is set to true.
-         * @note The H flag is set according to the calculation.
-         * 
-         * @return number of cycles. 
-         */
-        size_t Decrement_8bit_Low(Register CpuCore:: *reg);
+        size_t Decrement_8bit(RegisterPointer opReg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue);
 
         /**
          * @brief Decrements the value pointed to by addrReg by one.
@@ -507,35 +433,23 @@ private:
          * @note The S flag is set to true.
          * @note The H flag is set according to the calculation.
          */
-        size_t Decrement_Dereferenced(Register CpuCore::* addrReg);
+        size_t Decrement_Dereferenced(RegisterPointer addrReg);
 
         /**
          * @brief Performs a bitwise AND on the accumulator register with the
-         *        high part of oppReg as the operant.
+         *        data inside oppReg as the operant.
          * 
          * @param oppReg Pointer to the register containing the operant that will be
          *               used for the bitwise operation.
+         * @param GetValue Pointer to the operand register's member function that will take the
+         *                 High or Low part of the register.
          * 
          * @note The Z flag is set if the AND results in a 0.
          * @note The S flag is set to false.
          * @note The H flag is set to true.
          * @note The C flag is set to false.
          */
-        size_t BitwiseAnd_High(Register CpuCore::* oppReg);
-
-        /**
-         * @brief Performs a bitwise AND on the accumulator register with the
-         *        low part of oppReg as the operant.
-         * 
-         * @param oppReg Pointer to the register containing the operant that will be
-         *               used for the bitwise operation.
-         * 
-         * @note The Z flag is set if the AND results in a 0.
-         * @note The S flag is set to false.
-         * @note The H flag is set to true.
-         * @note The C flag is set to false.
-         */
-        size_t BitwiseAnd_Low(Register CpuCore::* oppReg);
+        size_t BitwiseAnd(RegisterPointer reg, RegisterGet8Bit GetOperand);
 
         /**
          * @brief Performs a bitwise AND on the accumulator register with the
@@ -549,51 +463,45 @@ private:
          * @note The H flag is set to true.
          * @note The C flag is set to false.
          */
-        size_t BitwiseAnd_Addr(Register CpuCore::* addrReg);
+        size_t BitwiseAnd_Addr(RegisterPointer addrReg);
 
         /**
-         * @brief Stores the byte found in the high register of dataReg to the addres
-         *        Pointed to by addrReg.
+         * @brief Stores the byte found in the register of dataReg to the addres Pointed to by addrReg.
          * 
          * @param addrReg Pointer to the register containing the address where the data needs to be stored. 
-         * @param dataReg Pointer to the register where the data will be taken from (high 8 bits).
+         * @param dataReg Pointer to the register where the data will be taken from.
+         * @param GetValue Pointer to the dataReg register's member function that will take the
+         *                 High or Low part of the register.
          * 
          * @return number of cycles.
          */
-        size_t Store_8bit_Addr_High(Register CpuCore::* addrReg, Register CpuCore::* dataReg);
-
-        /**
-         * @brief Stores the byte found in the low register of dataReg to the addres
-         *        pointed to by addrReg.
-         * 
-         * @param addrReg Pointer to the register containing the address where the data needs to be stored. 
-         * @param dataReg Pointer to the register where the data will be taken from (low 8 bits).
-         * 
-         * @return number of cycles.
-         */
-        size_t Store_8bit_Addr_Low(Register CpuCore::* addrReg, Register CpuCore::* dataReg);
+        size_t Store_8bit_Addr(RegisterPointer addrReg, RegisterPointer dataReg, RegisterGet8Bit GetData);
 
         /**
          * @brief Stores the byte found in the high register of dataReg to the addres
          *        pointed to by addrReg after which the contents of addrReg gets incremented by 1.
          * 
          * @param addrReg Pointer to the register containing the address where the data needs to be stored. 
-         * @param dataReg Pointer to the register where the data will be taken from (high 8 bits).
+         * @param dataReg Pointer to the register where the data will be taken from.
+         * @param GetValue Pointer to the dataReg register's member function that will take the
+         *                 High or Low part of the register.
          * 
          * @return number of cycles.
          */
-        size_t Store_8bit_AddrIncrement_High(Register CpuCore::* addrReg, Register CpuCore::* dataReg);
+        size_t Store_8bit_AddrIncrement(RegisterPointer addrReg, RegisterPointer dataReg, RegisterGet8Bit GetData);
 
         /**
          * @brief Stores the byte found in the high register of dataReg to the addres
          *        pointed to by addrReg after which the contents of addrReg gets decremented by 1.
          * 
          * @param addrReg Pointer to the register containing the address where the data needs to be stored. 
-         * @param dataReg Pointer to the register where the data will be taken from (high 8 bits).
+         * @param dataReg Pointer to the register where the data will be taken from.
+         * @param GetValue Pointer to the dataReg register's member function that will take the
+         *                 High or Low part of the register.
          * 
          * @return number of cycles.
          */
-        size_t Store_8bit_AddrDecrement_High(Register CpuCore::* addrReg, Register CpuCore::* dataReg);
+        size_t Store_8bit_AddrDecrement(RegisterPointer addrReg, RegisterPointer dataReg, RegisterGet8Bit GetData);
 
         /**
          * @brief Stores the byte found at the current PC register location to the destination
@@ -603,112 +511,74 @@ private:
          * 
          * @return number of cycles.
          */
-        size_t Store_8bit_Addr_ImmediateData(Register CpuCore::* addrReg);
+        size_t Store_8bit_Addr_ImmediateData(RegisterPointer addrReg);
 
         /**
-         * @brief Loads the 8bit immediate data into the high register of reg.
+         * @brief Loads the 8bit immediate data into the provided register.
          * 
-         * @param reg Pointer to the register where the data will be loaded into (high 8 bits).
+         * @param reg Pointer to the register where the data will be loaded into.
+         * @param SetValue Pointer to the register's member function that will store the result inside
+         *                 High or Low part of the register.
          * 
          * @return number of cycles. 
          */
-        size_t Load_8bit_High_ImmediateData(Register CpuCore::* reg);
-
-        /**
-         * @brief Loads the 8bit immediate data into the low register of reg.
-         * 
-         * @param reg Pointer to the register where the data will be loaded into (low 8 bits).
-         * 
-         * @return number of cycles. 
-         */
-        size_t Load_8bit_Low_ImmediateData(Register CpuCore::* reg);
+        size_t Load_8bit_ImmediateData(RegisterPointer reg, RegisterSet8Bit SetValue);
 
         /**
          * @brief Loads the 8bits of data found at the addrReg into destReg.
          * 
-         * @param destReg Pointer to the register where the data is loaded into the low 8 bits.
-         * @param addrReg Pointer to the register containing the address where the data is located.
+         * @param destReg  Pointer to the register where the data is loaded into.
+         * @param SetValue Member function pointer of destReg, specifying the high or low part of the register. 
+         * @param addrReg  Pointer to the register containing the address where the data is located.
          * 
          * @return number of cycles. 
          */
-        size_t Load_8bit_Low_Addr(Register CpuCore::* destReg, Register CpuCore::* addrReg);
-
-        /**
-         * @brief Loads the 8bits of data found at the addrReg into destReg.
-         * 
-         * @param destReg Pointer to the register where the data is loaded into the high 8 bits.
-         * @param addrReg Pointer to the register containing the address where the data is located.
-         * 
-         * @return number of cycles. 
-         */
-        size_t Load_8bit_High_Addr(Register CpuCore::* destReg, Register CpuCore::* addrReg);
+        size_t Load_8bit_Addr(RegisterPointer destReg, RegisterSet8Bit SetValue, RegisterPointer addrReg);
 
         /**
          * @brief Loads the 8 bits of data found at addrReg into destReg, after which the pointer inside
          *        addrReg gets incremented by 1.
          * 
-         * @param destReg Pointer to the register where the data is loaded into the high 8 bits.
-         * @param addrReg Pointer to the register containing the address where the data is located.
-         *                Will get incremented by 1 after the data is retrieved.
+         * @param destReg  Pointer to the register where the data is loaded into.
+         * @param SetValue Member function pointer of destReg, specifying the high or low part of the register. 
+         * @param addrReg  Pointer to the register containing the address where the data is located.
+         *                 Will get incremented by 1 after the data is retrieved.
          * 
          * @return number of cycles.
          */
-        size_t Load_8bit_High_AddrIncrement(Register CpuCore::* destReg, Register CpuCore::* addrReg);
+        size_t Load_8bit_AddrIncrement(RegisterPointer destReg, RegisterSet8Bit SetValue, RegisterPointer addrReg);
 
         /**
          * @brief Loads the 8 bits of data found at addrReg into destReg, after which the pointer inside
          *        addrReg gets decremented by 1.
          * 
-         * @param destReg Pointer to the register where the data is loaded into the high 8 bits.
-         * @param addrReg Pointer to the register containing the address where the data is located.
-         *                Will get decremented by 1 after the data is retrieved.
+         * @param destReg  Pointer to the register where the data is loaded into.
+         * @param SetValue Member function pointer of destReg, specifying the high or low part of the register. 
+         * @param addrReg  Pointer to the register containing the address where the data is located.
+         *                 Will get decremented by 1 after the data is retrieved.
          * 
          * @return number of cycles.
          */
-        size_t Load_8bit_High_AddrDecrement(Register CpuCore::* destReg, Register CpuCore::* addrReg);
+        size_t Load_8bit_AddrDecrement(RegisterPointer destReg, RegisterSet8Bit SetValue, RegisterPointer addrReg);
 
         /**
-         * @brief Loads the contents of the high part of fromReg into the high part of toReg.
+         * @brief Loads the contents 8 bit of fromReg into toReg.
          * 
-         * @param toReg Register where the high part the value will be loaded into.
-         * @param fromReg Register where the high part's value will be loaded from.
-         * 
-         * @return number of cycles.
-         */
-        size_t Load_8bit_High_High(Register CpuCore::* toReg, Register CpuCore::* fromReg);
-
-        /**
-         * @brief Loads the contents of the low part of fromReg into the high part of toReg.
-         * 
-         * @param toReg Register where the high part the value will be loaded into.
-         * @param fromReg Register where the low part's value will be loaded from.
+         * @param destReg  Pointer to the register where the data is loaded into.
+         * @param SetValue Member function pointer of destReg, specifying the high or low part of the register. 
+         * @param fromReg  Pointer to the register where the data is taken from.
+         * @param GetValue Member function pointer of fromReg, specifying the high or low part of the register.
          * 
          * @return number of cycles.
          */
-        size_t Load_8bit_High_Low(Register CpuCore::* toReg, Register CpuCore::* fromReg);
-
-        /**
-         * @brief Loads the contents of the high part of fromReg into the low part of toReg.
-         * 
-         * @param toReg Register where the low part the value will be loaded into.
-         * @param fromReg Register where the high part's value will be loaded from.
-         * 
-         * @return number of cycles.
-         */
-        size_t Load_8bit_Low_High(Register CpuCore::* toReg, Register CpuCore::* fromReg);
-
-        /**
-         * @brief Loads the contents of the low part of fromReg into the low part of toReg.
-         * 
-         * @param toReg Register where the low part the value will be loaded into.
-         * @param fromReg Register where the low part's value will be loaded from.
-         * 
-         * @return number of cycles.
-         */
-        size_t Load_8bit_Low_Low(Register CpuCore::* toReg, Register CpuCore::* fromReg);
+        size_t Load_8bit(RegisterPointer destReg, RegisterSet8Bit SetValue, RegisterPointer fromReg, RegisterGet8Bit GetValue);
 
         /**
          * @brief Compares the 8 bit immediate data to the high register by calculating (reg - data).
+         * 
+         * @param opReg    Pointer to the register that will be used as the operand.
+         * @param GetValue Pointer to the operand register's member function that will take the
+         *                 High or Low part of the register.
          * 
          * @note The Z flag is set if they are equal.
          * @note The S flag is set to true.
@@ -717,11 +587,17 @@ private:
          * 
          * @return number of cycles.
          */
-        size_t Compare_8bit_High_ImmediateData(Register CpuCore::* reg);
+        size_t Compare_8bit_ImmediateData(RegisterPointer opReg, RegisterGet8Bit GetValue);
 
         /**
-         * @brief Rotates the given register's high part to the left by 1,
+         * @brief Rotates the given register to the left by 1,
          *        appending the shifted-out bit to the right of that same register.
+         * 
+         * @param reg      Pointer to the register that will be used as the operand.
+         * @param GetValue Pointer to the register's member function that will take the
+         *                 High or Low part of the register.
+         * @param SetValue Pointer to the register's member function that will store the result
+         *                 into the High or Low part of the register.
          * 
          * @note The Z flag is set to false.
          * @note The S flag is set to false.
@@ -730,13 +606,19 @@ private:
          * 
          * @return number of cycles.
          */
-        size_t Rotate_8bit_High_Left(Register CpuCore::* reg);
+        size_t Rotate_8bit_Left(RegisterPointer reg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue);
 
         /**
          * @brief Rotats the given register's high part to the left by 1,
          *        appending the state of the carry flag bit to the right of the same register.
          *        The shifted-out bit will become the new state of the carry flag.
          * 
+         * @param reg      Pointer to the register that will be used as the operand.
+         * @param GetValue Pointer to the register's member function that will take the
+         *                 High or Low part of the register.
+         * @param SetValue Pointer to the register's member function that will store the result
+         *                 into the High or Low part of the register.
+         * 
          * @note The Z flag is set to false.
          * @note The S flag is set to false.
          * @note The H flag is set to false.
@@ -744,12 +626,18 @@ private:
          * 
          * @return number of cycles.
          */
-        size_t Rotate_8bit_High_Left_Carry(Register CpuCore::* reg);
+        size_t Rotate_8bit_Left_Carry(RegisterPointer reg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue);
 
         /**
-         * @brief Rotates the given register's low part to the right by 1,
+         * @brief Rotates the given register to the right by 1,
          *        appending the shifted-out bit to the left of that same register.
          * 
+         * @param reg      Pointer to the register that will be used as the operand.
+         * @param GetValue Pointer to the register's member function that will take the
+         *                 High or Low part of the register.
+         * @param SetValue Pointer to the register's member function that will store the result
+         *                 into the High or Low part of the register.
+         * 
          * @note The Z flag is set to false.
          * @note The S flag is set to false.
          * @note The H flag is set to false.
@@ -757,13 +645,19 @@ private:
          * 
          * @return number of cycles.
          */
-        size_t Rotate_8bit_Low_Right(Register CpuCore::* reg);
+        size_t Rotate_8bit_Right(RegisterPointer reg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue);
 
         /**
-         * @brief Rotates the given register's high part to the right by 1,
+         * @brief Rotates the given register to the right by 1,
          *        appending the state of the carry flag bit to the left of the same register. 
          *        The shifted-out bit will become the new state of the carry flag.
          * 
+         * @param reg      Pointer to the register that will be used as the operand.
+         * @param GetValue Pointer to the register's member function that will take the
+         *                 High or Low part of the register.
+         * @param SetValue Pointer to the register's member function that will store the result
+         *                 into the High or Low part of the register.
+         * 
          * @note The Z flag is set to false.
          * @note The S flag is set to false.
          * @note The H flag is set to false.
@@ -771,7 +665,7 @@ private:
          * 
          * @return number of cycles.
          */
-        size_t Rotate_8bit_High_Right_Carry(Register CpuCore::* reg);
+        size_t Rotate_8bit_Right_Carry(RegisterPointer reg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue);
     };
 
 }
