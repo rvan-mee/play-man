@@ -527,13 +527,13 @@ TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "LD_C_n8, 0x0E")
 TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RRCA, 0x0F")
 {
 	ClearRegisters();
-	BC.SetLowByte(0b10000001);
+	AF.SetHighByte(0b10000001);
 
 	auto numberOfCycles = ExecuteInstruction(GameBoy::OpCode::RRCA);
 
 	REQUIRE(numberOfCycles == 1);
-	REQUIRE(AF.Value() == 0b00000000'0001'0000);
-	REQUIRE(BC.Value() == 0b00000000'11000000);
+	REQUIRE(AF.Value() == 0b11000000'0001'0000);
+	REQUIRE(BC.Value() == 0x00'00);
 	REQUIRE(DE.Value() == 0x00'00);
 	REQUIRE(HL.Value() == 0x00'00);
 	REQUIRE(SP.Value() == 0x00'00);
@@ -541,13 +541,13 @@ TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RRCA, 0x0F")
 	REQUIRE(IE == 0x00);
 
 	ClearRegisters();
-	BC.SetLowByte(0b10101010);
+	AF.SetHighByte(0b10101010);
 
 	numberOfCycles = ExecuteInstruction(GameBoy::OpCode::RRCA);
 
 	REQUIRE(numberOfCycles == 1);
-	REQUIRE(AF.Value() == 0b00000000'0000'0000);
-	REQUIRE(BC.Value() == 0b00000000'01010101);
+	REQUIRE(AF.Value() == 0b01010101'0000'0000);
+	REQUIRE(BC.Value() == 0x00'00);
 	REQUIRE(DE.Value() == 0x00'00);
 	REQUIRE(HL.Value() == 0x00'00);
 	REQUIRE(SP.Value() == 0x00'00);
