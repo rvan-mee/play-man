@@ -256,6 +256,15 @@ namespace GameBoy
 		table[OpCode::XOR_A_A]        = std::bind(&Cpu::BitwiseXor, thisPtr, GetA);
 
 		// 0xB-
+		table[OpCode::OR_A_B]        = std::bind(&Cpu::BitwiseOr, thisPtr, GetB);
+		table[OpCode::OR_A_C]        = std::bind(&Cpu::BitwiseOr, thisPtr, GetC);
+		table[OpCode::OR_A_D]        = std::bind(&Cpu::BitwiseOr, thisPtr, GetD);
+		table[OpCode::OR_A_E]        = std::bind(&Cpu::BitwiseOr, thisPtr, GetE);
+		table[OpCode::OR_A_H]        = std::bind(&Cpu::BitwiseOr, thisPtr, GetH);
+		table[OpCode::OR_A_L]        = std::bind(&Cpu::BitwiseOr, thisPtr, GetL);
+		table[OpCode::OR_A_HL_NI]    = std::bind(&Cpu::BitwiseOr_Addr, thisPtr, RegisterHL);
+		table[OpCode::OR_A_A]        = std::bind(&Cpu::BitwiseOr, thisPtr, GetA);
+
 		// 0xC-
 		table[OpCode::JP_a16] = std::bind(&Cpu::Jump_16bit_ImmediateData, thisPtr);
 

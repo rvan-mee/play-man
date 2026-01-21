@@ -90,4 +90,39 @@ namespace GameBoy
         return numberOfCycles;
     }
 
+    size_t Cpu::BitwiseOr(RegisterPointer reg, RegisterGet8Bit GetOperand)
+    {
+        const uint8_t baseValue = core.AF.HighByte();
+        const uint8_t operandValue = ((core.*reg).*GetOperand)();
+        const uint8_t result = baseValue | operandValue;
+
+        core.AF.SetHighByte(result);
+
+        core.SetFlag(FlagRegisterFlag::ZERO, result == 0);
+        core.SetFlag(FlagRegisterFlag::SUB, false);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, false);
+        core.SetFlag(FlagRegisterFlag::CARRY, false);
+
+        constexpr size_t numberOfCycles = 1;
+        return numberOfCycles;
+    }
+
+    size_t Cpu::BitwiseOr_Addr(RegisterPointer addrReg)
+    {
+        const uint16_t address = (core.*addrReg).Value();
+        const uint8_t  baseValue = core.AF.HighByte();
+        const uint8_t  operandValue = memoryBus.ReadByte(address);
+        const uint8_t  result = baseValue | operandValue;
+
+        core.AF.SetHighByte(result);
+
+        core.SetFlag(FlagRegisterFlag::ZERO, result == 0);
+        core.SetFlag(FlagRegisterFlag::SUB, false);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, false);
+        core.SetFlag(FlagRegisterFlag::CARRY, false);
+
+        constexpr size_t numberOfCycles = 2;
+        return numberOfCycles;
+    }
+
 } // namespace GameBoy

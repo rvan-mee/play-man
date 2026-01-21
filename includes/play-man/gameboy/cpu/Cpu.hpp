@@ -496,6 +496,36 @@ private:
         size_t BitwiseXor_Addr(RegisterPointer addrReg);
 
         /**
+         * @brief Performs a bitwise OR on the accumulator register with the
+         *        data inside oppReg as the operant.
+         * 
+         * @param oppReg Pointer to the register containing the operant that will be
+         *               used for the bitwise operation.
+         * @param GetValue Pointer to the operand register's member function that will take the
+         *                 High or Low part of the register.
+         * 
+         * @note The Z flag is set if the OR results in a 0.
+         * @note The S flag is set to false.
+         * @note The H flag is set to true.
+         * @note The C flag is set to false.
+         */
+        size_t BitwiseOr(RegisterPointer reg, RegisterGet8Bit GetOperand);
+
+        /**
+         * @brief Performs a bitwise OR on the accumulator register with the
+         *        memory found at the location inside of addrReg as the operant.
+         * 
+         * @param adrReg Pointer to the register containing the memory address of the operant
+         *               that will be used for the bitwise operation.
+         * 
+         * @note The Z flag is set if the OR results in a 0.
+         * @note The S flag is set to false.
+         * @note The H flag is set to true.
+         * @note The C flag is set to false.
+         */
+        size_t BitwiseOr_Addr(RegisterPointer addrReg);
+
+        /**
          * @brief Stores the byte found in the register of dataReg to the addres Pointed to by addrReg.
          * 
          * @param addrReg Pointer to the register containing the address where the data needs to be stored. 
