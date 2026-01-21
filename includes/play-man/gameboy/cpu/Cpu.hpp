@@ -634,7 +634,8 @@ private:
         size_t Load_8bit(RegisterPointer destReg, RegisterSet8Bit SetValue, RegisterPointer fromReg, RegisterGet8Bit GetValue);
 
         /**
-         * @brief Compares the 8 bit immediate data to the high register by calculating (reg - data).
+         * @brief Compares the 8 bit value of opReg to the accumulator register
+         *        by calculating (A - operand).
          * 
          * @param opReg    Pointer to the register that will be used as the operand.
          * @param GetValue Pointer to the operand register's member function that will take the
@@ -647,7 +648,35 @@ private:
          * 
          * @return number of cycles.
          */
-        size_t Compare_8bit_ImmediateData(RegisterPointer opReg, RegisterGet8Bit GetValue);
+        size_t Compare_8bit(RegisterPointer opReg, RegisterGet8Bit GetValue);
+
+        /**
+         * @brief Compares the 8 bit value found at addrReg to the accumulator register
+         *        by calculating (A - operand).
+         * 
+         * @param addrReg Pointer to the register containing the address of the operand used
+         *                within the comparison.
+         * 
+         * @note The Z flag is set if they are equal.
+         * @note The S flag is set to true.
+         * @note The H flag is set according to the calculation.
+         * @note The C flag is set according to the calculation.
+         * 
+         * @return number of cycles.
+         */
+        size_t Compare_8bit_Addr(RegisterPointer addrReg);
+
+        /**
+         * @brief Compares the 8 bit immediate data to the accumulator register by calculating (A - operand).
+         * 
+         * @note The Z flag is set if they are equal.
+         * @note The S flag is set to true.
+         * @note The H flag is set according to the calculation.
+         * @note The C flag is set according to the calculation.
+         * 
+         * @return number of cycles.
+         */
+        size_t Compare_8bit_ImmediateData();
 
         /**
          * @brief Rotates the given register to the left by 1,

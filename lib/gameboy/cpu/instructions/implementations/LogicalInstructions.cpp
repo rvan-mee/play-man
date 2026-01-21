@@ -86,16 +86,47 @@ namespace GameBoy
         return numberOfCycles;
     }
 
-    size_t Cpu::Compare_8bit_ImmediateData(RegisterPointer opReg, RegisterGet8Bit GetValue)
+    size_t Cpu::Compare_8bit(RegisterPointer opReg, RegisterGet8Bit GetValue)
     {
+        const uint8_t baseValue = core.AF.HighByte();
         const uint8_t operand = ((core.*opReg).*GetValue)();
-        const uint8_t data = FetchPcAddress();
-        const uint8_t compareResult = operand - data;
+        const uint8_t compareResult = baseValue - operand;
 
         core.SetFlag(FlagRegisterFlag::ZERO, compareResult == 0);
         core.SetFlag(FlagRegisterFlag::SUB, true);
-        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((operand & 0xF) - (data & 0xF)) & HALF_CARRY_BIT);
-        core.SetFlag(FlagRegisterFlag::CARRY, (operand - data) & CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) - (operand & 0xF)) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::CARRY, (baseValue - operand) & CARRY_BIT);
+
+        constexpr size_t numberOfCycles = 1;
+        return numberOfCycles;
+    }
+
+    size_t Cpu::Compare_8bit_Addr(RegisterPointer addrReg)
+    {
+        const uint16_t address = (core.*addrReg).Value();
+        const uint8_t  baseValue = core.AF.HighByte();
+        const uint8_t  operand = memoryBus.ReadByte(address);
+        const uint8_t  compareResult = baseValue - operand;
+
+        core.SetFlag(FlagRegisterFlag::ZERO, compareResult == 0);
+        core.SetFlag(FlagRegisterFlag::SUB, true);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) - (operand & 0xF)) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::CARRY, (baseValue - operand) & CARRY_BIT);
+
+        constexpr size_t numberOfCycles = 2;
+        return numberOfCycles;
+    }
+
+    size_t Cpu::Compare_8bit_ImmediateData()
+    {
+        const uint8_t baseValue = core.AF.HighByte();
+        const uint8_t operand = FetchPcAddress();
+        const uint8_t compareResult = baseValue - operand;
+
+        core.SetFlag(FlagRegisterFlag::ZERO, compareResult == 0);
+        core.SetFlag(FlagRegisterFlag::SUB, true);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) - (operand & 0xF)) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::CARRY, (baseValue - operand) & CARRY_BIT);
 
         constexpr size_t numberOfCycles = 2;
         return numberOfCycles;
