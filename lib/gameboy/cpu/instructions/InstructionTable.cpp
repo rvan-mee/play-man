@@ -27,29 +27,29 @@ namespace GameBoy
 		#define RegisterAF &CpuCore::AF
 		#define RegisterSP &CpuCore::SP
 
-		#define GetB RegisterBC, Register::HighByte
-		#define GetC RegisterBC, Register::LowByte
-		#define GetD RegisterDE, Register::HighByte
-		#define GetE RegisterDE, Register::LowByte
-		#define GetH RegisterHL, Register::HighByte
-		#define GetL RegisterHL, Register::LowByte
-		#define GetA RegisterAF, Register::HighByte
+		#define GetB RegisterBC, &Register::HighByte
+		#define GetC RegisterBC, &Register::LowByte
+		#define GetD RegisterDE, &Register::HighByte
+		#define GetE RegisterDE, &Register::LowByte
+		#define GetH RegisterHL, &Register::HighByte
+		#define GetL RegisterHL, &Register::LowByte
+		#define GetA RegisterAF, &Register::HighByte
 
-		#define SetB RegisterBC, Register::SetHighByte
-		#define SetC RegisterBC, Register::SetLowByte
-		#define SetD RegisterDE, Register::SetHighByte
-		#define SetE RegisterDE, Register::SetLowByte
-		#define SetH RegisterHL, Register::SetHighByte
-		#define SetL RegisterHL, Register::SetLowByte
-		#define SetA RegisterAF, Register::SetHighByte
+		#define SetB RegisterBC, &Register::SetHighByte
+		#define SetC RegisterBC, &Register::SetLowByte
+		#define SetD RegisterDE, &Register::SetHighByte
+		#define SetE RegisterDE, &Register::SetLowByte
+		#define SetH RegisterHL, &Register::SetHighByte
+		#define SetL RegisterHL, &Register::SetLowByte
+		#define SetA RegisterAF, &Register::SetHighByte
 
-		#define GetSetB RegisterBC, Register::HighByte, Register::SetHighByte
-		#define GetSetC RegisterBC, Register::LowByte, Register::SetLowByte
-		#define GetSetD RegisterDE, Register::HighByte, Register::SetHighByte
-		#define GetSetE RegisterDE, Register::LowByte, Register::SetLowByte
-		#define GetSetH RegisterHL, Register::HighByte, Register::SetHighByte
-		#define GetSetL RegisterHL, Register::LowByte, Register::SetLowByte
-		#define GetSetA RegisterAF, Register::HighByte, Register::SetHighByte
+		#define GetSetB RegisterBC, &Register::HighByte, &Register::SetHighByte
+		#define GetSetC RegisterBC, &Register::LowByte, &Register::SetLowByte
+		#define GetSetD RegisterDE, &Register::HighByte, &Register::SetHighByte
+		#define GetSetE RegisterDE, &Register::LowByte, &Register::SetLowByte
+		#define GetSetH RegisterHL, &Register::HighByte, &Register::SetHighByte
+		#define GetSetL RegisterHL, &Register::LowByte, &Register::SetLowByte
+		#define GetSetA RegisterAF, &Register::HighByte, &Register::SetHighByte
 
 		constexpr auto thisPtr = std::placeholders::_1;
 		auto& table = instructions;
