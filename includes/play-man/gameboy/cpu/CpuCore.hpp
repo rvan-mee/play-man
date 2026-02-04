@@ -44,6 +44,7 @@ namespace GameBoy
 	#undef F_REGISTER_FLAGS_SEQ
 
 	constexpr uint16_t programCounterAfterBootRom = 0x0100;
+    constexpr uint16_t stackPointerAfterStartup = 0xFFFE; // HRAM end address
 
     class CpuCore
     {
@@ -55,9 +56,16 @@ namespace GameBoy
         Register	BC; /* */
         Register	DE; /* */
         Register	HL; /* */
-        Register	SP; /* Stack pointer */
+        Register	SP = stackPointerAfterStartup; /* Stack pointer */
         Register	PC = programCounterAfterBootRom; /* Program counter */
         uint8_t		IE; /* Interrupt Enable Register*/
+
+        /**
+         * @brief Whether the emulator is set to DMG or CGB mode.
+         * 
+         * Set to true if CGB mode is enabled.
+         */
+        bool        cgbMode = false;
 
         // uint16_t	cyclesPassed = 0; /* */
 
@@ -90,6 +98,23 @@ namespace GameBoy
          * @return true/false depending if the flag is set or not.
          */
         bool GetFlag(FlagRegisterFlag flag);
+
+        /**
+         * @brief Returns the state of the emulator, DMG or CGB mode.
+         * 
+         * @return True if set to CGB mode, false for DMG.
+         */
+        bool GetCgbMode() const;
+
+        /**
+         * @brief Returns the value inside the stack pointer, after which it gets incremented. 
+         */
+        uint16_t GetStackPointerInc();
+
+        /**
+         * @brief Decrements the value inside the stack pointer, after which it gets returned.
+         */
+        uint16_t GetStackPointerDec();
 
         friend std::ostream& operator << (std::ostream& lhs, const CpuCore& rom);
     };

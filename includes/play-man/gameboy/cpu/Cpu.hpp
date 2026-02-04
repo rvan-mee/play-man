@@ -172,6 +172,22 @@ private:
          */
         size_t CCF();
 
+        /**
+         * @brief Returns to the previous subroutine by popping the previous saved
+         * ProgramCounter from the stack.
+         * 
+         * @return number of cycles.
+         */
+        size_t Return();
+
+        /**
+         * @brief Returns to the previous subroutine by popping the previous saved
+         * ProgramCounter from the stack.
+         * 
+         * @return number of cycles.
+         */
+        size_t ConditionalReturn(FlagRegisterFlag conditionalFlag, bool flagEnabled);
+
         /**                               Jmp/call instructions                                             **/
 
         /**

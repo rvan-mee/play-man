@@ -80,4 +80,25 @@ namespace GameBoy {
 		return numberOfCycles;
 	}
 
+	size_t Cpu::Return()
+	{
+		const uint16_t oldPC = memoryBus.PopStack();
+
+		core.PC.SetValue(oldPC);
+
+		constexpr auto numberOfCycles = 16;
+		return numberOfCycles;
+	}
+
+	size_t Cpu::ConditionalReturn(FlagRegisterFlag conditionalFlag, bool flagEnabled)
+	{
+		auto numberOfCycles = 8;
+		if (core.GetFlag(conditionalFlag) == flagEnabled)
+		{
+			Return();
+			numberOfCycles += 12;
+		}
+		return numberOfCycles;
+	}
+
 }

@@ -30,7 +30,7 @@ namespace TestFixtures
 			, PC(cpu.core.PC)
 			, IE(cpu.core.IE)
 		{
-
+			ClearRegisters();
 		}
 
 		GameBoy::Cpu 		cpu;
@@ -6731,6 +6731,50 @@ TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "CP_A_A, 0xBF")
 	REQUIRE(DE.Value() == 0x00'00);
 	REQUIRE(HL.Value() == 0x00'00);
 	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+}
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RET_NZ, 0xC0")
+{
+	ClearRegisters();
+
+	// Set a value to the stack and load the stack pointer
+	memoryBus.WriteByte(wRamAddressStart, 0x0F);
+	memoryBus.WriteByte(wRamAddressStart + 1, 0xF0);
+	SP.SetValue(wRamAddressStart);
+
+	AF.SetLowByte(0b0111'0000);
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::OpCode::RET_NZ);
+
+	REQUIRE(numberOfCycles == 20);
+	REQUIRE(AF.HighByte() == 0x00);
+	REQUIRE(AF.LowByte() == 0b0111'0000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == wRamAddressStart + 2);
+	REQUIRE(PC.Value() == 0xF0'0F);
+	REQUIRE(IE == 0x00);
+
+	ClearRegisters();
+
+	memoryBus.WriteByte(wRamAddressStart, 0x0F);
+	memoryBus.WriteByte(wRamAddressStart + 1, 0xF0);
+	SP.SetValue(wRamAddressStart);
+
+	AF.SetLowByte(0b1111'0000);
+
+	numberOfCycles = ExecuteInstruction(GameBoy::OpCode::RET_NZ);
+
+	REQUIRE(numberOfCycles == 8);
+	REQUIRE(AF.HighByte() == 0x00);
+	REQUIRE(AF.LowByte() == 0b1111'0000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == wRamAddressStart);
 	REQUIRE(PC.Value() == 0x00'00);
 	REQUIRE(IE == 0x00);
 }

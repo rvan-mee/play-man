@@ -58,6 +58,25 @@ namespace GameBoy
         return (AF.LowByte() & static_cast<uint8_t>(flag)) > 0;
     }
 
+    bool CpuCore::GetCgbMode() const
+    {
+        return cgbMode;
+    }
+
+    uint16_t CpuCore::GetStackPointerInc()
+    {
+        const uint16_t value = SP.Value();
+
+        SP++;
+        return value;
+    }
+
+    uint16_t CpuCore::GetStackPointerDec()
+    {
+        SP--;
+        return SP.Value();
+    }
+
     /*           ostream overload           */
 
     std::ostream& operator << (std::ostream& lhs, const CpuCore& core)

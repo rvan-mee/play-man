@@ -274,6 +274,7 @@ namespace GameBoy
 		table[OpCode::CP_A_A]        = std::bind(&Cpu::Compare_8bit, thisPtr, GetA);
 
 		// 0xC-
+		table[OpCode::RET_NZ] = std::bind(&Cpu::ConditionalReturn, thisPtr, FlagRegisterFlag::ZERO, false);
 		table[OpCode::JP_a16] = std::bind(&Cpu::Jump_16bit_ImmediateData, thisPtr);
 
 		// 0xD-
