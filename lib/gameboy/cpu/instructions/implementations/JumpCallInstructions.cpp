@@ -63,6 +63,52 @@ namespace GameBoy {
         return numberOfCycles;
     }
 
+    size_t Cpu::Jump_Conditional_16bit_ImmediateData(FlagRegisterFlag flag, bool flagCondition)
+    {
+        const bool flagSet = core.GetFlag(flag);
+        const uint8_t lowerByte = FetchPcAddress();
+        const uint8_t upperByte = FetchPcAddress();
+        auto numberOfCycles = 12;
+
+        if (flagSet == flagCondition)
+        {
+            core.PC.SetValue((upperByte << 8) | lowerByte);
+            numberOfCycles += 4;
+        }
+        return numberOfCycles;
+    }
+
+    size_t Cpu::Call_16bit_ImmediateData()
+    {
+        const uint8_t lowerByte = FetchPcAddress();
+        const uint8_t upperByte = FetchPcAddress();
+
+        memoryBus.PushStack(core.PC.Value());
+    
+        core.PC.SetValue((upperByte << 8) | lowerByte);
+
+        constexpr auto numberOfCycles = 24;
+        return numberOfCycles;
+    }
+
+    size_t Cpu::ConditionalCall_16bit_ImmediateData(FlagRegisterFlag flag, bool flagCondition)
+    {
+        const bool flagSet = core.GetFlag(flag);
+        const uint8_t lowerByte = FetchPcAddress();
+        const uint8_t upperByte = FetchPcAddress();
+        auto numberOfCycles = 12;
+
+        if (flagSet == flagCondition)
+        {
+            memoryBus.PushStack(core.PC.Value());
+
+            core.PC.SetValue((upperByte << 8) | lowerByte);
+
+            numberOfCycles += 12;
+        }
+        return numberOfCycles;
+    }
+
     size_t Cpu::Return()
     {
         const uint16_t oldPC = memoryBus.PopStack();

@@ -6801,6 +6801,82 @@ TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "POP_BC, 0xC1")
 	REQUIRE(IE == 0x00);
 }
 
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "JP_NZ_a16, 0xC2")
+{
+	ClearRegisters();
+	LoadTestRom(GB_ROM_PATH "load_immediate_16.gb");
+	REQUIRE(PC.Value() == 0x00'00);
+	AF.SetLowByte(0b1000'0000);
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::OpCode::JP_NZ_a16);
+
+	REQUIRE(numberOfCycles == 12);
+	REQUIRE(AF.HighByte() == 0x00);
+	REQUIRE(AF.LowByte() == 0b1000'0000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'02);
+	REQUIRE(IE == 0x00);
+
+	ClearRegisters();
+	LoadTestRom(GB_ROM_PATH "load_immediate_16.gb");
+	REQUIRE(PC.Value() == 0x00'00);
+	AF.SetLowByte(0b0111'0000);
+
+	numberOfCycles = ExecuteInstruction(GameBoy::OpCode::JP_NZ_a16);
+
+	REQUIRE(numberOfCycles == 16);
+	REQUIRE(AF.HighByte() == 0x00);
+	REQUIRE(AF.LowByte() == 0b0111'0000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x0F'F0);
+	REQUIRE(IE == 0x00);
+}
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "CALL_NZ_a16, 0xC3")
+{
+	LoadTestRom(GB_ROM_PATH "load_immediate_16.gb");
+	PC.SetValue(0x00'00);
+	SP.SetValue(wRamAddressStart + 2);
+
+	AF.SetLowByte(0b0000'0000);
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::OpCode::CALL_NZ_a16);
+
+	REQUIRE(memoryBus.PopStack() == 0x00'02);
+
+	REQUIRE(numberOfCycles == 24);
+	REQUIRE(AF.HighByte() == 0x00);
+	REQUIRE(AF.LowByte() == 0b0000'0000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == wRamAddressStart + 2);
+	REQUIRE(PC.Value() == 0x0F'F0);
+	REQUIRE(IE == 0x00);
+
+	LoadTestRom(GB_ROM_PATH "load_immediate_16.gb");
+	REQUIRE(PC.Value() == 0x00'00);
+	AF.SetLowByte(0b1111'0000);
+
+	numberOfCycles = ExecuteInstruction(GameBoy::OpCode::CALL_NZ_a16);
+
+	REQUIRE(numberOfCycles == 12);
+	REQUIRE(AF.HighByte() == 0x00);
+	REQUIRE(AF.LowByte() == 0b1111'0000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'02);
+	REQUIRE(IE == 0x00);
+}
+
 TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "JP_a16, 0xC3")
 {
 	// File containing the bytes 0xF0 0x0F

@@ -214,6 +214,36 @@ private:
          */
 	    size_t Jump_Relative_Conditional_8bit_SignedImmediateData(FlagRegisterFlag flag, bool flagCondition);
 
+        /**
+         * @brief Check if the flag is set according to the given condition, sets the PC register
+         *        to the 16 bit value of the immediate data.
+         * 
+         * @param flag The flag to check.
+         * @param flagCondition The condition the flag needs to be in for the jump to happen.
+         * 
+         * @return number of cycles.
+         */
+        size_t Jump_Conditional_16bit_ImmediateData(FlagRegisterFlag flag, bool flagCondition);
+
+        /**
+         * @brief Pushes the PC register to the stack, after which the 16bit immediate data will
+         * be loaded into PC.
+         * 
+         * @return number of cycles.
+         */
+        size_t Call_16bit_ImmediateData();
+
+        /**
+         * @brief If the flag condition is met the PC register value will be pushed to the stack,
+         * after which the 16bit immediate data will be loaded into PC.
+         * 
+         * @param flag The flag to check.
+         * @param flagCondition The condition the flag needs to be in for the jump to happen.
+         * 
+         * @return number of cycles.
+         */
+        size_t ConditionalCall_16bit_ImmediateData(FlagRegisterFlag flag, bool flagCondition);
+
         /**                                16 bit instructions                                             **/
 
 		/**

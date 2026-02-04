@@ -274,9 +274,11 @@ namespace GameBoy
 		table[OpCode::CP_A_A]        = std::bind(&Cpu::Compare_8bit, thisPtr, GetA);
 
 		// 0xC-
-		table[OpCode::RET_NZ]    = std::bind(&Cpu::ConditionalReturn, thisPtr, FlagRegisterFlag::ZERO, false);
-		table[OpCode::POP_BC]    = std::bind(&Cpu::Pop, thisPtr, RegisterBC);
-		table[OpCode::JP_a16]    = std::bind(&Cpu::Jump_16bit_ImmediateData, thisPtr);
+		table[OpCode::RET_NZ]      = std::bind(&Cpu::ConditionalReturn, thisPtr, FlagRegisterFlag::ZERO, false);
+		table[OpCode::POP_BC]      = std::bind(&Cpu::Pop, thisPtr, RegisterBC);
+		table[OpCode::JP_NZ_a16]   = std::bind(&Cpu::Jump_Conditional_16bit_ImmediateData, thisPtr, FlagRegisterFlag::ZERO, false);
+		table[OpCode::JP_a16]      = std::bind(&Cpu::Jump_16bit_ImmediateData, thisPtr);
+		table[OpCode::CALL_NZ_a16] = std::bind(&Cpu::ConditionalCall_16bit_ImmediateData, thisPtr, FlagRegisterFlag::ZERO, false);
 
 		// 0xD-
 		table[OpCode::ILLEGAL_D3] = std::bind(&Cpu::HardLock, thisPtr);

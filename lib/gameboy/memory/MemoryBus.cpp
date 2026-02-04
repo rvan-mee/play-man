@@ -195,8 +195,7 @@ void MemoryBus::WriteByte(const uint16_t address, const uint8_t value)
     }
     else
     {
-        LOG_FATAL("Trying to read from an invalid address");
-        assert(false);
+        assert(false && "Trying to write to an unsupported address");
     }
 }
 

@@ -39,6 +39,19 @@ add_executable(${UTILITY_UNIT_TEST_EXECUTABLE}
 target_link_libraries(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE ${LIBRARY_NAME})
 target_link_libraries(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::Catch2WithMain)
 
+
+
+# Enable fsan
+# target_compile_options(${GENERAL_PLAY_MAN_UNIT_TEST_EXECUTABLE} PRIVATE -fsanitize=address)
+# target_link_options(${GENERAL_PLAY_MAN_UNIT_TEST_EXECUTABLE} PRIVATE -fsanitize=address)
+
+# target_compile_options(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE -fsanitize=address)
+# target_link_options(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE -fsanitize=address)
+
+# target_compile_options(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE -fsanitize=address)
+# target_link_options(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE -fsanitize=address)
+
+
 set(UNIT_TEST_INSTALL_DIR ${CMAKE_SOURCE_DIR}/bin/unit-tests)
 
 # Copy unit test test data
