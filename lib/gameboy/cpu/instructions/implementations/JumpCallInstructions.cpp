@@ -19,86 +19,69 @@
 
 namespace GameBoy {
 
-	
-	size_t Cpu::Jump_16bit_ImmediateData()
-	{
-		Register tmpReg;
+    
+    size_t Cpu::Jump_16bit_ImmediateData()
+    {
+        Register tmpReg;
 
-		tmpReg.SetLowByte(FetchPcAddress());
-		tmpReg.SetHighByte(FetchPcAddress());
+        tmpReg.SetLowByte(FetchPcAddress());
+        tmpReg.SetHighByte(FetchPcAddress());
 
-		core.PC = tmpReg;
+        core.PC = tmpReg;
 
-		constexpr auto numberOfCycles = 4;
-		return numberOfCycles;
-	}
+        constexpr auto numberOfCycles = 4;
+        return numberOfCycles;
+    }
 
-	size_t Cpu::Jump_Relative_8bit_SignedImmediateData()
-	{
-		const uint8_t dist = FetchPcAddress();
+    size_t Cpu::Jump_Relative_8bit_SignedImmediateData()
+    {
+        const uint8_t dist = FetchPcAddress();
 
-		if (dist > 127)
-			core.PC -= dist;
-		else
-			core.PC += dist;
+        if (dist > 127)
+            core.PC -= dist;
+        else
+            core.PC += dist;
 
-		constexpr auto numberOfCycles = 3;
-		return numberOfCycles;
-	}
+        constexpr auto numberOfCycles = 3;
+        return numberOfCycles;
+    }
 
-	size_t Cpu::Jump_Relative_FlagNotSet_8bit_SignedImmediateData(FlagRegisterFlag flag)
-	{
-		const bool flagSet = core.GetFlag(flag);
-		const auto dist = FetchPcAddress();
-		auto numberOfCycles = 2;
+    size_t Cpu::Jump_Relative_Conditional_8bit_SignedImmediateData(FlagRegisterFlag flag, bool flagCondition)
+    {
+        const bool flagSet = core.GetFlag(flag);
+        const auto dist = FetchPcAddress();
+        auto numberOfCycles = 2;
 
-		if (!flagSet)
-		{
-			numberOfCycles += 1;
-			if (dist > 127)
-				core.PC -= dist;
-			else
-				core.PC += dist;
-		}
-		return numberOfCycles;
-	}
+        if (flagSet == flagCondition)
+        {
+            numberOfCycles += 1;
+            if (dist > 127)
+                core.PC -= dist;
+            else
+                core.PC += dist;
+        }
+        return numberOfCycles;
+    }
 
-	size_t Cpu::Jump_Relative_FlagSet_8bit_SignedImmediateData(FlagRegisterFlag flag)
-	{
-		const bool flagSet = core.GetFlag(flag);
-		const auto dist = FetchPcAddress();
-		auto numberOfCycles = 2;
+    size_t Cpu::Return()
+    {
+        const uint16_t oldPC = memoryBus.PopStack();
 
-		if (flagSet)
-		{
-			numberOfCycles += 1;
-			if (dist > 127)
-				core.PC -= dist;
-			else
-				core.PC += dist;
-		}
-		return numberOfCycles;
-	}
+        core.PC.SetValue(oldPC);
 
-	size_t Cpu::Return()
-	{
-		const uint16_t oldPC = memoryBus.PopStack();
+        constexpr auto numberOfCycles = 16;
+        return numberOfCycles;
+    }
 
-		core.PC.SetValue(oldPC);
-
-		constexpr auto numberOfCycles = 16;
-		return numberOfCycles;
-	}
-
-	size_t Cpu::ConditionalReturn(FlagRegisterFlag conditionalFlag, bool flagEnabled)
-	{
-		auto numberOfCycles = 8;
-		if (core.GetFlag(conditionalFlag) == flagEnabled)
-		{
-			Return();
-			numberOfCycles += 12;
-		}
-		return numberOfCycles;
-	}
+    size_t Cpu::ConditionalReturn(FlagRegisterFlag conditionalFlag, bool flagEnabled)
+    {
+        auto numberOfCycles = 8;
+        if (core.GetFlag(conditionalFlag) == flagEnabled)
+        {
+            Return();
+            numberOfCycles += 12;
+        }
+        return numberOfCycles;
+    }
 
 }

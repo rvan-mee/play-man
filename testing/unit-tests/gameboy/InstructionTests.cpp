@@ -6779,6 +6779,28 @@ TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RET_NZ, 0xC0")
 	REQUIRE(IE == 0x00);
 }
 
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "POP_BC, 0xC1")
+{
+	ClearRegisters();
+
+	// Set a value to the stack and load the stack pointer
+	memoryBus.WriteByte(wRamAddressStart, 0x0F);
+	memoryBus.WriteByte(wRamAddressStart + 1, 0xF0);
+	SP.SetValue(wRamAddressStart);
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::OpCode::POP_BC);
+
+	REQUIRE(numberOfCycles == 12);
+	REQUIRE(AF.HighByte() == 0x00);
+	REQUIRE(AF.LowByte() == 0b0000'0000);
+	REQUIRE(BC.Value() == 0xF0'0F);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == wRamAddressStart + 2);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+}
+
 TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "JP_a16, 0xC3")
 {
 	// File containing the bytes 0xF0 0x0F

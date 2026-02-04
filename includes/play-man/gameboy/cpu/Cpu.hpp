@@ -204,18 +204,15 @@ private:
         size_t Jump_Relative_8bit_SignedImmediateData();
 
         /**
-         * @brief Check if the flag is set, if it is not, increments the PC register
+         * @brief Check if the flag is set according to the given condition, increments the PC register
          *        by the signed 8 bit value of the immediate data.
+         * 
+         * @param flag The flag to check.
+         * @param flagCondition The condition the flag needs to be in for the jump to happen.
+         * 
          * @return number of cycles.
          */
-	    size_t Jump_Relative_FlagNotSet_8bit_SignedImmediateData(FlagRegisterFlag flag);
-
-        /**
-         * @brief Check if the flag is set, if it is, increments the PC register
-         *        by the signed 8 bit value of the immediate data.
-         * @return number of cycles.
-         */
-        size_t Jump_Relative_FlagSet_8bit_SignedImmediateData(FlagRegisterFlag flag);
+	    size_t Jump_Relative_Conditional_8bit_SignedImmediateData(FlagRegisterFlag flag, bool flagCondition);
 
         /**                                16 bit instructions                                             **/
 
@@ -263,6 +260,21 @@ private:
          */
         size_t Add_16bit(RegisterPointer toReg, RegisterPointer fromReg);
 
+        /**
+         * @brief Pushes the 16 bit value found inside reg to the stack, after which the
+         *        StackPointer (SP) will be decremented by 2.
+         * 
+         * @return number of cycles.
+         */
+        size_t Push(RegisterPointer reg);
+
+        /**
+         * @brief Pops the 16 bit value found at the address stored inside StackPointer (SP)
+         *        inside reg, after which the StackPointer will be incremented by 2.
+         * 
+         * @return number of cycles.
+         */
+        size_t Pop(RegisterPointer reg);
 
         /**                                8 bit instructions                                              **/
 

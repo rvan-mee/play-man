@@ -123,29 +123,50 @@ namespace GameBoy
         return numberOfCycles;
     }
 
-	size_t Cpu::Load_16bit_ImmediateData(RegisterPointer reg)
-	{
-		Register& r = core.*reg;
-		r.SetLowByte(FetchPcAddress());
-		r.SetHighByte(FetchPcAddress());
+    size_t Cpu::Load_16bit_ImmediateData(RegisterPointer reg)
+    {
+        Register& r = core.*reg;
+        r.SetLowByte(FetchPcAddress());
+        r.SetHighByte(FetchPcAddress());
 
-		constexpr auto numberOfCycles = 3;
-		return numberOfCycles;
-	}
+        constexpr auto numberOfCycles = 3;
+        return numberOfCycles;
+    }
 
-	size_t Cpu::Load_16bit_RegToImmediateAddr(RegisterPointer reg)
-	{
-		const Register& r = core.*reg;
-		const auto lowByte = r.LowByte();
-		const auto highByte = r.HighByte();
+    size_t Cpu::Load_16bit_RegToImmediateAddr(RegisterPointer reg)
+    {
+        const Register& r = core.*reg;
+        const auto lowByte = r.LowByte();
+        const auto highByte = r.HighByte();
 
-		const auto addr = FetchPcAddress16bit();
+        const auto addr = FetchPcAddress16bit();
 
-		memoryBus.WriteByte(addr, lowByte);
-		memoryBus.WriteByte(addr+1, highByte);
+        memoryBus.WriteByte(addr, lowByte);
+        memoryBus.WriteByte(addr+1, highByte);
 
-		constexpr size_t numberOfCycles = 5;
-		return numberOfCycles;
-	}
+        constexpr size_t numberOfCycles = 5;
+        return numberOfCycles;
+    }
+
+    size_t Cpu::Push(RegisterPointer reg)
+    {
+        const Register& r = core.*reg;
+        const uint16_t value = r.Value();
+
+        memoryBus.PushStack(value);
+
+        constexpr size_t numberOfCycles = 16;
+        return numberOfCycles;
+    }
+
+    size_t Cpu::Pop(RegisterPointer reg)
+    {
+        Register& r = core.*reg;
+
+        r.SetValue(memoryBus.PopStack());
+
+        constexpr size_t numberOfCycles = 12;
+        return numberOfCycles;
+    }
 
 }
