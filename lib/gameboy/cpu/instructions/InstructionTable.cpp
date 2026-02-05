@@ -279,6 +279,17 @@ namespace GameBoy
 		table[OpCode::JP_NZ_a16]   = std::bind(&Cpu::Jump_Conditional_16bit_ImmediateData, thisPtr, FlagRegisterFlag::ZERO, false);
 		table[OpCode::JP_a16]      = std::bind(&Cpu::Jump_16bit_ImmediateData, thisPtr);
 		table[OpCode::CALL_NZ_a16] = std::bind(&Cpu::ConditionalCall_16bit_ImmediateData, thisPtr, FlagRegisterFlag::ZERO, false);
+		table[OpCode::PUSH_BC]     = std::bind(&Cpu::Push, thisPtr, RegisterBC);
+		table[OpCode::ADD_A_n8]    = std::bind(&Cpu::Add_8bit_ImmediateData, thisPtr);
+		table[OpCode::RST_00]      = std::bind(&Cpu::RST, thisPtr, 0x00);
+		table[OpCode::RET_Z]       = std::bind(&Cpu::ConditionalReturn, thisPtr, FlagRegisterFlag::ZERO, true);
+		table[OpCode::RET]         = std::bind(&Cpu::Return, thisPtr);
+		table[OpCode::JP_Z_a16]    = std::bind(&Cpu::Jump_Conditional_16bit_ImmediateData, thisPtr, FlagRegisterFlag::ZERO, true);
+		// 0xCB reserved for prefixed instructions
+		table[OpCode::CALL_Z_a16]  = std::bind(&Cpu::ConditionalCall_16bit_ImmediateData, thisPtr, FlagRegisterFlag::ZERO, true);
+		table[OpCode::CALL_a16]    = std::bind(&Cpu::Call_16bit_ImmediateData, thisPtr);
+		table[OpCode::ADC_A_n8]    = std::bind(&Cpu::AddCarry_8bit_ImmediateData, thisPtr);
+		table[OpCode::RST_08]      = std::bind(&Cpu::RST, thisPtr, 0x08);
 
 		// 0xD-
 		table[OpCode::ILLEGAL_D3] = std::bind(&Cpu::HardLock, thisPtr);

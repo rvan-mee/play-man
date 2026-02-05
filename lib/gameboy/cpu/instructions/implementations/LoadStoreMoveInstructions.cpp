@@ -155,7 +155,7 @@ namespace GameBoy
 
         memoryBus.PushStack(value);
 
-        constexpr size_t numberOfCycles = 16;
+        constexpr size_t numberOfCycles = 4;
         return numberOfCycles;
     }
 
@@ -165,7 +165,17 @@ namespace GameBoy
 
         r.SetValue(memoryBus.PopStack());
 
-        constexpr size_t numberOfCycles = 12;
+        constexpr size_t numberOfCycles = 3;
+        return numberOfCycles;
+    }
+
+    size_t Cpu::RST(const uint8_t address)
+    {
+        memoryBus.PushStack(core.PC.Value());
+
+        core.PC.SetValue(address);
+
+        constexpr size_t numberOfCycles = 4;
         return numberOfCycles;
     }
 

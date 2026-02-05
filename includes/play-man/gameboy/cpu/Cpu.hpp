@@ -306,6 +306,16 @@ private:
          */
         size_t Pop(RegisterPointer reg);
 
+        /**
+         * @brief The 'Restart' instruction. Pushes the current program counter (PC) to the stack
+         *        and performs a jump to the given address (0x00 as the high part, the address as low part).
+         * 
+         * @param address The address that will be jumped to.
+         * 
+         * @return number of cycles.  
+         */
+        size_t RST(const uint8_t address);
+
         /**                                8 bit instructions                                              **/
 
         /**
@@ -340,6 +350,19 @@ private:
         size_t Add_8bit_Addr(RegisterPointer addrReg);
 
         /**
+         * @brief Adds the 8 bit immediate data found at the memory location stored
+         *        inside the program counter (PC) to the accumulator register.
+         * 
+         * @note Sets the Z flag according to the calculation.
+         * @note Sets the S flag to false.
+         * @note Sets the H flag according to the calculation.
+         * @note Sets the C flag according to the calculation.
+         * 
+         * @return number of cycles.
+         */
+        size_t Add_8bit_ImmediateData();
+
+        /**
          * @brief Adds the contents from opReg to the accumulator register, combined with the 
          *        contents of the Carry flag (1 or 0).
          * 
@@ -355,6 +378,19 @@ private:
          * @return number of cycles.
          */
         size_t AddCarry_8bit(RegisterPointer opReg, RegisterGet8Bit GetValue);
+
+        /**
+         * @brief Adds the value found at the current program counter (PC) to the accumulator register,
+         *        combined with the contents of the Carry flag (1 or 0).
+         * 
+         * @note Sets the Z flag according to the calculation.
+         * @note Sets the S flag to false.
+         * @note Sets the H flag according to the calculation.
+         * @note Sets the C flag according to the calculation.
+         * 
+         * @return number of cycles.
+         */
+        size_t AddCarry_8bit_ImmediateData();
 
         /**
          * @brief Adds the contents from memory location addrReg to the accumulator register, combined with the 

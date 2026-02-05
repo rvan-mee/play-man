@@ -68,12 +68,12 @@ namespace GameBoy {
         const bool flagSet = core.GetFlag(flag);
         const uint8_t lowerByte = FetchPcAddress();
         const uint8_t upperByte = FetchPcAddress();
-        auto numberOfCycles = 12;
+        auto numberOfCycles = 3;
 
         if (flagSet == flagCondition)
         {
             core.PC.SetValue((upperByte << 8) | lowerByte);
-            numberOfCycles += 4;
+            numberOfCycles += 1;
         }
         return numberOfCycles;
     }
@@ -87,7 +87,7 @@ namespace GameBoy {
     
         core.PC.SetValue((upperByte << 8) | lowerByte);
 
-        constexpr auto numberOfCycles = 24;
+        constexpr auto numberOfCycles = 6;
         return numberOfCycles;
     }
 
@@ -96,7 +96,7 @@ namespace GameBoy {
         const bool flagSet = core.GetFlag(flag);
         const uint8_t lowerByte = FetchPcAddress();
         const uint8_t upperByte = FetchPcAddress();
-        auto numberOfCycles = 12;
+        auto numberOfCycles = 3;
 
         if (flagSet == flagCondition)
         {
@@ -104,7 +104,7 @@ namespace GameBoy {
 
             core.PC.SetValue((upperByte << 8) | lowerByte);
 
-            numberOfCycles += 12;
+            numberOfCycles += 3;
         }
         return numberOfCycles;
     }
@@ -115,17 +115,17 @@ namespace GameBoy {
 
         core.PC.SetValue(oldPC);
 
-        constexpr auto numberOfCycles = 16;
+        constexpr auto numberOfCycles = 4;
         return numberOfCycles;
     }
 
     size_t Cpu::ConditionalReturn(FlagRegisterFlag conditionalFlag, bool flagEnabled)
     {
-        auto numberOfCycles = 8;
+        auto numberOfCycles = 2;
         if (core.GetFlag(conditionalFlag) == flagEnabled)
         {
             Return();
-            numberOfCycles += 12;
+            numberOfCycles += 3;
         }
         return numberOfCycles;
     }
