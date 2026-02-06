@@ -293,6 +293,23 @@ namespace GameBoy
         return numberOfCycles;
     }
 
+    size_t Cpu::Sub_8bit_ImmediateData()
+    {
+        const uint16_t operand = FetchPcAddress();
+        const uint16_t baseValue = core.AF.HighByte();
+        const uint16_t result = baseValue - operand;
+
+        core.AF.SetHighByte(static_cast<uint8_t>(result));
+
+        core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
+        core.SetFlag(FlagRegisterFlag::SUB, true);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) - (operand & 0xF)) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
+
+        constexpr size_t numberOfCycles = 2;
+        return numberOfCycles;  
+    }
+
     size_t Cpu::Sub_8bit_Addr(RegisterPointer addrReg)
     {
         const uint16_t addr = (core.*addrReg).Value();
@@ -326,6 +343,24 @@ namespace GameBoy
         core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
 
         constexpr size_t numberOfCycles = 1;
+        return numberOfCycles;
+    }
+
+    size_t Cpu::SubCarry_8bit_ImmediateData()
+    {
+        const uint16_t carryValue = 1 * core.GetFlag(FlagRegisterFlag::CARRY);
+        const uint16_t operand = FetchPcAddress();
+        const uint16_t baseValue = core.AF.HighByte();
+        const uint16_t result = baseValue - operand - carryValue;
+
+        core.AF.SetHighByte(static_cast<uint8_t>(result));
+
+        core.SetFlag(FlagRegisterFlag::ZERO, static_cast<uint8_t>(result) == 0);
+        core.SetFlag(FlagRegisterFlag::SUB, true);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) - (operand & 0xF) - carryValue) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::CARRY, result & CARRY_BIT);
+
+        constexpr size_t numberOfCycles = 2;
         return numberOfCycles;
     }
 

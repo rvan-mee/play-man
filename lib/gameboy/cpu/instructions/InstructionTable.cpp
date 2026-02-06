@@ -292,9 +292,23 @@ namespace GameBoy
 		table[OpCode::RST_08]      = std::bind(&Cpu::RST, thisPtr, 0x08);
 
 		// 0xD-
-		table[OpCode::ILLEGAL_D3] = std::bind(&Cpu::HardLock, thisPtr);
-		table[OpCode::ILLEGAL_DB] = std::bind(&Cpu::HardLock, thisPtr);
-		table[OpCode::ILLEGAL_DD] = std::bind(&Cpu::HardLock, thisPtr);
+		table[OpCode::RET_NC]      = std::bind(&Cpu::ConditionalReturn, thisPtr, FlagRegisterFlag::CARRY, false);
+		table[OpCode::POP_DE]      = std::bind(&Cpu::Pop, thisPtr, RegisterDE);
+		table[OpCode::JP_NC_a16]   = std::bind(&Cpu::Jump_Conditional_16bit_ImmediateData, thisPtr, FlagRegisterFlag::CARRY, false);
+		table[OpCode::ILLEGAL_D3]  = std::bind(&Cpu::HardLock, thisPtr);
+		table[OpCode::CALL_NC_a16] = std::bind(&Cpu::ConditionalCall_16bit_ImmediateData, thisPtr, FlagRegisterFlag::CARRY, false);
+		table[OpCode::PUSH_DE]     = std::bind(&Cpu::Push, thisPtr, RegisterDE);
+		table[OpCode::SUB_A_n8]    = std::bind(&Cpu::Sub_8bit_ImmediateData, thisPtr);
+		table[OpCode::RST_10]      = std::bind(&Cpu::RST, thisPtr, 0x10);
+		table[OpCode::RET_C]       = std::bind(&Cpu::ConditionalReturn, thisPtr, FlagRegisterFlag::CARRY, true);
+		// 0xD9 - RETI
+		//        Implement when interrupts have been handled
+		table[OpCode::JP_C_a16]    = std::bind(&Cpu::Jump_Conditional_16bit_ImmediateData, thisPtr, FlagRegisterFlag::CARRY, true);
+		table[OpCode::ILLEGAL_DB]  = std::bind(&Cpu::HardLock, thisPtr);
+		table[OpCode::CALL_C_a16]  = std::bind(&Cpu::ConditionalCall_16bit_ImmediateData, thisPtr, FlagRegisterFlag::CARRY, true); 
+		table[OpCode::ILLEGAL_DD]  = std::bind(&Cpu::HardLock, thisPtr);
+		table[OpCode::SBC_A_n8]    = std::bind(&Cpu::SubCarry_8bit_ImmediateData, thisPtr);
+		table[OpCode::RST_18]      = std::bind(&Cpu::RST, thisPtr, 0x18);
 
 		// 0xE-
 		table[OpCode::ILLEGAL_E3] = std::bind(&Cpu::HardLock, thisPtr);

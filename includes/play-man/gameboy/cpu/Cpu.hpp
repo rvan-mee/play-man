@@ -425,6 +425,19 @@ private:
         size_t Sub_8bit(RegisterPointer opReg, RegisterGet8Bit GetValue);
 
         /**
+         * @brief Subtracts the contents found on the address contained inside the program counter (PC)
+         *        from the accumulator register.
+         * 
+         * @note Sets the Z flag according to the calculation.
+         * @note Sets the S flag to true.
+         * @note Sets the H flag according to the calculation.
+         * @note Sets the C flag according to the calculation.
+         * 
+         * @return number of cycles.
+         */
+        size_t Sub_8bit_ImmediateData();
+
+        /**
          * @brief Subtracts the contents of memory location addrReg
          *        from the accumulator register.
          * 
@@ -456,6 +469,19 @@ private:
          * @return number of cycles.
          */
         size_t SubCarry_8bit(RegisterPointer opReg, RegisterGet8Bit GetValue);
+
+        /**
+         * @brief Subtracts the contents found at the addres inside the program counter (PC)
+         *        combined with the contents of the Carry flag (1 or 0) from the accumulator register.
+         * 
+         * @note Sets the Z flag according to the calculation.
+         * @note Sets the S flag to true.
+         * @note Sets the H flag according to the calculation.
+         * @note Sets the C flag according to the calculation.
+         * 
+         * @return number of cycles.
+         */
+        size_t SubCarry_8bit_ImmediateData();
 
         /**
          * @brief Subtracts the contents of memory location addrReg combined
