@@ -20,6 +20,40 @@
 namespace GameBoy
 {
 
+    size_t Cpu::Store_8bit_8bitImmediateAddr(RegisterPointer dataReg, RegisterGet8Bit GetData)
+    {
+        uint8_t data = ((core.*dataReg).*GetData)();
+        uint16_t address = 0xFF'00 | FetchPcAddress();
+
+        memoryBus.WriteByte(address, data);
+
+        constexpr size_t numberOfCycles = 3;
+        return numberOfCycles;
+    }
+
+    size_t Cpu::Store_8bit_16bitImmediateAddr(RegisterPointer dataReg, RegisterGet8Bit GetData)
+    {
+        uint8_t data = ((core.*dataReg).*GetData)();
+        uint16_t address = FetchPcAddress16bit();
+
+        memoryBus.WriteByte(address, data);
+
+        constexpr size_t numberOfCycles = 3;
+        return numberOfCycles;
+    }
+
+    size_t Cpu::Store_8bit_8bitAddr(RegisterPointer addrReg, RegisterGet8Bit GetAddr, RegisterPointer dataReg, RegisterGet8Bit GetData)
+    {
+        uint8_t addrValue = ((core.*addrReg).*GetAddr)();
+        uint8_t data = ((core.*dataReg).*GetData)();
+        uint16_t addressRegister = 0xFF'00 | addrValue;
+
+        memoryBus.WriteByte(addressRegister, data);
+
+        constexpr size_t numberOfCycles = 3;
+        return numberOfCycles;
+    }
+
     size_t Cpu::Store_8bit_Addr(RegisterPointer addrReg, RegisterPointer dataReg, RegisterGet8Bit GetData)
     {
         uint8_t data = ((core.*dataReg).*GetData)();

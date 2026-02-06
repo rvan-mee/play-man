@@ -191,6 +191,15 @@ private:
         /**                               Jmp/call instructions                                             **/
 
         /**
+         * @brief Loads the address value addrReg into the PC reg.
+         * 
+         * @param addrReg Pointer to the register containing the new PC value.
+         * 
+         * @return number of cycles.
+         */
+        size_t Jump_Addr(RegisterPointer addrReg);
+
+        /**
          * @brief Loads two bytes of immediate date into the PC reg.
          *        First byte of immediate data is low byte.
          * @return number of cycles.
@@ -289,6 +298,19 @@ private:
          * @return number of cycles.
          */
         size_t Add_16bit(RegisterPointer toReg, RegisterPointer fromReg);
+
+        /**
+         * @brief Adds the 8 bit signed value found at the program counter (PC) to the
+         *        16 bit register reg.
+         * 
+         * @note Sets the Z flag to false.
+         * @note Sets the S flag to false.
+         * @note Sets the H flag according to the calculation (Lower register carry).
+         * @note Sets the C flag according to the calculation (Lower register carry).
+         * 
+         * @return number of cycles.
+         */
+        size_t Add_16bit_8bitSignedImmediateData(RegisterPointer reg);
 
         /**
          * @brief Pushes the 16 bit value found inside reg to the stack, after which the
@@ -586,6 +608,17 @@ private:
         size_t BitwiseAnd_Addr(RegisterPointer addrReg);
 
         /**
+         * @brief Performs a bitwise AND on the accumulator register with the
+         *        data found at the current program counter (PC).
+         * 
+         * @note The Z flag is set if the AND results in a 0.
+         * @note The S flag is set to false.
+         * @note The H flag is set to true.
+         * @note The C flag is set to false.
+         */
+        size_t BitwiseAnd_ImmediateData();
+
+        /**
          * @brief Performs a bitwise XOR on the accumulator register with the
          *        data inside oppReg as the operant.
          * 
@@ -616,6 +649,17 @@ private:
         size_t BitwiseXor_Addr(RegisterPointer addrReg);
 
         /**
+         * @brief Performs a bitwise XOR on the accumulator register with the
+         *        data found at the current program counter (PC).
+         * 
+         * @note The Z flag is set if the XOR results in a 0.
+         * @note The S flag is set to false.
+         * @note The H flag is set to true.
+         * @note The C flag is set to false.
+         */
+        size_t BitwiseXor_ImmediateData();
+
+        /**
          * @brief Performs a bitwise OR on the accumulator register with the
          *        data inside oppReg as the operant.
          * 
@@ -644,6 +688,47 @@ private:
          * @note The C flag is set to false.
          */
         size_t BitwiseOr_Addr(RegisterPointer addrReg);
+
+        /**
+         * @brief Stores the byte found in the register of dataReg to the memory location pointed to by the
+         *        immediate address found inside the location pointed to by the program counter (PC).
+         * 
+         * @note The 8 bits of immediate data are added to the value of 0xFF'00 to get the final address.
+         * 
+         * @param dataReg Pointer to the register where the data will be taken from.
+         * @param GetValue Pointer to the dataReg register's member function that will take the
+         *                 High or Low part of the register.
+         * 
+         * @return number of cycles.
+         */
+        size_t Store_8bit_8bitImmediateAddr(RegisterPointer dataReg, RegisterGet8Bit GetData);
+
+        /**
+         * @brief Stores the byte found in the register of dataReg to the memory location pointed to by the
+         *        immediate address found inside the location pointed to by the program counter (PC).
+         *  
+         * @param dataReg Pointer to the register where the data will be taken from.
+         * @param GetValue Pointer to the dataReg register's member function that will take the
+         *                 High or Low part of the register.
+         * 
+         * @return number of cycles.
+         */
+        size_t Store_8bit_16bitImmediateAddr(RegisterPointer dataReg, RegisterGet8Bit GetData);
+
+        /**
+         * @brief Stores the byte found in the register of dataReg to the memory location
+         *        pointed to by the addrReg.
+         * 
+         * @note The 8 bits address found inside addrReg is added to the value of 0xFF'00 to get the final address.
+         * 
+         * @param addrReg Pointer to the register containing the address where the data needs to be stored. 
+         * @param dataReg Pointer to the register where the data will be taken from.
+         * @param GetValue Pointer to the dataReg register's member function that will take the
+         *                 High or Low part of the register.
+         * 
+         * @return number of cycles.
+         */
+        size_t Store_8bit_8bitAddr(RegisterPointer addrReg, RegisterGet8Bit GetAddr, RegisterPointer dataReg, RegisterGet8Bit GetData);
 
         /**
          * @brief Stores the byte found in the register of dataReg to the addres Pointed to by addrReg.

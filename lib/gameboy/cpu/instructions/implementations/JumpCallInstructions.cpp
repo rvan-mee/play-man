@@ -19,7 +19,17 @@
 
 namespace GameBoy {
 
-    
+    size_t Cpu::Jump_Addr(RegisterPointer addrReg)
+    {
+        Register&      r = (core.*addrReg);
+        const uint16_t newPC = r.Value(); 
+
+        core.PC = newPC;
+
+        constexpr auto numberOfCycles = 1;
+        return numberOfCycles;
+    }
+
     size_t Cpu::Jump_16bit_ImmediateData()
     {
         Register tmpReg;

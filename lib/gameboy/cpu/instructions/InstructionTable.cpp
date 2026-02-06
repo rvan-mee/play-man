@@ -311,11 +311,22 @@ namespace GameBoy
 		table[OpCode::RST_18]      = std::bind(&Cpu::RST, thisPtr, 0x18);
 
 		// 0xE-
-		table[OpCode::ILLEGAL_E3] = std::bind(&Cpu::HardLock, thisPtr);
-		table[OpCode::ILLEGAL_E4] = std::bind(&Cpu::HardLock, thisPtr);
-		table[OpCode::ILLEGAL_EB] = std::bind(&Cpu::HardLock, thisPtr);
-		table[OpCode::ILLEGAL_EC] = std::bind(&Cpu::HardLock, thisPtr);
-		table[OpCode::ILLEGAL_ED] = std::bind(&Cpu::HardLock, thisPtr);
+		table[OpCode::LDH_a8_NI_A] = std::bind(&Cpu::Store_8bit_8bitImmediateAddr, thisPtr, GetA);
+		table[OpCode::POP_HL]      = std::bind(&Cpu::Pop, thisPtr, RegisterHL);
+		table[OpCode::LDH_C_NI_A]  = std::bind(&Cpu::Store_8bit_8bitAddr, thisPtr, GetC, GetA);
+		table[OpCode::ILLEGAL_E3]  = std::bind(&Cpu::HardLock, thisPtr);
+		table[OpCode::ILLEGAL_E4]  = std::bind(&Cpu::HardLock, thisPtr);
+		table[OpCode::PUSH_HL]     = std::bind(&Cpu::Push, thisPtr, RegisterHL);
+		table[OpCode::AND_A_n8]    = std::bind(&Cpu::BitwiseAnd_ImmediateData, thisPtr);
+		table[OpCode::RST_20]      = std::bind(&Cpu::RST, thisPtr, 0x20);
+		table[OpCode::ADD_SP_e8]   = std::bind(&Cpu::Add_16bit_8bitSignedImmediateData, thisPtr, RegisterSP);
+		table[OpCode::JP_HL]       = std::bind(&Cpu::Jump_Addr, thisPtr, RegisterHL);
+		table[OpCode::LD_a16_NI_A] = std::bind(&Cpu::Store_8bit_16bitImmediateAddr, thisPtr, GetA);
+		table[OpCode::ILLEGAL_EB]  = std::bind(&Cpu::HardLock, thisPtr);
+		table[OpCode::ILLEGAL_EC]  = std::bind(&Cpu::HardLock, thisPtr);
+		table[OpCode::ILLEGAL_ED]  = std::bind(&Cpu::HardLock, thisPtr);
+		table[OpCode::XOR_A_n8]    = std::bind(&Cpu::BitwiseXor_ImmediateData, thisPtr);
+		table[OpCode::RST_28]      = std::bind(&Cpu::RST, thisPtr, 0x28);
 
 		// 0xF-
 		table[OpCode::CP_A_n8] = std::bind(&Cpu::Compare_8bit_ImmediateData, thisPtr);

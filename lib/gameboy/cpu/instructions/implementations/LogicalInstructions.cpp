@@ -167,6 +167,26 @@ namespace GameBoy
         return numberOfCycles;
     }
 
+
+
+    size_t Cpu::Add_16bit_8bitSignedImmediateData(RegisterPointer reg)
+    {
+        Register& r = core.*reg;
+        const int8_t operandValue = FetchPcAddress();
+        const uint16_t baseValue = r.Value();
+        const int32_t result = baseValue + operandValue; 
+
+        r.SetValue(static_cast<uint16_t>(result));
+
+        core.SetFlag(FlagRegisterFlag::ZERO, false);
+        core.SetFlag(FlagRegisterFlag::SUB, false);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) + (operandValue & 0xF)) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::CARRY, ((baseValue & 0xFF) + (operandValue & 0xFF)) & CARRY_BIT);
+
+        constexpr size_t numberOfCycles = 4;
+        return numberOfCycles;
+    }
+
     size_t Cpu::Add_8bit(RegisterPointer opReg, RegisterGet8Bit GetValue)
     {
         const Register& operandRegister = core.*opReg;
