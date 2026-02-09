@@ -329,10 +329,24 @@ namespace GameBoy
 		table[OpCode::RST_28]      = std::bind(&Cpu::RST, thisPtr, 0x28);
 
 		// 0xF-
-		table[OpCode::CP_A_n8] = std::bind(&Cpu::Compare_8bit_ImmediateData, thisPtr);
-		table[OpCode::ILLEGAL_F4] = std::bind(&Cpu::HardLock, thisPtr);
-		table[OpCode::ILLEGAL_FC] = std::bind(&Cpu::HardLock, thisPtr);
-		table[OpCode::ILLEGAL_FD] = std::bind(&Cpu::HardLock, thisPtr);
+		table[OpCode::LDH_A_a8_NI]     = std::bind(&Cpu::Load_8bit_8bitImmediateAddr, thisPtr, SetA);
+		table[OpCode::POP_AF]          = std::bind(&Cpu::Pop, thisPtr, RegisterAF);
+		table[OpCode::LDH_A_C_NI]      = std::bind(&Cpu::Load_8bit_8bitAddr, thisPtr, SetA, GetC);
+		// TODO: 0xF3 - DI
+		// Implement when interrupts are handled.
+		table[OpCode::ILLEGAL_F4]      = std::bind(&Cpu::HardLock, thisPtr);
+		table[OpCode::PUSH_AF]         = std::bind(&Cpu::Push, thisPtr, RegisterAF);
+		table[OpCode::OR_A_n8]         = std::bind(&Cpu::BitwiseOr_ImmediateData, thisPtr);
+		table[OpCode::RST_30]          = std::bind(&Cpu::RST, thisPtr, 0x30);
+		table[OpCode::LD_HL_SP_INC_e8] = std::bind(&Cpu::Store_StackPointerPlusSignedImmediateData, thisPtr, RegisterHL);
+		table[OpCode::LD_SP_HL]        = std::bind(&Cpu::Load_16bit, thisPtr, RegisterSP, RegisterHL);
+		table[OpCode::LD_A_a16_NI]     = std::bind(&Cpu::Load_8bit_ImmediateAddr, thisPtr, SetA);
+		// TODO: 0xFB - EI
+		// Implement when interrupts are handled.
+		table[OpCode::ILLEGAL_FC]      = std::bind(&Cpu::HardLock, thisPtr);
+		table[OpCode::ILLEGAL_FD]      = std::bind(&Cpu::HardLock, thisPtr);
+		table[OpCode::CP_A_n8]         = std::bind(&Cpu::Compare_8bit_ImmediateData, thisPtr);
+		table[OpCode::RST_38]          = std::bind(&Cpu::RST, thisPtr, 0x38);
 
 
 		/** Prefixed instructions **/

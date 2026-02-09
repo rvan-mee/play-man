@@ -17,6 +17,9 @@
 
 #include <play-man/gameboy/cpu/Cpu.hpp>
 
+#define HALF_CARRY_BIT 0b1'0000
+#define CARRY_BIT 0b1'0000'0000
+
 namespace GameBoy
 {
 
@@ -100,6 +103,23 @@ namespace GameBoy
         return numberOfCycles;
     }
 
+    size_t Cpu::Store_StackPointerPlusSignedImmediateData(RegisterPointer reg)
+    {
+        const uint16_t baseValue = core.SP.Value();
+        const int8_t immData = FetchPcAddress();
+        const uint16_t result = baseValue + immData;
+
+        (core.*reg).SetValue(result);
+
+        core.SetFlag(FlagRegisterFlag::ZERO, false);
+        core.SetFlag(FlagRegisterFlag::SUB, false);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, ((baseValue & 0xF) + (immData & 0xF)) & HALF_CARRY_BIT);
+        core.SetFlag(FlagRegisterFlag::CARRY, ((baseValue & 0xFF) + (immData & 0xFF)) & CARRY_BIT);
+
+        constexpr size_t numberOfCycles = 3;
+        return numberOfCycles;
+    }
+
     size_t Cpu::Load_8bit_ImmediateData(RegisterPointer reg, RegisterSet8Bit SetValue)
     {
         Register& r = core.*reg;
@@ -111,12 +131,48 @@ namespace GameBoy
         return numberOfCycles;
     }
 
+    size_t Cpu::Load_8bit_ImmediateAddr(RegisterPointer reg, RegisterSet8Bit SetValue)
+    {
+        const uint16_t addr = FetchPcAddress16bit();
+        const uint8_t data = memoryBus.ReadByte(addr);
+        Register& r = core.*reg;
+
+        (r.*SetValue)(data);
+
+        constexpr size_t numberOfCycles = 4;
+        return numberOfCycles;
+    }
+
+    size_t Cpu::Load_8bit_8bitImmediateAddr(RegisterPointer reg, RegisterSet8Bit SetValue)
+    {
+        const uint16_t addr = 0xFF00 + FetchPcAddress();
+        const uint8_t data = memoryBus.ReadByte(addr);
+        Register& r = core.*reg;
+
+        (r.*SetValue)(data);
+
+        constexpr size_t numberOfCycles = 3;
+        return numberOfCycles;
+    }
+
     size_t Cpu::Load_8bit_Addr(RegisterPointer destReg, RegisterSet8Bit SetValue, RegisterPointer addrReg)
     {
         const uint16_t address = (core.*addrReg).Value();
         Register& dest = core.*destReg;
 
         (dest.*SetValue)(memoryBus.ReadByte(address));
+
+        constexpr size_t numberOfCycles = 2;
+        return numberOfCycles;
+    }
+
+    size_t Cpu::Load_8bit_8bitAddr(RegisterPointer destReg, RegisterSet8Bit SetValue, RegisterPointer addrReg, RegisterGet8Bit GetAddr)
+    {
+        const uint16_t address = 0xFF00 + ((core.*addrReg).*GetAddr)();
+        const uint8_t data = memoryBus.ReadByte(address);
+        Register& dest = core.*destReg;
+
+        (dest.*SetValue)(data);
 
         constexpr size_t numberOfCycles = 2;
         return numberOfCycles;
@@ -154,6 +210,17 @@ namespace GameBoy
         (dest.*SetValue)((from.*GetValue)());
 
         constexpr size_t numberOfCycles = 1;
+        return numberOfCycles;
+    }
+
+    size_t Cpu::Load_16bit(RegisterPointer destReg, RegisterPointer fromReg)
+    {
+        Register& dest = core.*destReg;
+        Register& from = core.*fromReg;
+
+        dest.SetValue(from.Value());
+
+        constexpr size_t numberOfCycles = 2;
         return numberOfCycles;
     }
 

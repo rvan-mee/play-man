@@ -255,6 +255,16 @@ private:
 
         /**                                16 bit instructions                                             **/
 
+        /**
+         * @brief Loads the contents 16 bits of fromReg into toReg.
+         * 
+         * @param destReg  Pointer to the register where the data is loaded into.
+         * @param fromReg  Pointer to the register where the data is taken from.
+         * 
+         * @return number of cycles.
+         */
+        size_t Load_16bit(RegisterPointer destReg, RegisterPointer fromReg);
+
 		/**
 		 * @brief Loads two bytes of immediate data into reg.
 		 * 		  First byte of immediate data is low byte.
@@ -684,10 +694,21 @@ private:
          * 
          * @note The Z flag is set if the OR results in a 0.
          * @note The S flag is set to false.
-         * @note The H flag is set to true.
+         * @note The H flag is set to false.
          * @note The C flag is set to false.
          */
         size_t BitwiseOr_Addr(RegisterPointer addrReg);
+
+        /**
+         * @brief Performs a bitwise OR on the accumulator register with the
+         *        data found at the current program counter (PC).
+         * 
+         * @note The Z flag is set if the OR results in a 0.
+         * @note The S flag is set to false.
+         * @note The H flag is set to false.
+         * @note The C flag is set to false.
+         */
+        size_t BitwiseOr_ImmediateData();
 
         /**
          * @brief Stores the byte found in the register of dataReg to the memory location pointed to by the
@@ -778,6 +799,21 @@ private:
          */
         size_t Store_8bit_Addr_ImmediateData(RegisterPointer addrReg);
 
+
+        /**
+         * @brief Adds the signed 8 bits of immediate data to the StackPointer and stores the result inside reg.
+         * 
+         * @param reg Pointer to the register where the data will to be stored.
+         * 
+         * @note The Z flag is set to false.
+         * @note The S flag is set to false.
+         * @note The H flag is set according to the calculation.
+         * @note The C flag is set according to the calculation.
+         * 
+         * @return number of cycles.
+         */
+        size_t Store_StackPointerPlusSignedImmediateData(RegisterPointer reg);
+
         /**
          * @brief Loads the 8bit immediate data into the provided register.
          * 
@@ -790,6 +826,24 @@ private:
         size_t Load_8bit_ImmediateData(RegisterPointer reg, RegisterSet8Bit SetValue);
 
         /**
+         * @brief Loads the 8 bits of memory found at the location pointed to
+         *        by the immediate data into the provided register.
+         * 
+         * @return number of cycles. 
+         */
+        size_t Load_8bit_ImmediateAddr(RegisterPointer reg, RegisterSet8Bit SetValue);
+
+        /**
+         * @brief Loads the 8 bits of memory found at the 8bit immediate data into the provided register.
+         * 
+         * @note The 8 bits of immediate data is added to the value 0xFF00, resulting in an address
+         *       rang of 0xFF00-0xFFFF.
+         * 
+         * @return number of cycles. 
+         */
+        size_t Load_8bit_8bitImmediateAddr(RegisterPointer reg, RegisterSet8Bit SetValue);
+
+        /**
          * @brief Loads the 8bits of data found at the addrReg into destReg.
          * 
          * @param destReg  Pointer to the register where the data is loaded into.
@@ -799,6 +853,20 @@ private:
          * @return number of cycles. 
          */
         size_t Load_8bit_Addr(RegisterPointer destReg, RegisterSet8Bit SetValue, RegisterPointer addrReg);
+
+        /**
+         * @brief Loads the 8bits of data from the 8bit address found inside addrReg and loads it into destReg.
+         * 
+         * @note The bit bit address will be added to the value 0xFF00, making an effective address of 0xFF00-0xFFFF.
+         * 
+         * @param destReg  Pointer to the register where the data is loaded into.
+         * @param SetValue Member function pointer of destReg, specifying the high or low part of the register. 
+         * @param addrReg  Pointer to the register containing the 8bit address where the data is located.
+         * @param GetAddr  Member function pointer of addrReg, specifying the high or low part of the register.
+         * 
+         * @return number of cycles. 
+         */
+        size_t Load_8bit_8bitAddr(RegisterPointer destReg, RegisterSet8Bit SetValue, RegisterPointer addrReg, RegisterGet8Bit GetAddr);
 
         /**
          * @brief Loads the 8 bits of data found at addrReg into destReg, after which the pointer inside
