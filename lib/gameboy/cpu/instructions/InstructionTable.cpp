@@ -62,7 +62,7 @@ namespace GameBoy
 		table[OpCode::INC_B]          = std::bind(&Cpu::Increment_8bit, thisPtr, GetSetB);
 		table[OpCode::DEC_B]          = std::bind(&Cpu::Decrement_8bit, thisPtr, GetSetB);
 		table[OpCode::LD_B_n8]        = std::bind(&Cpu::Load_8bit_ImmediateData, thisPtr, SetB);
-		table[OpCode::RLCA]           = std::bind(&Cpu::Rotate_8bit_Left, thisPtr, GetSetA);
+		table[OpCode::RLCA]           = std::bind(&Cpu::NoPrefixRotateLeftCarry, thisPtr, GetSetA);
 		table[OpCode::LD_a16_NI_SP]   = std::bind(&Cpu::Load_16bit_RegToImmediateAddr, thisPtr, RegisterSP);
 		table[OpCode::ADD_HL_BC]      = std::bind(&Cpu::Add_16bit, thisPtr, RegisterHL, RegisterBC);
 		table[OpCode::LD_A_BC_NI]     = std::bind(&Cpu::Load_8bit_Addr, thisPtr, SetA, RegisterBC);
@@ -70,7 +70,7 @@ namespace GameBoy
 		table[OpCode::INC_C]          = std::bind(&Cpu::Increment_8bit, thisPtr, GetSetC);
 		table[OpCode::DEC_C]          = std::bind(&Cpu::Decrement_8bit, thisPtr, GetSetC);
 		table[OpCode::LD_C_n8]        = std::bind(&Cpu::Load_8bit_ImmediateData, thisPtr, SetC);
-		table[OpCode::RRCA]           = std::bind(&Cpu::Rotate_8bit_Right, thisPtr, GetSetA);
+		table[OpCode::RRCA]           = std::bind(&Cpu::NoPrefixRotateRightCarry, thisPtr, GetSetA);
 
 		// 0x1-
 			// 0x10
@@ -82,7 +82,7 @@ namespace GameBoy
 		table[OpCode::INC_D]          = std::bind(&Cpu::Increment_8bit, thisPtr, GetSetD);
 		table[OpCode::DEC_D]          = std::bind(&Cpu::Decrement_8bit, thisPtr, GetSetD);
 		table[OpCode::LD_D_n8]        = std::bind(&Cpu::Load_8bit_ImmediateData, thisPtr, SetD);
-		table[OpCode::RLA]            = std::bind(&Cpu::Rotate_8bit_Left_Carry, thisPtr, GetSetA);
+		table[OpCode::RLA]            = std::bind(&Cpu::NoPrefixRotateLeft, thisPtr, GetSetA);
 		table[OpCode::JR_e8]          = std::bind(&Cpu::Jump_Relative_8bit_SignedImmediateData, thisPtr);
 		table[OpCode::ADD_HL_DE]      = std::bind(&Cpu::Add_16bit, thisPtr, RegisterHL, RegisterDE);
 		table[OpCode::LD_A_DE_NI]     = std::bind(&Cpu::Load_8bit_Addr, thisPtr, SetA, RegisterDE);
@@ -90,7 +90,7 @@ namespace GameBoy
 		table[OpCode::INC_E]          = std::bind(&Cpu::Increment_8bit, thisPtr, GetSetE);
 		table[OpCode::DEC_E]          = std::bind(&Cpu::Decrement_8bit, thisPtr, GetSetE);
 		table[OpCode::LD_E_n8]        = std::bind(&Cpu::Load_8bit_ImmediateData, thisPtr, SetE);
-		table[OpCode::RRA]            = std::bind(&Cpu::Rotate_8bit_Right_Carry, thisPtr, GetSetA);
+		table[OpCode::RRA]            = std::bind(&Cpu::NoPrefixRotateRight, thisPtr, GetSetA);
 
 		// 0x2-
 		table[OpCode::JR_NZ_e8]       = std::bind(&Cpu::Jump_Relative_Conditional_8bit_SignedImmediateData, thisPtr, FlagRegisterFlag::ZERO, false);
@@ -351,7 +351,19 @@ namespace GameBoy
 
 		/** Prefixed instructions **/
 
+		auto& preTable = prefixedInstructions;
+		using PreOpCode = PrefixedOpCode;
+
 		// 0x0-
+		preTable[PreOpCode::RLC_B]     = std::bind(&Cpu::RotateLeftCarry, thisPtr, GetSetB);
+		preTable[PreOpCode::RLC_C]     = std::bind(&Cpu::RotateLeftCarry, thisPtr, GetSetC);
+		preTable[PreOpCode::RLC_D]     = std::bind(&Cpu::RotateLeftCarry, thisPtr, GetSetD);
+		preTable[PreOpCode::RLC_E]     = std::bind(&Cpu::RotateLeftCarry, thisPtr, GetSetE);
+		preTable[PreOpCode::RLC_H]     = std::bind(&Cpu::RotateLeftCarry, thisPtr, GetSetH);
+		preTable[PreOpCode::RLC_L]     = std::bind(&Cpu::RotateLeftCarry, thisPtr, GetSetL);
+		preTable[PreOpCode::RLC_HL_NI] = std::bind(&Cpu::RotateLeftCarry_Addr, thisPtr, RegisterHL);
+		preTable[PreOpCode::RLC_A]     = std::bind(&Cpu::RotateLeftCarry, thisPtr, GetSetA);
+
 		// 0x1-
 		// 0x2-
 		// 0x3-

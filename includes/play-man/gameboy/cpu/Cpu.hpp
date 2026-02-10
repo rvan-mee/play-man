@@ -952,26 +952,10 @@ private:
         size_t Compare_8bit_ImmediateData();
 
         /**
-         * @brief Rotates the given register to the left by 1,
-         *        appending the shifted-out bit to the right of that same register.
+         * @note Non prefixed version of the rotate instruction, difference being the 
+         *       cycle count and zero flag not being set compared to the prefixed one.
          * 
-         * @param reg      Pointer to the register that will be used as the operand.
-         * @param GetValue Pointer to the register's member function that will take the
-         *                 High or Low part of the register.
-         * @param SetValue Pointer to the register's member function that will store the result
-         *                 into the High or Low part of the register.
-         * 
-         * @note The Z flag is set to false.
-         * @note The S flag is set to false.
-         * @note The H flag is set to false.
-         * @note The C flag is set to the shifted-out bit.
-         * 
-         * @return number of cycles.
-         */
-        size_t Rotate_8bit_Left(RegisterPointer reg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue);
-
-        /**
-         * @brief Rotats the given register's high part to the left by 1,
+         * @brief Rotates the given register's to the left by 1 through the carry flag, that is,
          *        appending the state of the carry flag bit to the right of the same register.
          *        The shifted-out bit will become the new state of the carry flag.
          * 
@@ -988,11 +972,15 @@ private:
          * 
          * @return number of cycles.
          */
-        size_t Rotate_8bit_Left_Carry(RegisterPointer reg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue);
+        size_t NoPrefixRotateLeft(RegisterPointer reg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue);
 
         /**
-         * @brief Rotates the given register to the right by 1,
-         *        appending the shifted-out bit to the left of that same register.
+         * @note Non prefixed version of the rotate instruction, difference being the 
+         *       cycle count and zero flag not being set compared to the prefixed one.
+         * 
+         * @brief Rotates the given register to the left by 1,
+         *        appending the shifted-out bit to the right of that same register
+         *        and storing that same bit into the carry register.
          * 
          * @param reg      Pointer to the register that will be used as the operand.
          * @param GetValue Pointer to the register's member function that will take the
@@ -1007,10 +995,13 @@ private:
          * 
          * @return number of cycles.
          */
-        size_t Rotate_8bit_Right(RegisterPointer reg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue);
+        size_t NoPrefixRotateLeftCarry(RegisterPointer reg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue);
 
         /**
-         * @brief Rotates the given register to the right by 1,
+         * @note Non prefixed version of the rotate instruction, difference being the 
+         *       cycle count and zero flag not being set compared to the prefixed one.
+         * 
+         * @brief Rotates the given register to the right by 1 through the carry flag, that is,
          *        appending the state of the carry flag bit to the left of the same register. 
          *        The shifted-out bit will become the new state of the carry flag.
          * 
@@ -1027,7 +1018,133 @@ private:
          * 
          * @return number of cycles.
          */
-        size_t Rotate_8bit_Right_Carry(RegisterPointer reg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue);
+        size_t NoPrefixRotateRight(RegisterPointer reg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue);
+
+        /**
+         * @note Non prefixed version of the rotate instruction, difference being the 
+         *       cycle count and zero flag not being set compared to the prefixed one.
+         * 
+         * @brief Rotates the given register to the right by 1,
+         *        appending the shifted-out bit to the left of that same register
+         *        and storing that same bit into the carry register.
+         * 
+         * @param reg      Pointer to the register that will be used as the operand.
+         * @param GetValue Pointer to the register's member function that will take the
+         *                 High or Low part of the register.
+         * @param SetValue Pointer to the register's member function that will store the result
+         *                 into the High or Low part of the register.
+         * 
+         * @note The Z flag is set to false.
+         * @note The S flag is set to false.
+         * @note The H flag is set to false.
+         * @note The C flag is set to the shifted-out bit.
+         * 
+         * @return number of cycles.
+         */
+        size_t NoPrefixRotateRightCarry(RegisterPointer reg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue);
+
+        /**                                     Prefixed Instructions                                     **/
+    
+
+        /**
+         * @brief Rotates the given register's to the left by 1 through the carry flag, that is,
+         *        appending the state of the carry flag bit to the right of the same register.
+         *        The shifted-out bit will become the new state of the carry flag.
+         * 
+         * @param reg      Pointer to the register that will be used as the operand.
+         * @param GetValue Pointer to the register's member function that will take the
+         *                 High or Low part of the register.
+         * @param SetValue Pointer to the register's member function that will store the result
+         *                 into the High or Low part of the register.
+         * 
+         * @note The Z flag is set according to the result.
+         * @note The S flag is set to false.
+         * @note The H flag is set to false.
+         * @note The C flag is set to the shifted-out bit.
+         * 
+         * @return number of cycles.
+         */
+        size_t RotateLeft(RegisterPointer reg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue);
+
+        /**
+         * @brief Rotates the given register to the left by 1,
+         *        appending the shifted-out bit to the right of that same register
+         *        and storing that same bit into the carry register.
+         * 
+         * @param reg      Pointer to the register that will be used as the operand.
+         * @param GetValue Pointer to the register's member function that will take the
+         *                 High or Low part of the register.
+         * @param SetValue Pointer to the register's member function that will store the result
+         *                 into the High or Low part of the register.
+         * 
+         * @note The Z flag is set to according to the result.
+         * @note The S flag is set to false.
+         * @note The H flag is set to false.
+         * @note The C flag is set to the shifted-out bit.
+         * 
+         * @return number of cycles.
+         */
+        size_t RotateLeftCarry(RegisterPointer reg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue);
+
+        /**
+         * @brief Rotates the value pointed to by addrReg to the left by 1,
+         *        appending the shifted-out bit to the right of that same value
+         *        and storing that same bit into the carry register.
+         * 
+         * @param addrReg Pointer to the register containing the address of the value
+         *                that will be used as the operand.
+         * 
+         * @note The Z flag is set to according to the result.
+         * @note The S flag is set to false.
+         * @note The H flag is set to false.
+         * @note The C flag is set to the shifted-out bit.
+         * 
+         * @return number of cycles.
+         */
+        size_t RotateLeftCarry_Addr(RegisterPointer addrReg);
+
+        /**
+         * @brief Rotates the given register to the right by 1 through the carry flag, that is,
+         *        appending the state of the carry flag bit to the left of the same register. 
+         *        The shifted-out bit will become the new state of the carry flag.
+         * 
+         * @param reg      Pointer to the register that will be used as the operand.
+         * @param GetValue Pointer to the register's member function that will take the
+         *                 High or Low part of the register.
+         * @param SetValue Pointer to the register's member function that will store the result
+         *                 into the High or Low part of the register.
+         * 
+         * @note The Z flag is set to according to the result.
+         * @note The S flag is set to false.
+         * @note The H flag is set to false.
+         * @note The C flag is set to the shifted-out bit.
+         * 
+         * @return number of cycles.
+         */
+        size_t RotateRight(RegisterPointer reg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue);
+
+        /**
+         * @brief Rotates the given register to the right by 1,
+         *        appending the shifted-out bit to the left of that same register
+         *        and storing that same bit into the carry register.
+         * 
+         * @param reg      Pointer to the register that will be used as the operand.
+         * @param GetValue Pointer to the register's member function that will take the
+         *                 High or Low part of the register.
+         * @param SetValue Pointer to the register's member function that will store the result
+         *                 into the High or Low part of the register.
+         * 
+         * @note The Z flag is set to according to the result.
+         * @note The S flag is set to false.
+         * @note The H flag is set to false.
+         * @note The C flag is set to the shifted-out bit.
+         * 
+         * @return number of cycles.
+         */
+        size_t RotateRightCarry(RegisterPointer reg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue);
+
+    
+    
     };
 
 }

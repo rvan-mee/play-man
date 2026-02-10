@@ -15,7 +15,6 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <memory_resource>
 #include <play-man/gameboy/cpu/Cpu.hpp>
 
 namespace GameBoy
