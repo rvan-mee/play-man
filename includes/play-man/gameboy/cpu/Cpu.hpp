@@ -1143,8 +1143,23 @@ private:
          */
         size_t RotateRightCarry(RegisterPointer reg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue);
 
-    
-    
+        /**
+         * @brief Rotates the value pointed to by addrReg to the right by 1,
+         *        appending the shifted-out bit to the left side of that same value
+         *        and storing that same bit into the carry register.
+         * 
+         * @param addrReg Pointer to the register containing the address of the value
+         *                that will be used as the operand.
+         * 
+         * @note The Z flag is set to according to the result.
+         * @note The S flag is set to false.
+         * @note The H flag is set to false.
+         * @note The C flag is set to the shifted-out bit.
+         * 
+         * @return number of cycles.
+         */
+        size_t RotateRightCarry_Addr(RegisterPointer addrReg);
+
     };
 
 }

@@ -173,7 +173,7 @@ namespace GameBoy
         core.SetFlag(FlagRegisterFlag::HALF_CARRY, false);
         core.SetFlag(FlagRegisterFlag::CARRY, shiftedBit);
 
-        constexpr size_t numberOfCycles = 1;
+        constexpr size_t numberOfCycles = 2;
         return numberOfCycles;
     }
 
@@ -191,7 +191,26 @@ namespace GameBoy
         core.SetFlag(FlagRegisterFlag::HALF_CARRY, false);
         core.SetFlag(FlagRegisterFlag::CARRY, shiftedBit);
 
-        constexpr size_t numberOfCycles = 1;
+        constexpr size_t numberOfCycles = 2;
+        return numberOfCycles;
+    }
+
+    size_t Cpu::RotateRightCarry_Addr(RegisterPointer addrReg)
+    {
+        Register& r = core.*addrReg;
+        const uint16_t address = r.Value();
+        const uint8_t value = memoryBus.ReadByte(address);
+        const bool shiftedBit = (value & LOW_BIT);
+        const uint8_t result = (shiftedBit << 7) | (value >> 1);
+
+        memoryBus.WriteByte(address, result);
+
+        core.SetFlag(FlagRegisterFlag::ZERO, result == 0);
+        core.SetFlag(FlagRegisterFlag::SUB, false);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, false);
+        core.SetFlag(FlagRegisterFlag::CARRY, shiftedBit);
+
+        constexpr size_t numberOfCycles = 4;
         return numberOfCycles;
     }
 }
