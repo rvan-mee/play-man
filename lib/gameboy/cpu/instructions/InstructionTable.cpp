@@ -373,6 +373,23 @@ namespace GameBoy
 		preTable[PreOpCode::RRC_A]     = std::bind(&Cpu::RotateRightCarry, thisPtr, GetSetA);
 
 		// 0x1-
+		preTable[PreOpCode::RL_B]     = std::bind(&Cpu::RotateLeft, thisPtr, GetSetB);
+		preTable[PreOpCode::RL_C]     = std::bind(&Cpu::RotateLeft, thisPtr, GetSetC);
+		preTable[PreOpCode::RL_D]     = std::bind(&Cpu::RotateLeft, thisPtr, GetSetD);
+		preTable[PreOpCode::RL_E]     = std::bind(&Cpu::RotateLeft, thisPtr, GetSetE);
+		preTable[PreOpCode::RL_H]     = std::bind(&Cpu::RotateLeft, thisPtr, GetSetH);
+		preTable[PreOpCode::RL_L]     = std::bind(&Cpu::RotateLeft, thisPtr, GetSetL);
+		preTable[PreOpCode::RL_HL_NI] = std::bind(&Cpu::RotateLeft_Addr, thisPtr, RegisterHL);
+		preTable[PreOpCode::RL_A]     = std::bind(&Cpu::RotateLeft, thisPtr, GetSetA);
+		preTable[PreOpCode::RR_B]     = std::bind(&Cpu::RotateRight, thisPtr, GetSetB);
+		preTable[PreOpCode::RR_C]     = std::bind(&Cpu::RotateRight, thisPtr, GetSetC);
+		preTable[PreOpCode::RR_D]     = std::bind(&Cpu::RotateRight, thisPtr, GetSetD);
+		preTable[PreOpCode::RR_E]     = std::bind(&Cpu::RotateRight, thisPtr, GetSetE);
+		preTable[PreOpCode::RR_H]     = std::bind(&Cpu::RotateRight, thisPtr, GetSetH);
+		preTable[PreOpCode::RR_L]     = std::bind(&Cpu::RotateRight, thisPtr, GetSetL);
+		preTable[PreOpCode::RR_HL_NI] = std::bind(&Cpu::RotateRight_Addr, thisPtr, RegisterHL);
+		preTable[PreOpCode::RR_A]     = std::bind(&Cpu::RotateRight, thisPtr, GetSetA);
+
 		// 0x2-
 		// 0x3-
 		// 0x4-

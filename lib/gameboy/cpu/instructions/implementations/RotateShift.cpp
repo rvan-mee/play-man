@@ -83,7 +83,7 @@ namespace GameBoy
     {
         Register& r = core.*reg;
         const uint8_t value = (r.*GetValue)();
-        const bool shiftedBit = (value & LOW_BIT);
+        const bool shiftedBit = (value & LOW_BIT) > 0;
         const uint8_t result = (shiftedBit << 7) | (value >> 1);
 
         (r.*SetValue)(result);
@@ -106,7 +106,7 @@ namespace GameBoy
     {
         Register& r = core.*reg;
         const uint8_t value = (r.*GetValue)();
-        const uint8_t shiftedBit = (value & HIGH_BIT) ? LOW_BIT : NO_BIT;
+        const bool shiftedBit = (value & HIGH_BIT) > 0;
         const uint8_t appendBit = core.GetFlag(FlagRegisterFlag::CARRY);
         const uint8_t result = value << 1 | appendBit;
 
@@ -121,11 +121,32 @@ namespace GameBoy
         return numberOfCycles;
     }
 
+    size_t Cpu::RotateLeft_Addr(RegisterPointer addrReg)
+    {
+        Register& r = core.*addrReg;
+        const uint16_t address = r.Value();
+        const uint8_t value = memoryBus.ReadByte(address);
+        const bool shiftedBit = (value & HIGH_BIT) > 0;
+        const uint8_t appendBit = core.GetFlag(FlagRegisterFlag::CARRY);
+        const uint8_t result = value << 1 | appendBit;
+
+        memoryBus.WriteByte(address, result);
+
+        core.SetFlag(FlagRegisterFlag::ZERO, result == 0);
+        core.SetFlag(FlagRegisterFlag::SUB, false);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, false);
+        core.SetFlag(FlagRegisterFlag::CARRY, shiftedBit);
+
+        constexpr size_t numberOfCycles = 4;
+        return numberOfCycles;
+    }
+
+
     size_t Cpu::RotateLeftCarry(RegisterPointer reg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue)
     {
         Register& r = core.*reg;
         const uint8_t value = (r.*GetValue)();
-        const bool shiftedBit = (value & HIGH_BIT);
+        const bool shiftedBit = (value & HIGH_BIT) > 0;
         const uint8_t result = (value << 1) | shiftedBit;
 
         (r.*SetValue)(result);
@@ -144,7 +165,7 @@ namespace GameBoy
         Register& r = core.*addrReg;
         const uint16_t address = r.Value();
         const uint8_t value = memoryBus.ReadByte(address);
-        const bool shiftedBit = (value & HIGH_BIT);
+        const bool shiftedBit = (value & HIGH_BIT) > 0;
         const uint8_t result = (value << 1) | shiftedBit;
 
         memoryBus.WriteByte(address, result);
@@ -177,11 +198,31 @@ namespace GameBoy
         return numberOfCycles;
     }
 
+    size_t Cpu::RotateRight_Addr(RegisterPointer addrReg)
+    {
+        Register& r = core.*addrReg;
+        const uint16_t address = r.Value();
+        const uint8_t value = memoryBus.ReadByte(address);
+        const bool shiftedBit = (value & LOW_BIT) > 0;
+        const bool carryBit = core.GetFlag(FlagRegisterFlag::CARRY);
+        const uint8_t result = (carryBit << 7) | (value >> 1);
+
+        memoryBus.WriteByte(address, result);
+
+        core.SetFlag(FlagRegisterFlag::ZERO, result == 0);
+        core.SetFlag(FlagRegisterFlag::SUB, false);
+        core.SetFlag(FlagRegisterFlag::HALF_CARRY, false);
+        core.SetFlag(FlagRegisterFlag::CARRY, shiftedBit);
+
+        constexpr size_t numberOfCycles = 4;
+        return numberOfCycles;
+    }
+
     size_t Cpu::RotateRightCarry(RegisterPointer reg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue)
     {
         Register& r = core.*reg;
         const uint8_t value = (r.*GetValue)();
-        const bool shiftedBit = (value & LOW_BIT);
+        const bool shiftedBit = (value & LOW_BIT) > 0;
         const uint8_t result = (shiftedBit << 7) | (value >> 1);
 
         (r.*SetValue)(result);
@@ -200,7 +241,7 @@ namespace GameBoy
         Register& r = core.*addrReg;
         const uint16_t address = r.Value();
         const uint8_t value = memoryBus.ReadByte(address);
-        const bool shiftedBit = (value & LOW_BIT);
+        const bool shiftedBit = (value & LOW_BIT) > 0;
         const uint8_t result = (shiftedBit << 7) | (value >> 1);
 
         memoryBus.WriteByte(address, result);
