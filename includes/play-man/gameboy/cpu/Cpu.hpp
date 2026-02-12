@@ -1194,6 +1194,77 @@ private:
          */
         size_t RotateRightCarry_Addr(RegisterPointer addrReg);
 
+        /**
+         * @brief Shifts the given register to the left by 1. The Bit being shifted out is copied to the
+         *        Carry flag whist the first bit (bit 0) will be reset to 0.
+         * 
+         * @param reg      Pointer to the register that will be used as the operand.
+         * @param GetValue Pointer to the register's member function that will take the
+         *                 High or Low part of the register.
+         * @param SetValue Pointer to the register's member function that will store the result
+         *                 into the High or Low part of the register.
+         * 
+         * @note The Z flag is set to according to the result.
+         * @note The S flag is set to false.
+         * @note The H flag is set to false.
+         * @note The C flag is set to the shifted-out bit.
+         * 
+         * @return number of cycles.
+         */
+        size_t ShiftLeftArithmetic(RegisterPointer reg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue);
+
+        /**
+         * @brief Shifts the value pointed to by addrReg to the left by 1.
+         *        The Bit being shifted out is copied to the Carry flag
+         *        whist the first bit (bit 0) will be reset to 0.
+         * 
+         * @param addrReg Pointer to the register containing the address of the value
+         *                that will be used as the operand.
+         * 
+         * @note The Z flag is set to according to the result.
+         * @note The S flag is set to false.
+         * @note The H flag is set to false.
+         * @note The C flag is set to the shifted-out bit.
+         * 
+         * @return number of cycles.
+         */
+        size_t ShiftLeftArithmetic_Addr(RegisterPointer addrReg);
+
+        /**
+         * @brief Shifts the given register to the right by 1. The Bit being shifted out is copied to the
+         *        Carry flag whist the last bit (bit 7) will remain unchanged compared to the initial value.
+         * 
+         * @param reg      Pointer to the register that will be used as the operand.
+         * @param GetValue Pointer to the register's member function that will take the
+         *                 High or Low part of the register.
+         * @param SetValue Pointer to the register's member function that will store the result
+         *                 into the High or Low part of the register.
+         * 
+         * @note The Z flag is set to according to the result.
+         * @note The S flag is set to false.
+         * @note The H flag is set to false.
+         * @note The C flag is set to the shifted-out bit.
+         * 
+         * @return number of cycles.
+         */
+        size_t ShiftRightArithmetic(RegisterPointer reg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue);
+
+        /**
+         * @brief Shifts the value pointed to by addrReg to the right by 1.
+         *        The Bit being shifted out is copied to the Carry flag
+         *        whist the last bit (bit 7) will remain unchanged compared to the initial value.
+         * 
+         * @param addrReg Pointer to the register containing the address of the value
+         *                that will be used as the operand.
+         * 
+         * @note The Z flag is set to according to the result.
+         * @note The S flag is set to false.
+         * @note The H flag is set to false.
+         * @note The C flag is set to the shifted-out bit.
+         * 
+         * @return number of cycles.
+         */
+        size_t ShiftRightArithmetic_Addr(RegisterPointer addrReg);
     };
 
 }

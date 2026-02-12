@@ -391,6 +391,23 @@ namespace GameBoy
 		preTable[PreOpCode::RR_A]     = std::bind(&Cpu::RotateRight, thisPtr, GetSetA);
 
 		// 0x2-
+		preTable[PreOpCode::SLA_B]     = std::bind(&Cpu::ShiftLeftArithmetic, thisPtr, GetSetB);
+		preTable[PreOpCode::SLA_C]     = std::bind(&Cpu::ShiftLeftArithmetic, thisPtr, GetSetC);
+		preTable[PreOpCode::SLA_D]     = std::bind(&Cpu::ShiftLeftArithmetic, thisPtr, GetSetD);
+		preTable[PreOpCode::SLA_E]     = std::bind(&Cpu::ShiftLeftArithmetic, thisPtr, GetSetE);
+		preTable[PreOpCode::SLA_H]     = std::bind(&Cpu::ShiftLeftArithmetic, thisPtr, GetSetH);
+		preTable[PreOpCode::SLA_L]     = std::bind(&Cpu::ShiftLeftArithmetic, thisPtr, GetSetL);
+		preTable[PreOpCode::SLA_HL_NI] = std::bind(&Cpu::ShiftLeftArithmetic_Addr, thisPtr, RegisterHL);
+		preTable[PreOpCode::SLA_A]     = std::bind(&Cpu::ShiftLeftArithmetic, thisPtr, GetSetA);
+		preTable[PreOpCode::SRA_B]     = std::bind(&Cpu::ShiftRightArithmetic, thisPtr, GetSetB);
+		preTable[PreOpCode::SRA_C]     = std::bind(&Cpu::ShiftRightArithmetic, thisPtr, GetSetC);
+		preTable[PreOpCode::SRA_D]     = std::bind(&Cpu::ShiftRightArithmetic, thisPtr, GetSetD);
+		preTable[PreOpCode::SRA_E]     = std::bind(&Cpu::ShiftRightArithmetic, thisPtr, GetSetE);
+		preTable[PreOpCode::SRA_H]     = std::bind(&Cpu::ShiftRightArithmetic, thisPtr, GetSetH);
+		preTable[PreOpCode::SRA_L]     = std::bind(&Cpu::ShiftRightArithmetic, thisPtr, GetSetL);
+		preTable[PreOpCode::SRA_HL_NI] = std::bind(&Cpu::ShiftRightArithmetic_Addr, thisPtr, RegisterHL);
+		preTable[PreOpCode::SRA_A]     = std::bind(&Cpu::ShiftRightArithmetic, thisPtr, GetSetA);
+
 		// 0x3-
 		// 0x4-
 		// 0x5-
