@@ -51,6 +51,15 @@ namespace GameBoy
 		#define GetSetL RegisterHL, &Register::LowByte, &Register::SetLowByte
 		#define GetSetA RegisterAF, &Register::HighByte, &Register::SetHighByte
 
+		#define Bit0 0b00000001
+		#define Bit1 0b00000010
+		#define Bit2 0b00000100
+		#define Bit3 0b00001000
+		#define Bit4 0b00010000
+		#define Bit5 0b00100000
+		#define Bit6 0b01000000
+		#define Bit7 0b10000000
+
 		constexpr auto thisPtr = std::placeholders::_1;
 		auto& table = instructions;
 
@@ -427,6 +436,23 @@ namespace GameBoy
 		preTable[PreOpCode::SRL_A]      = std::bind(&Cpu::ShiftRightLogical, thisPtr, GetSetA);
 
 		// 0x4-
+		preTable[PreOpCode::BIT_0_B]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit0, GetB);
+		preTable[PreOpCode::BIT_0_C]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit0, GetC);
+		preTable[PreOpCode::BIT_0_D]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit0, GetD);
+		preTable[PreOpCode::BIT_0_E]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit0, GetE);
+		preTable[PreOpCode::BIT_0_H]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit0, GetH);
+		preTable[PreOpCode::BIT_0_L]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit0, GetL);
+		preTable[PreOpCode::BIT_0_HL_NI] = std::bind(&Cpu::BitComplementToZeroFlag_Addr, thisPtr, Bit0, RegisterHL);
+		preTable[PreOpCode::BIT_0_A]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit0, GetA);
+		preTable[PreOpCode::BIT_1_B]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit1, GetB);
+		preTable[PreOpCode::BIT_1_C]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit1, GetC);
+		preTable[PreOpCode::BIT_1_D]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit1, GetD);
+		preTable[PreOpCode::BIT_1_E]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit1, GetE);
+		preTable[PreOpCode::BIT_1_H]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit1, GetH);
+		preTable[PreOpCode::BIT_1_L]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit1, GetL);
+		preTable[PreOpCode::BIT_1_HL_NI] = std::bind(&Cpu::BitComplementToZeroFlag_Addr, thisPtr, Bit1, RegisterHL);
+		preTable[PreOpCode::BIT_1_A]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit1, GetA);
+
 		// 0x5-
 		// 0x6-
 		// 0x7-

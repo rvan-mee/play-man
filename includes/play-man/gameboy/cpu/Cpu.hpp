@@ -1315,6 +1315,8 @@ private:
          * @note The S flag is set to false.
          * @note The H flag is set to false.
          * @note The C flag is set to false.
+         * 
+         * @return number of cycles.
          */
         size_t Swap(RegisterPointer reg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue);
 
@@ -1329,8 +1331,41 @@ private:
          * @note The S flag is set to false.
          * @note The H flag is set to false.
          * @note The C flag is set to false.
+         * 
+         * @return number of cycles.
          */
         size_t Swap_Addr(RegisterPointer addrReg);
+
+        /**
+         * @brief Takes the complement of a bit found inside reg and sets the zero flag to it.
+         * 
+         * @param bitMask  A mask for the bit which the complement will be taken from.
+         * @param reg      Pointer to the register that will be used as the operand.
+         * @param GetValue Pointer to the register's member function that will take the
+         *                 High or Low part of the register.
+         * 
+         * @note The Z flag is set to the complement of the bit masked by the bitMask.
+         * @note The S flag is set to false.
+         * @note The H flag is set to true.
+         * 
+         * @return number of cycles.
+         */
+        size_t BitComplementToZeroFlag(uint8_t bitMask, RegisterPointer reg, RegisterGet8Bit GetValue);
+
+        /**
+         * @brief Takes the complement of a bit found inside reg and sets the zero flag to it.
+         * 
+         * @param bitMask  A mask for the bit which the complement will be taken from.
+         * @param addrReg Pointer to the register containing the address of the value
+         *                that will be used as the operand.
+         * 
+         * @note The Z flag is set to the complement of the bit masked by the bitMask.
+         * @note The S flag is set to false.
+         * @note The H flag is set to true.
+         * 
+         * @return number of cycles.
+         */
+        size_t BitComplementToZeroFlag_Addr(uint8_t bitMask, RegisterPointer addrReg);
 
     };
 
