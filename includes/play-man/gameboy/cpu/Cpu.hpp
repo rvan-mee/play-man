@@ -1391,6 +1391,31 @@ private:
          * @return number of cycles.
          */
         size_t BitReset_Addr(uint8_t bitMask, RegisterPointer addrReg);
+
+        /**
+         * @brief Sets a bit inside the given register to 1.
+         * 
+         * @param bitMask  A mask for the bit which will be set to 1.
+         * @param reg      Pointer to the register that will be used as the operand.
+         * @param GetValue Pointer to the register's member function that will take the
+         *                 High or Low part of the register.
+         * @param SetValue Pointer to the register's member function that will store the result
+         *                 into the High or Low part of the register.
+         * 
+         * @return number of cycles.
+         */
+        size_t BitSet(uint8_t bitMask, RegisterPointer reg, RegisterGet8Bit GetValue, RegisterSet8Bit SetValue);
+
+        /**
+         * @brief Sets a bit inside the value pointed to by the address contained in the given register to 1.
+         * 
+         * @param bitMask A mask for the bit which will be set to 1.
+         * @param addrReg Pointer to the register containing the address of the value
+         *                that will be used as the operand.
+         * 
+         * @return number of cycles.
+         */
+        size_t BitSet_Addr(uint8_t bitMask, RegisterPointer addrReg);
     };
 
 }
