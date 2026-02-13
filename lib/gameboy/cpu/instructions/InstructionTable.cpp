@@ -598,6 +598,23 @@ namespace GameBoy
 		preTable[PreOpCode::SET_1_A]     = std::bind(&Cpu::BitSet, thisPtr, Bit1, GetSetA);
 
 		// 0xD-
+		preTable[PreOpCode::SET_2_B]     = std::bind(&Cpu::BitSet, thisPtr, Bit2, GetSetB);
+		preTable[PreOpCode::SET_2_C]     = std::bind(&Cpu::BitSet, thisPtr, Bit2, GetSetC);
+		preTable[PreOpCode::SET_2_D]     = std::bind(&Cpu::BitSet, thisPtr, Bit2, GetSetD);
+		preTable[PreOpCode::SET_2_E]     = std::bind(&Cpu::BitSet, thisPtr, Bit2, GetSetE);
+		preTable[PreOpCode::SET_2_H]     = std::bind(&Cpu::BitSet, thisPtr, Bit2, GetSetH);
+		preTable[PreOpCode::SET_2_L]     = std::bind(&Cpu::BitSet, thisPtr, Bit2, GetSetL);
+		preTable[PreOpCode::SET_2_HL_NI] = std::bind(&Cpu::BitSet_Addr, thisPtr, Bit2, RegisterHL);
+		preTable[PreOpCode::SET_2_A]     = std::bind(&Cpu::BitSet, thisPtr, Bit2, GetSetA);
+		preTable[PreOpCode::SET_3_B]     = std::bind(&Cpu::BitSet, thisPtr, Bit3, GetSetB);
+		preTable[PreOpCode::SET_3_C]     = std::bind(&Cpu::BitSet, thisPtr, Bit3, GetSetC);
+		preTable[PreOpCode::SET_3_D]     = std::bind(&Cpu::BitSet, thisPtr, Bit3, GetSetD);
+		preTable[PreOpCode::SET_3_E]     = std::bind(&Cpu::BitSet, thisPtr, Bit3, GetSetE);
+		preTable[PreOpCode::SET_3_H]     = std::bind(&Cpu::BitSet, thisPtr, Bit3, GetSetH);
+		preTable[PreOpCode::SET_3_L]     = std::bind(&Cpu::BitSet, thisPtr, Bit3, GetSetL);
+		preTable[PreOpCode::SET_3_HL_NI] = std::bind(&Cpu::BitSet_Addr, thisPtr, Bit3, RegisterHL);
+		preTable[PreOpCode::SET_3_A]     = std::bind(&Cpu::BitSet, thisPtr, Bit3, GetSetA);
+
 		// 0xE-
 		// 0xF-
 	}
