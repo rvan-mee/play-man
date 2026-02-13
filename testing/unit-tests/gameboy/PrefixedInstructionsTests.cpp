@@ -5761,3 +5761,321 @@ TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RES_1_A, 0xCB8F")
 	REQUIRE(PC.Value() == 0x00'00);
 	REQUIRE(IE == 0x00);
 }
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RES_2_B, 0xCB90")
+{
+	ClearRegisters();
+	BC.SetHighByte(0b1111'1111);
+	AF.SetLowByte(0b1111'0000);
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::PrefixedOpCode::RES_2_B);
+
+	REQUIRE(numberOfCycles == 2);
+	REQUIRE(AF.HighByte() == 0x00);
+	REQUIRE(AF.LowByte() == 0b1111'0000);
+	REQUIRE(BC.HighByte() == 0b1111'1011);
+	REQUIRE(BC.LowByte() == 0x00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+}
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RES_2_C, 0xCB91")
+{
+	ClearRegisters();
+	BC.SetLowByte(0b1111'1111);
+	AF.SetLowByte(0b1111'0000);
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::PrefixedOpCode::RES_2_C);
+
+	REQUIRE(numberOfCycles == 2);
+	REQUIRE(AF.HighByte() == 0x00);
+	REQUIRE(AF.LowByte() == 0b1111'0000);
+	REQUIRE(BC.LowByte() == 0b1111'1011);
+	REQUIRE(BC.HighByte() == 0x00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+}
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RES_2_D, 0xCB92")
+{
+	ClearRegisters();
+	DE.SetHighByte(0b1111'1111);
+	AF.SetLowByte(0b1111'0000);
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::PrefixedOpCode::RES_2_D);
+
+	REQUIRE(numberOfCycles == 2);
+	REQUIRE(AF.HighByte() == 0x00);
+	REQUIRE(AF.LowByte() == 0b1111'0000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.HighByte() == 0b1111'1011);
+	REQUIRE(DE.LowByte() == 0x00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+}
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RES_2_E, 0xCB93")
+{
+	ClearRegisters();
+	DE.SetLowByte(0b1111'1111);
+	AF.SetLowByte(0b1111'0000);
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::PrefixedOpCode::RES_2_E);
+
+	REQUIRE(numberOfCycles == 2);
+	REQUIRE(AF.HighByte() == 0x00);
+	REQUIRE(AF.LowByte() == 0b1111'0000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.LowByte() == 0b1111'1011);
+	REQUIRE(DE.HighByte() == 0x00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+}
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RES_2_H, 0xCB94")
+{
+	ClearRegisters();
+	HL.SetHighByte(0b1111'1111);
+	AF.SetLowByte(0b1111'0000);
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::PrefixedOpCode::RES_2_H);
+
+	REQUIRE(numberOfCycles == 2);
+	REQUIRE(AF.HighByte() == 0x00);
+	REQUIRE(AF.LowByte() == 0b1111'0000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.HighByte() == 0b1111'1011);
+	REQUIRE(HL.LowByte() == 0x00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+}
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RES_2_L, 0xCB95")
+{
+	ClearRegisters();
+	HL.SetLowByte(0b1111'1111);
+	AF.SetLowByte(0b1111'0000);
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::PrefixedOpCode::RES_2_L);
+
+	REQUIRE(numberOfCycles == 2);
+	REQUIRE(AF.HighByte() == 0x00);
+	REQUIRE(AF.LowByte() == 0b1111'0000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.LowByte() == 0b1111'1011);
+	REQUIRE(HL.HighByte() == 0x00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+}
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RES_2_HL_NI, 0xCB96")
+{
+	ClearRegisters();
+	AF.SetLowByte(0b1111'0000);
+	HL.SetValue(interruptAddress);
+	IE = 0b1111'1111;
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::PrefixedOpCode::RES_2_HL_NI);
+
+	REQUIRE(numberOfCycles == 4);
+	REQUIRE(AF.HighByte() == 0x00);
+	REQUIRE(AF.LowByte() == 0b1111'0000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == interruptAddress);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0b1111'1011);
+}
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RES_2_A, 0xCB97")
+{
+	ClearRegisters();
+	AF.SetHighByte(0b1111'1111);
+	AF.SetLowByte(0b1111'0000);
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::PrefixedOpCode::RES_2_A);
+
+	REQUIRE(numberOfCycles == 2);
+	REQUIRE(AF.HighByte() == 0b1111'1011);
+	REQUIRE(AF.LowByte() == 0b1111'0000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+}
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RES_3_B, 0xCB98")
+{
+	ClearRegisters();
+	BC.SetHighByte(0b1111'1111);
+	AF.SetLowByte(0b1111'0000);
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::PrefixedOpCode::RES_3_B);
+
+	REQUIRE(numberOfCycles == 2);
+	REQUIRE(AF.HighByte() == 0x00);
+	REQUIRE(AF.LowByte() == 0b1111'0000);
+	REQUIRE(BC.HighByte() == 0b1111'0111);
+	REQUIRE(BC.LowByte() == 0x00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+}
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RES_3_C, 0xCB99")
+{
+	ClearRegisters();
+	BC.SetLowByte(0b1111'1111);
+	AF.SetLowByte(0b1111'0000);
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::PrefixedOpCode::RES_3_C);
+
+	REQUIRE(numberOfCycles == 2);
+	REQUIRE(AF.HighByte() == 0x00);
+	REQUIRE(AF.LowByte() == 0b1111'0000);
+	REQUIRE(BC.LowByte() == 0b1111'0111);
+	REQUIRE(BC.HighByte() == 0x00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+}
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RES_3_D, 0xCB9A")
+{
+	ClearRegisters();
+	DE.SetHighByte(0b1111'1111);
+	AF.SetLowByte(0b1111'0000);
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::PrefixedOpCode::RES_3_D);
+
+	REQUIRE(numberOfCycles == 2);
+	REQUIRE(AF.HighByte() == 0x00);
+	REQUIRE(AF.LowByte() == 0b1111'0000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.HighByte() == 0b1111'0111);
+	REQUIRE(DE.LowByte() == 0x00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+}
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RES_3_E, 0xCB9B")
+{
+	ClearRegisters();
+	DE.SetLowByte(0b1111'1111);
+	AF.SetLowByte(0b1111'0000);
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::PrefixedOpCode::RES_3_E);
+
+	REQUIRE(numberOfCycles == 2);
+	REQUIRE(AF.HighByte() == 0x00);
+	REQUIRE(AF.LowByte() == 0b1111'0000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.LowByte() == 0b1111'0111);
+	REQUIRE(DE.HighByte() == 0x00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+}
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RES_3_H, 0xCB9C")
+{
+	ClearRegisters();
+	HL.SetHighByte(0b1111'1111);
+	AF.SetLowByte(0b1111'0000);
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::PrefixedOpCode::RES_3_H);
+
+	REQUIRE(numberOfCycles == 2);
+	REQUIRE(AF.HighByte() == 0x00);
+	REQUIRE(AF.LowByte() == 0b1111'0000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.HighByte() == 0b1111'0111);
+	REQUIRE(HL.LowByte() == 0x00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+}
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RES_3_L, 0xCB9D")
+{
+	ClearRegisters();
+	HL.SetLowByte(0b1111'1111);
+	AF.SetLowByte(0b1111'0000);
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::PrefixedOpCode::RES_3_L);
+
+	REQUIRE(numberOfCycles == 2);
+	REQUIRE(AF.HighByte() == 0x00);
+	REQUIRE(AF.LowByte() == 0b1111'0000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.LowByte() == 0b1111'0111);
+	REQUIRE(HL.HighByte() == 0x00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+}
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RES_3_HL_NI, 0xCB9E")
+{
+	ClearRegisters();
+	AF.SetLowByte(0b1111'0000);
+	HL.SetValue(interruptAddress);
+	IE = 0b1111'1111;
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::PrefixedOpCode::RES_3_HL_NI);
+
+	REQUIRE(numberOfCycles == 4);
+	REQUIRE(AF.HighByte() == 0x00);
+	REQUIRE(AF.LowByte() == 0b1111'0000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == interruptAddress);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0b1111'0111);
+}
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RES_3_A, 0xCB9F")
+{
+	ClearRegisters();
+	AF.SetHighByte(0b1111'1111);
+	AF.SetLowByte(0b1111'0000);
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::PrefixedOpCode::RES_3_A);
+
+	REQUIRE(numberOfCycles == 2);
+	REQUIRE(AF.HighByte() == 0b1111'0111);
+	REQUIRE(AF.LowByte() == 0b1111'0000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == 0x00'00);
+	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+}
