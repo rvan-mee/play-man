@@ -490,6 +490,23 @@ namespace GameBoy
 		preTable[PreOpCode::BIT_5_A]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit5, GetA);
 
 		// 0x7-
+		preTable[PreOpCode::BIT_6_B]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit6, GetB);
+		preTable[PreOpCode::BIT_6_C]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit6, GetC);
+		preTable[PreOpCode::BIT_6_D]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit6, GetD);
+		preTable[PreOpCode::BIT_6_E]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit6, GetE);
+		preTable[PreOpCode::BIT_6_H]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit6, GetH);
+		preTable[PreOpCode::BIT_6_L]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit6, GetL);
+		preTable[PreOpCode::BIT_6_HL_NI] = std::bind(&Cpu::BitComplementToZeroFlag_Addr, thisPtr, Bit6, RegisterHL);
+		preTable[PreOpCode::BIT_6_A]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit6, GetA);
+		preTable[PreOpCode::BIT_7_B]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit7, GetB);
+		preTable[PreOpCode::BIT_7_C]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit7, GetC);
+		preTable[PreOpCode::BIT_7_D]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit7, GetD);
+		preTable[PreOpCode::BIT_7_E]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit7, GetE);
+		preTable[PreOpCode::BIT_7_H]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit7, GetH);
+		preTable[PreOpCode::BIT_7_L]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit7, GetL);
+		preTable[PreOpCode::BIT_7_HL_NI] = std::bind(&Cpu::BitComplementToZeroFlag_Addr, thisPtr, Bit7, RegisterHL);
+		preTable[PreOpCode::BIT_7_A]     = std::bind(&Cpu::BitComplementToZeroFlag, thisPtr, Bit7, GetA);
+
 		// 0x8-
 		// 0x9-
 		// 0xA-
