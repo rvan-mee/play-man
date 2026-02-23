@@ -4,7 +4,7 @@
 #include "play-man/gameboy/cpu/Cpu.hpp"
 #include "play-man/gameboy/memory/MemoryBus.hpp"
 
-#define GB_ROM_PATH "../test-data/custom_gb_test_roms/"
+#define GB_ROM_PATH "./test-data/custom_gb_test_roms/"
 
 // Address for the interrupt register 
 constexpr uint16_t interruptAddress = 0xFFFF;
