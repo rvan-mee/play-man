@@ -15,40 +15,19 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <play-man/gameboy/cartridge/Cartridge.hpp>
-#include <play-man/settings/PlayManSettings.hpp>
-#include <play-man/gameboy/opcodes/Opcodes.hpp>
 #include <play-man/gameboy/cpu/Cpu.hpp>
-#include <play-man/logger/Logger.hpp>
-#include <iostream>
 
-int main(int argc, char** argv)
+namespace GameBoy
 {
-	(void)argc;
-	(void)argv;
-	std::cout << "Welcome to play-man!" << std::endl;
-    Logger::LogInterface::Initialize("Logging", Logger::LogLevel::Debug);
-
-    if (argc > 1)
+    template<typename T>
+    static constexpr uint8_t u8(T type)
     {
-        std::shared_ptr<GameBoy::ACartridge> cartridge = GameBoy::MakeCartridge(argv[1]);
-
-        std::cout << *cartridge << std::endl;
-
-        GameBoy::Cpu cpu(cartridge);
-
-        while (true)
-        {
-            cpu.FetchInstruction();
-            cpu.ExecuteInstruction();
-        }
-
-        return 0;
-    }
-    else
-    {
-        std::cout << "No ROM provided!" << std::endl;
+        return (static_cast<uint8_t>(type));
     }
 
-	return 0;
+    void    Cpu::InitInstructionTable()
+    {
+        auto& arr = instructions[u8(OpCodePrefix::NO_PREFIX)];
+        arr[u8(OpCode::NOP)] = std::bind(&Cpu::NOP, this);
+    }
 }

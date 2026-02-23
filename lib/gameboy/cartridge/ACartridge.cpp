@@ -15,40 +15,43 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <play-man/gameboy/cartridge/Cartridge.hpp>
-#include <play-man/settings/PlayManSettings.hpp>
-#include <play-man/gameboy/opcodes/Opcodes.hpp>
-#include <play-man/gameboy/cpu/Cpu.hpp>
-#include <play-man/logger/Logger.hpp>
-#include <iostream>
+#include <play-man/gameboy/cartridge/ACartridge.hpp>
 
-int main(int argc, char** argv)
-{
-	(void)argc;
-	(void)argv;
-	std::cout << "Welcome to play-man!" << std::endl;
-    Logger::LogInterface::Initialize("Logging", Logger::LogLevel::Debug);
+namespace GameBoy {
 
-    if (argc > 1)
+    ACartridge::ACartridge(std::unique_ptr<Rom> _rom) : rom(std::move(_rom))
     {
-        std::shared_ptr<GameBoy::ACartridge> cartridge = GameBoy::MakeCartridge(argv[1]);
+        InitRamBanks();
+    };
 
-        std::cout << *cartridge << std::endl;
-
-        GameBoy::Cpu cpu(cartridge);
-
-        while (true)
-        {
-            cpu.FetchInstruction();
-            cpu.ExecuteInstruction();
-        }
-
-        return 0;
-    }
-    else
+    void ACartridge::InitRamBanks()
     {
-        std::cout << "No ROM provided!" << std::endl;
+        const uint8_t ramBankCount = rom->GetRamBankCount();
+
+        ramBanks.resize(ramBankCount);
+        for (uint32_t i = 0; i < ramBankCount; i++)
+            ramBanks[i].resize(RamBankSize);
     }
 
-	return 0;
+    CartridgeType   ACartridge::GetType() const
+    {
+        return rom->GetCartridgeType();
+    }
+
+    uint32_t        ACartridge::GetRamBankCount() const
+    {
+        return rom->GetRamBankCount();
+    }
+
+    uint32_t        ACartridge::GetRomBankCount() const
+    {
+        return rom->GetRomBankCount();
+    }
+
+    std::ostream& operator << (std::ostream& lhs, ACartridge& cart)
+    {
+        lhs << "Cartridge: " << *cart.rom << std::endl;
+        return (lhs);
+    }
+
 }

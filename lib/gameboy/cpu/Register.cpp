@@ -15,40 +15,43 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <play-man/gameboy/cartridge/Cartridge.hpp>
-#include <play-man/settings/PlayManSettings.hpp>
-#include <play-man/gameboy/opcodes/Opcodes.hpp>
-#include <play-man/gameboy/cpu/Cpu.hpp>
-#include <play-man/logger/Logger.hpp>
-#include <iostream>
+#include <play-man/gameboy/cpu/Register.hpp>
 
-int main(int argc, char** argv)
+namespace GameBoy
 {
-	(void)argc;
-	(void)argv;
-	std::cout << "Welcome to play-man!" << std::endl;
-    Logger::LogInterface::Initialize("Logging", Logger::LogLevel::Debug);
+	Register::Register(uint16_t initialValue)
+	{
+		internalRegister.value = initialValue;
+	}
 
-    if (argc > 1)
-    {
-        std::shared_ptr<GameBoy::ACartridge> cartridge = GameBoy::MakeCartridge(argv[1]);
+	void Register::SetLowByte(uint8_t value)
+	{
+		internalRegister.byte.low = value;
+	}
 
-        std::cout << *cartridge << std::endl;
+	void Register::SetHighByte(uint8_t value)
+	{
+		internalRegister.byte.high = value;
+	}
 
-        GameBoy::Cpu cpu(cartridge);
+	void Register::SetValue(uint16_t value)
+	{
+		internalRegister.value = value;
+	}
 
-        while (true)
-        {
-            cpu.FetchInstruction();
-            cpu.ExecuteInstruction();
-        }
+	uint8_t Register::LowByte() const
+	{
+		return internalRegister.byte.low;
+	}
 
-        return 0;
-    }
-    else
-    {
-        std::cout << "No ROM provided!" << std::endl;
-    }
+	uint8_t Register::HighByte() const
+	{
+		return internalRegister.byte.high;
+	}
 
-	return 0;
+	uint16_t Register::Value() const
+	{
+		return internalRegister.value;
+	}
+
 }

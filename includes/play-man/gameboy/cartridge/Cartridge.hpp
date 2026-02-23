@@ -15,40 +15,24 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <play-man/gameboy/cartridge/Cartridge.hpp>
-#include <play-man/settings/PlayManSettings.hpp>
-#include <play-man/gameboy/opcodes/Opcodes.hpp>
-#include <play-man/gameboy/cpu/Cpu.hpp>
-#include <play-man/logger/Logger.hpp>
-#include <iostream>
+#pragma once
 
-int main(int argc, char** argv)
-{
-	(void)argc;
-	(void)argv;
-	std::cout << "Welcome to play-man!" << std::endl;
-    Logger::LogInterface::Initialize("Logging", Logger::LogLevel::Debug);
+#include <play-man/gameboy/cartridge/ACartridge.hpp>
+#include <play-man/gameboy/cartridge/NoMBC.hpp>
+#include <play-man/gameboy/cartridge/MBC1.hpp>
+#include <play-man/gameboy/cartridge/MBC2.hpp>
+#include <play-man/gameboy/cartridge/MBC3.hpp>
+#include <play-man/gameboy/cartridge/MBC5.hpp>
+#include <memory>
 
-    if (argc > 1)
-    {
-        std::shared_ptr<GameBoy::ACartridge> cartridge = GameBoy::MakeCartridge(argv[1]);
+namespace GameBoy {
 
-        std::cout << *cartridge << std::endl;
+/**
+ * @param filePath The path where the ROM/Cartridge is located
+ * @throw std::runtime_error: Errors can happen with permission/non existing files or
+ *        unsupported cartridge types
+ * @return A shared pointer to the abstract cartridge class
+ */
+std::shared_ptr<ACartridge> MakeCartridge(const char* filePath) noexcept(false);
 
-        GameBoy::Cpu cpu(cartridge);
-
-        while (true)
-        {
-            cpu.FetchInstruction();
-            cpu.ExecuteInstruction();
-        }
-
-        return 0;
-    }
-    else
-    {
-        std::cout << "No ROM provided!" << std::endl;
-    }
-
-	return 0;
 }

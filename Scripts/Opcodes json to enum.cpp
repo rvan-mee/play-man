@@ -15,40 +15,40 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <play-man/gameboy/cartridge/Cartridge.hpp>
-#include <play-man/settings/PlayManSettings.hpp>
-#include <play-man/gameboy/opcodes/Opcodes.hpp>
-#include <play-man/gameboy/cpu/Cpu.hpp>
-#include <play-man/logger/Logger.hpp>
 #include <iostream>
+
+#include <play-man/utility/UtilFunc.hpp>
+#include <play-man/utility/JsonUtility.hpp>
 
 int main(int argc, char** argv)
 {
 	(void)argc;
 	(void)argv;
-	std::cout << "Welcome to play-man!" << std::endl;
-    Logger::LogInterface::Initialize("Logging", Logger::LogLevel::Debug);
 
-    if (argc > 1)
-    {
-        std::shared_ptr<GameBoy::ACartridge> cartridge = GameBoy::MakeCartridge(argv[1]);
+	const auto opcodeJson = Utility::Json::ReadJsonFromFile("opcodes.json");
+	const auto unprefixedOpcodes = opcodeJson.find("cbprefixed");
 
-        std::cout << *cartridge << std::endl;
-
-        GameBoy::Cpu cpu(cartridge);
-
-        while (true)
-        {
-            cpu.FetchInstruction();
-            cpu.ExecuteInstruction();
-        }
-
-        return 0;
-    }
-    else
-    {
-        std::cout << "No ROM provided!" << std::endl;
-    }
+	for (const auto& [key, value] : unprefixedOpcodes.value().items())
+	{
+		(void)key;
+		(void)value;
+		// std::cout << value["operands"];
+		std::string enumName = value.find("mnemonic").value();
+		for (const auto& op : value["operands"])
+		{
+			enumName += "_" + op.value<std::string>("name", "");
+			if (op.contains("increment"))
+			{
+				enumName += "_INC";
+			}
+			else if (op.contains("decrement"))
+			{
+				enumName += "_DEC";
+			}
+			enumName += (op.value<bool>("immediate", true) ? "" : "_NI");
+		}
+		std::cout << "X(n, " << enumName << ", " << key << ")\t\t\t\\" << std::endl;
+	}
 
 	return 0;
 }

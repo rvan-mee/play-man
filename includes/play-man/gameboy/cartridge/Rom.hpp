@@ -17,7 +17,8 @@
 
 #pragma once
 
-#include <play-man/ROM/RomHeaderDefines.hpp>
+#include <play-man/gameboy/cartridge/RomHeaderDefines.hpp>
+#include <play-man/gameboy/cartridge/CartridgeDefines.hpp>
 #include <array>
 #include <vector>
 #include <stdint.h>
@@ -30,7 +31,7 @@ class RomHeader {
         std::array<uint8_t, nintendoLogoSize>       nintendoLogo;
         std::array<char, romTitleSize + 1>          title;
         std::array<char, manufacturerCodeSize + 1>  manufacturerCode;
-        uint8_t                                     cgbFlag;
+        CgbFlag                                     cgbFlag;
         NewLicensingCode                            newLicensingCode;
         uint8_t                                     sgbFlag; 
         CartridgeType                               cartridgeType;
@@ -47,7 +48,7 @@ class RomHeader {
          * 
          * @param data A vector that contains the raw data from a ROM. 
          */
-        void ParseRawData(const std::vector<int8_t>& data);
+        void Init(const std::vector<uint8_t>& data);
 };
 
 std::ostream& operator << (std::ostream& lhs, const RomHeader& header);
@@ -55,19 +56,24 @@ std::ostream& operator << (std::ostream& lhs, const RomHeader& header);
 class Rom
 {
     private:
-        RomHeader           _header;
-        std::vector<int8_t> _romData;
-        const char*         _filePath;
+        RomHeader   header;
+        MemoryBanks romBanks;
+        const char* filePath;
 
-        void ParseRomFile(const char* filePath);
+        void InitRomBanks(std::vector<uint8_t>& rawRomData);
 
     public:
         Rom() = delete;
-        Rom(const char* filePath);
+        Rom(const char* romFilePath) noexcept(false);
 
-        RomHeader&              GetHeader();
-        std::vector<int8_t>&    GetData();
-        const char*             GetFilePath();
+        const RomHeader&                GetHeader() const;
+        const MemoryBanks&              GetBanks() const;
+        const char*                     GetFilePath() const;
+        CartridgeType                   GetCartridgeType() const;
+        uint32_t                        GetRomBankCount() const;
+        uint32_t                        GetRamBankCount() const;
+
+        uint8_t                         ReadFromBank(uint32_t bank, uint16_t address) const;
 
 };
 

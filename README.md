@@ -71,3 +71,4 @@ For our settings and serialization we used [nlohmann's json library](https://git
 - [gameboy programming manual](https://ia803208.us.archive.org/9/items/GameBoyProgManVer1.1/GameBoyProgManVer1.1.pdf)
 - [gameboy development community](https://gbdev.io/)
 - [gameboy technical refference](https://gekkio.fi/files/gb-docs/gbctr.pdf)
+- [gameboy opcodes](https://meganesu.github.io/generate-gb-opcodes/)
