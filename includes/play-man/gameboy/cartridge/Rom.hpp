@@ -79,11 +79,13 @@ class Rom
          * @brief Only to be used for testing, clears the internal data and replaces it
          *        with the contents of the specified file.
          * 
-         *        Does not parse the ROM header for easier creations of custom test roms.
+         * @note  Does not parse the ROM header for easier creations of custom test roms.
+         *        Will only use ROM bank 0.
          * 
          * @param filePath The path the the test rom.
          */
         void                    LoadTestRom(const char* filePath);
+
 };
 
 std::ostream& operator << (std::ostream& lhs, Rom& rom);

@@ -20,6 +20,8 @@
 #include <stdint.h>
 #include <vector>
 
+#include <play-man/gameboy/memory/MemoryDefines.hpp>
+
 namespace GameBoy {
 
     /**
@@ -33,7 +35,7 @@ namespace GameBoy {
      *       into ROM memory, instead it will change a register values inside the cartridge.
      */
     using MemoryBanks = std::vector<std::vector<uint8_t>>;
-    constexpr uint32_t KiB = 1024;
+
     constexpr uint32_t RamBankSize = KiB * 8;
     constexpr uint32_t RomBankSize = KiB * 16;
     constexpr uint32_t MBC2RamSize = 512;

@@ -24,7 +24,7 @@ namespace GameBoy
     void Cpu::LoadTestRom(const char* filePath)
     {
         core.ClearRegisters();
-        rom.LoadTestRom(filePath);
+        cartridge->LoadTestRom(filePath);
     }
 
     void Cpu::ExecuteInstruction(OpCode opCode)

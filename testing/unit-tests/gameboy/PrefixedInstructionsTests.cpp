@@ -15,7 +15,7 @@ namespace TestFixtures
 	struct GameBoyCpuFixture
 	{
 		GameBoyCpuFixture()
-			: cpu(GB_ROM_PATH "test_rom.gb")
+			: cpu(GameBoy::MakeCartridge(GB_ROM_PATH "test_rom.gb"))
 			, memoryBus(cpu.memoryBus)
 			, AF(cpu.core.AF)
 			, BC(cpu.core.BC)

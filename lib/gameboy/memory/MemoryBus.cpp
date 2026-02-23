@@ -73,7 +73,7 @@ uint8_t MemoryBus::ReadByte(const uint16_t address)
     {
         if (core.GetCgbMode() == true)
         {
-            // workRam[GetWorkRamBank()][wRamAddress] = value;
+            // return (workRam[GetWorkRamBank()][address - wRamAddressStart]);
             assert(false && "CGB mode not yet supported");
         }
         else
@@ -143,11 +143,19 @@ void MemoryBus::WriteByte(const uint16_t address, const uint8_t value)
     }
     else if (address >= wRamAddressStart && address <= wRamAddressEnd)
     {
-        assert(false && "Writing to this memory address is not supported yet!");
+        workRam[0][address - wRamAddressStart] = value;
     }
     else if (address >= wRamBankAddressStart && address <= wRamBankAddressEnd)
     {
-        assert(false && "Writing to this memory address is not supported yet!");
+        if (core.GetCgbMode() == true)
+        {
+            // workRam[GetWorkRamBank()][wRamAddress] = value;
+            assert(false && "CGB mode not yet supported");
+        }
+        else
+        {
+            workRam[1][address - wRamAddressStart] = value;
+        }
     }
     else if (address >= echoRamAddressStart && address <= echoRamAddressEnd)
     {
@@ -175,7 +183,7 @@ void MemoryBus::WriteByte(const uint16_t address, const uint8_t value)
     }
     else if (address == interruptAddress)
     {
-        assert(false && "Writing to this memory address is not supported yet!");
+        core.SetInterruptRegister(value);
     }
     else if (address >= wRamAddressStart && address <= wRamAddressEnd)
     {

@@ -48,6 +48,11 @@ namespace GameBoy {
         return rom->GetRomBankCount();
     }
 
+    void    ACartridge::LoadTestRom(const char* filePath)
+    {
+        rom->LoadTestRom(filePath);
+    }
+
     std::ostream& operator << (std::ostream& lhs, ACartridge& cart)
     {
         lhs << "Cartridge: " << *cart.rom << std::endl;

@@ -45,6 +45,17 @@ public:
     uint32_t        GetRamBankCount() const;
     uint32_t        GetRomBankCount() const;
 
+    /**
+     * @brief Only to be used for testing, clears the internal data and replaces it
+     *        with the contents of the specified file.
+     * 
+     * @note  Does not parse the ROM header for easier creations of custom test roms.
+     *        Will only use ROM bank 0.
+     * 
+     * @param filePath The path the the test rom.
+     */
+    void    LoadTestRom(const char* filePath);
+
     friend std::ostream& operator << (std::ostream& lhs, ACartridge& cart);
 };
 

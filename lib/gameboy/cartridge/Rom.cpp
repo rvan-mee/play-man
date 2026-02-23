@@ -294,6 +294,45 @@ namespace GameBoy {
         return romBanks[bank][address];
     }
 
+    void    Rom::LoadTestRom(const char* filePath)
+    {
+        std::ifstream   rom(filePath);
+
+        if (!rom.is_open())
+        {
+            std::string error;
+
+            error += "Failed to open test ROM: ";
+            error += filePath;
+            error += "\nError: " + Utility::ErrnoToString() + "\n";
+            throw std::runtime_error(error); 
+        }
+
+        std::streamsize romSize = std::filesystem::file_size(filePath);
+
+        std::vector<uint8_t> rawRomData;
+
+        rawRomData.resize(romSize);
+        rom.read(reinterpret_cast<char*>(rawRomData.data()), romSize);
+        rom.close();
+
+        if (rawRomData.size() != static_cast<size_t>(romSize))
+            throw std::runtime_error("Error reading ROM data: Couldn't read all file data");
+
+        header.romSize = RomSize::KiB32;
+        header.ramSize = RamSize::NoRam;
+
+        size_t totalBytesSet = 0;
+        for (size_t bank = 0; bank <= static_cast<size_t>(romSize) / (4 *KiB); bank++)
+        {
+            for (size_t i = 0; i < 4 * KiB && totalBytesSet < static_cast<size_t>(romSize); i++)
+            {
+                totalBytesSet++;
+                romBanks[bank][i] = rawRomData[i];
+            }
+        }
+    }
+
     std::ostream& operator << (std::ostream& lhs, Rom& rom)
     {
         lhs << "Info for ROM located on: " << rom.GetFilePath() << std::endl;
