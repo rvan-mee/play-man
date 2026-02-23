@@ -78,7 +78,7 @@ uint8_t MemoryBus::ReadByte(const uint16_t address)
         }
         else
         {
-            return (workRam[1][address - wRamAddressStart]);
+            return (workRam[1][address - wRamBankAddressStart]);
         }
     }
     else if (address >= echoRamAddressStart && address <= echoRamAddressEnd)
@@ -154,7 +154,7 @@ void MemoryBus::WriteByte(const uint16_t address, const uint8_t value)
         }
         else
         {
-            workRam[1][address - wRamAddressStart] = value;
+            workRam[1][address - wRamBankAddressStart] = value;
         }
     }
     else if (address >= echoRamAddressStart && address <= echoRamAddressEnd)
@@ -198,7 +198,7 @@ void MemoryBus::WriteByte(const uint16_t address, const uint8_t value)
         }
         else
         {
-            workRam[1][address - wRamAddressStart] = value;
+            workRam[1][address - wRamBankAddressStart] = value;
         }
     }
     else
