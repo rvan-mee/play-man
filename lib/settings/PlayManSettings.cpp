@@ -17,6 +17,23 @@
 
 #include <play-man/settings/PlayManSettings.hpp>
 
+PlayManSettings::PlayManSettings()
+	: logLevel(defaultLogLevel)
+	, logDirectory(defaultLogDirectory)
+{}
+
+PlayManSettings::PlayManSettings(const PlayManSettings& rhs)
+{
+	*this = rhs;
+}
+
+PlayManSettings& PlayManSettings::operator = (const PlayManSettings& rhs)
+{
+	logLevel = rhs.logLevel;
+	logDirectory = rhs.logDirectory;
+	return *this;
+}
+
 void to_json(nlohmann::json& j, const PlayManSettings& p)
 {
 	j = nlohmann::json {

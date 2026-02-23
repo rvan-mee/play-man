@@ -16,11 +16,31 @@
 // ****************************************************************************** //
 
 #include <play-man/gameboy/memory/MemoryBus.hpp>
-#include <play-man/gameboy/memory/MemoryDefines.hpp>
+#include <play-man/gameboy/memory/MemoryBusDefines.hpp>
 #include <play-man/logger/Logger.hpp>
 #include <assert.h>
 
 namespace GameBoy {
+
+uint16_t MemoryBus::PopStack()
+{
+    uint8_t lowerByte;
+    uint8_t upperByte;
+
+    lowerByte = ReadByte(core.GetStackPointerInc());
+    upperByte = ReadByte(core.GetStackPointerInc());
+
+    return ((upperByte << 8) | lowerByte);
+}
+
+void MemoryBus::PushStack(uint16_t value)
+{
+    const uint8_t lowerByte = value & 0xFF;
+    const uint8_t upperByte = (value & 0xFF00) >> 8;
+
+    WriteByte(core.GetStackPointerDec(), upperByte);
+    WriteByte(core.GetStackPointerDec(), lowerByte);
+}
 
 uint8_t MemoryBus::ReadByte(const Register reg)
 {
@@ -47,11 +67,19 @@ uint8_t MemoryBus::ReadByte(const uint16_t address)
     }
     else if (address >= wRamAddressStart && address <= wRamAddressEnd)
     {
-        assert(false && "Fetching from this memory address is not supported yet!");
+        return (workRam[0][address - wRamAddressStart]);
     }
     else if (address >= wRamBankAddressStart && address <= wRamBankAddressEnd)
     {
-        assert(false && "Fetching from this memory address is not supported yet!");
+        if (core.GetCgbMode() == true)
+        {
+            // return (workRam[GetWorkRamBank()][address - wRamAddressStart]);
+            assert(false && "CGB mode not yet supported");
+        }
+        else
+        {
+            return (workRam[1][address - wRamBankAddressStart]);
+        }
     }
     else if (address >= echoRamAddressStart && address <= echoRamAddressEnd)
     {
@@ -115,11 +143,19 @@ void MemoryBus::WriteByte(const uint16_t address, const uint8_t value)
     }
     else if (address >= wRamAddressStart && address <= wRamAddressEnd)
     {
-        assert(false && "Writing to this memory address is not supported yet!");
+        workRam[0][address - wRamAddressStart] = value;
     }
     else if (address >= wRamBankAddressStart && address <= wRamBankAddressEnd)
     {
-        assert(false && "Writing to this memory address is not supported yet!");
+        if (core.GetCgbMode() == true)
+        {
+            // workRam[GetWorkRamBank()][wRamAddress] = value;
+            assert(false && "CGB mode not yet supported");
+        }
+        else
+        {
+            workRam[1][address - wRamBankAddressStart] = value;
+        }
     }
     else if (address >= echoRamAddressStart && address <= echoRamAddressEnd)
     {
@@ -147,12 +183,27 @@ void MemoryBus::WriteByte(const uint16_t address, const uint8_t value)
     }
     else if (address == interruptAddress)
     {
-        assert(false && "Writing to this memory address is not supported yet!");
+        core.SetInterruptRegister(value);
+    }
+    else if (address >= wRamAddressStart && address <= wRamAddressEnd)
+    {
+        workRam[0][address - wRamAddressStart] = value;
+    }
+    else if (address >= wRamBankAddressStart && address <= wRamBankAddressEnd)
+    {
+        if (core.GetCgbMode() == true)
+        {
+            // workRam[GetWorkRamBank()][wRamAddress] = value;
+            assert(false && "CGB mode not yet supported");
+        }
+        else
+        {
+            workRam[1][address - wRamBankAddressStart] = value;
+        }
     }
     else
     {
-        LOG_FATAL("Trying to read from an invalid address");
-        assert(false);
+        assert(false && "Trying to write to an unsupported address");
     }
 }
 

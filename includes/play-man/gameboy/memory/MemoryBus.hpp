@@ -20,6 +20,7 @@
 #include <play-man/gameboy/cpu/Register.hpp>
 #include <play-man/gameboy/cpu/CpuCore.hpp>
 #include <play-man/gameboy/cartridge/Cartridge.hpp>
+#include <play-man/gameboy/memory/MemoryDefines.hpp>
 #include <stdint.h>
 
 namespace GameBoy {
@@ -32,6 +33,8 @@ namespace GameBoy {
             // video module
             // io module
             // other modules
+
+            std::array<WorkRamBank, 8> workRam;
 
         public:
             MemoryBus() = delete;
@@ -67,6 +70,23 @@ namespace GameBoy {
              * @param value The value to be set.
              */
             void WriteByte(const uint16_t address, const uint8_t value);
+             
+            /**
+             * @brief Pops 2 bytes from the address pointed to by SP, which then
+             * gets incremented by 2.
+             * 
+             * @note The bytes are popped in order of LowByte then HighByte.
+             */
+            uint16_t PopStack();
+
+            /**
+             * @brief Pushes 2 bytes to the address pointed to by SP, which then
+             * gets decremented by 2.
+             * 
+             * @note The bytes are pushed in oder of HighByte then LowByte.
+             */
+            void PushStack(uint16_t value);
+
     };
 
 }

@@ -20,7 +20,9 @@ target_link_libraries(${GENERAL_PLAY_MAN_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::C
 
 set(GAMEBOY_UNIT_TEST_EXECUTABLE gameboy-unit-tests)
 add_executable(${GAMEBOY_UNIT_TEST_EXECUTABLE}
-	gameboy/Test.cpp
+	gameboy/InstructionTests.cpp
+	gameboy/PrefixedInstructionsTests.cpp
+	gameboy/RegisterTests.cpp
 )
 target_link_libraries(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE ${LIBRARY_NAME})
 target_link_libraries(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::Catch2WithMain)
@@ -33,9 +35,23 @@ add_executable(${UTILITY_UNIT_TEST_EXECUTABLE}
 	logger/LoggerTests.cpp
 	signal/SignalTests.cpp
 	issueHandler/IssueHandlerTests.cpp
+	containers/EnumIndexableArrayTests.cpp
 )
 target_link_libraries(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE ${LIBRARY_NAME})
 target_link_libraries(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::Catch2WithMain)
+
+
+
+# Enable fsan
+# target_compile_options(${GENERAL_PLAY_MAN_UNIT_TEST_EXECUTABLE} PRIVATE -fsanitize=address)
+# target_link_options(${GENERAL_PLAY_MAN_UNIT_TEST_EXECUTABLE} PRIVATE -fsanitize=address)
+
+# target_compile_options(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE -fsanitize=address)
+# target_link_options(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE -fsanitize=address)
+
+# target_compile_options(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE -fsanitize=address)
+# target_link_options(${UTILITY_UNIT_TEST_EXECUTABLE} PRIVATE -fsanitize=address)
+
 
 set(UNIT_TEST_INSTALL_DIR ${CMAKE_SOURCE_DIR}/bin/unit-tests)
 

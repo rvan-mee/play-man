@@ -18,6 +18,7 @@
 #pragma once
 
 #include <inttypes.h>
+#include <functional>
 
 namespace GameBoy
 {
@@ -35,13 +36,13 @@ namespace GameBoy
 		 *        By having a union with an unnamed struct makes us able to share the memory and
 		 *        easily access the high and low byte of the register without any bitshift shenanigans.
 		 */
-		union __attribute__((packed)) InternalRegisterLayout
+		union InternalRegisterLayout
 		{
 			struct {
-				uint8_t low;
-				uint8_t high;
+				uint8_t low : 8;
+				uint8_t high : 8;
 			} byte;
-			uint16_t value;
+			uint16_t value : 16;
 		};
 
 		InternalRegisterLayout internalRegister;
@@ -98,7 +99,32 @@ namespace GameBoy
 			return (temp);
 		}
 
+		// Postfix decrement
+		Register operator--(int)
+		{
+			Register temp = *this;
+			internalRegister.value--;
+			return (temp);
+		}
+
+		// Compound assignment
+		Register& operator+=(uint16_t rhs)
+		{
+			internalRegister.value = internalRegister.value + rhs;
+			return *this;
+		}
+
+		// Compound assignment
+		Register& operator-=(uint16_t rhs)
+		{
+			internalRegister.value = internalRegister.value - rhs;
+			return *this;
+		}
 	};
 
+	using RegisterGet8Bit = uint8_t (Register::*)(void) const;
+	using RegisterGet16Bit = uint16_t (Register::*)(void) const;
+	using RegisterSet8Bit = void (Register::*)(uint8_t);
+	using RegisterSet16Bit = void (Register::*)(uint16_t);
 
 } /* namespace gameboy */

@@ -26,8 +26,8 @@ int main(int argc, char** argv)
 {
 	(void)argc;
 	(void)argv;
-	std::cout << "Welcome to play-man!" << std::endl;
     Logger::LogInterface::Initialize("Logging", Logger::LogLevel::Debug);
+	LOG_INFO("Welcome to play-man!");
 
     if (argc > 1)
     {
@@ -47,7 +47,7 @@ int main(int argc, char** argv)
     }
     else
     {
-        std::cout << "No ROM provided!" << std::endl;
+    	LOG_ERROR("No ROM provided!");
     }
 
 	return 0;

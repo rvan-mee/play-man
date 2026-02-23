@@ -68,7 +68,7 @@ public:
 	 */
 	void operator () (Args... args)
 	{
-		for (auto callback : callbacks)
+		for (auto& callback : callbacks)
 		{
 			callback(args...);
 		}

@@ -15,11 +15,16 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <play-man/gameboy/cpu/Cpu.hpp>
+#pragma once
 
-namespace GameBoy
-{
-    void Cpu::NOP()
-    {
-    }
-}
+#include <type_traits>
+
+namespace Utility { namespace Concept {
+
+	template<class E>
+	concept IsScopedEnum = std::is_scoped_enum_v<E>;
+
+} /* namespace Concept */
+
+} /* namespace Utility */
+ 

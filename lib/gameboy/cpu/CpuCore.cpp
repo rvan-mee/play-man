@@ -20,21 +20,61 @@
 
 namespace GameBoy
 {
+    void CpuCore::ClearRegisters()
+    {
+        AF = 0x00'00;
+        BC = 0x00'00;
+        DE = 0x00'00;
+        HL = 0x00'00;
+        SP = 0x00'00;
+        PC = 0x00'00;
+        IE = 0x00;
+    }
+
     uint8_t	CpuCore::GetInterruptRegister()
     {
         return (IE);
+    }
+
+    void	CpuCore::SetInterruptRegister(const uint8_t value)
+    {
+        IE = value;
     }
 
     void CpuCore::SetFlag(FlagRegisterFlag flag, bool enable)
     {
         if (enable)
         {
-            AF.SetHighByte(AF.HighByte() | static_cast<uint8_t>(flag));
+            AF.SetLowByte(AF.LowByte() | static_cast<uint8_t>(flag));
         }
         else
         {
-            AF.SetHighByte(AF.HighByte() & ~(static_cast<uint8_t>(flag)));
+            AF.SetLowByte(AF.LowByte() & ~(static_cast<uint8_t>(flag)));
         }
+    }
+
+    bool CpuCore::GetFlag(FlagRegisterFlag flag)
+    {
+        return (AF.LowByte() & static_cast<uint8_t>(flag)) > 0;
+    }
+
+    bool CpuCore::GetCgbMode() const
+    {
+        return cgbMode;
+    }
+
+    uint16_t CpuCore::GetStackPointerInc()
+    {
+        const uint16_t value = SP.Value();
+
+        SP++;
+        return value;
+    }
+
+    uint16_t CpuCore::GetStackPointerDec()
+    {
+        SP--;
+        return SP.Value();
     }
 
     /*           ostream overload           */
@@ -42,10 +82,19 @@ namespace GameBoy
     std::ostream& operator << (std::ostream& lhs, const CpuCore& core)
     {
         lhs << "Register:       Value:\n";
-        lhs << "AF              " << Utility::IntAsHexString(core.AF.LowByte()) << " " << Utility::IntAsHexString(core.AF.HighByte()) << "\n";
-        lhs << "BC              " << Utility::IntAsHexString(core.BC.LowByte()) << " " << Utility::IntAsHexString(core.BC.HighByte()) << "\n";
-        lhs << "DE              " << Utility::IntAsHexString(core.DE.LowByte()) << " " << Utility::IntAsHexString(core.DE.HighByte()) << "\n";
-        lhs << "HL              " << Utility::IntAsHexString(core.HL.LowByte()) << " " << Utility::IntAsHexString(core.HL.HighByte()) << "\n";
+        lhs << "AF              " << Utility::IntAsHexString(core.AF.HighByte()) << " " << Utility::IntAsHexString(core.AF.LowByte());
+        
+        // Print the bits of the flag register
+        lhs << " Flags: 0b";
+        for (int8_t i = 7; i >= 0; i--)
+        {
+            lhs << (((core.AF.LowByte() >> i) & 1) ? "1" : "0");
+        }
+        lhs << "\n";
+
+        lhs << "BC              " << Utility::IntAsHexString(core.BC.HighByte()) << " " << Utility::IntAsHexString(core.BC.LowByte()) << "\n";
+        lhs << "DE              " << Utility::IntAsHexString(core.DE.HighByte()) << " " << Utility::IntAsHexString(core.DE.LowByte()) << "\n";
+        lhs << "HL              " << Utility::IntAsHexString(core.HL.HighByte()) << " " << Utility::IntAsHexString(core.HL.LowByte()) << "\n";
         lhs << "SP              " << Utility::IntAsHexString(core.SP.Value()) << "\n";
         lhs << "PC              " << Utility::IntAsHexString(core.PC.Value()) << "\n";
         lhs << "IE              " << Utility::IntAsHexString(core.IE) << "\n";

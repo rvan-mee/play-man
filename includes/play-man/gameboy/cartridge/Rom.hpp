@@ -75,6 +75,17 @@ class Rom
 
         uint8_t                         ReadFromBank(uint32_t bank, uint16_t address) const;
 
+        /**
+         * @brief Only to be used for testing, clears the internal data and replaces it
+         *        with the contents of the specified file.
+         * 
+         * @note  Does not parse the ROM header for easier creations of custom test roms.
+         *        Will only use ROM bank 0.
+         * 
+         * @param filePath The path the the test rom.
+         */
+        void                    LoadTestRom(const char* filePath);
+
 };
 
 std::ostream& operator << (std::ostream& lhs, Rom& rom);

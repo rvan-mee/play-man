@@ -69,6 +69,14 @@ target_link_libraries(
 	PRIVATE nlohmann_json::nlohmann_json
 )
 
+
+# Enable fsan (Do so in the unit test cmake as well)
+# target_compile_options(${LIBRARY_NAME} PRIVATE -fsanitize=address)
+# target_link_options(${LIBRARY_NAME} PRIVATE -fsanitize=address)
+
+# target_compile_options(${EXECUTABLE_NAME} PRIVATE -fsanitize=address)
+# target_link_options(${EXECUTABLE_NAME} PRIVATE -fsanitize=address)
+
 #
 # Unit testing
 #

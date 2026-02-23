@@ -15,48 +15,70 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <play-man/gameboy/cartridge/ACartridge.hpp>
+#pragma once
 
-namespace GameBoy {
+#include <play-man/utility/Concepts.hpp>
 
-    ACartridge::ACartridge(std::unique_ptr<Rom> _rom) : rom(std::move(_rom))
-    {
-        InitRamBanks();
-    };
+#include <array>
 
-    void ACartridge::InitRamBanks()
-    {
-        const uint8_t ramBankCount = rom->GetRamBankCount();
+/**
+ * @brief Wrapper class of std::array with indexing support for enum classes of type EnumKeyType.
+ * 
+ * @tparam EnumKeyType 
+ * @tparam T 
+ * @tparam N 
+ */
+template<
+	Utility::Concept::IsScopedEnum EnumKeyType,
+	class T,
+	std::size_t N
+> struct EnumIndexableArray : public std::array<T, N>
+{
+private:
 
-        ramBanks.resize(ramBankCount);
-        for (uint32_t i = 0; i < ramBankCount; i++)
-            ramBanks[i].resize(RamBankSize);
-    }
+	using array = std::array<T, N>;
+	using reference = typename array::reference;
+	using const_reference = typename array::const_reference;
 
-    CartridgeType   ACartridge::GetType() const
-    {
-        return rom->GetCartridgeType();
-    }
+public:
 
-    uint32_t        ACartridge::GetRamBankCount() const
-    {
-        return rom->GetRamBankCount();
-    }
+	reference at(EnumKeyType pos)
+	{
+		return array::at(static_cast<size_t>(pos));
+	}
 
-    uint32_t        ACartridge::GetRomBankCount() const
-    {
-        return rom->GetRomBankCount();
-    }
+	const_reference at(EnumKeyType pos) const
+	{
+		return array::at(static_cast<size_t>(pos));
+	}
 
-    void    ACartridge::LoadTestRom(const char* filePath)
-    {
-        rom->LoadTestRom(filePath);
-    }
+	reference at(size_t pos)
+	{
+		return array::at(pos);
+	}
 
-    std::ostream& operator << (std::ostream& lhs, ACartridge& cart)
-    {
-        lhs << "Cartridge: " << *cart.rom << std::endl;
-        return (lhs);
-    }
+	const_reference at(size_t pos) const
+	{
+		return array::at(pos);
+	}
 
-}
+	reference operator[](EnumKeyType pos)
+	{
+		return array::operator[](static_cast<size_t>(pos));
+	}
+
+	const_reference operator[](EnumKeyType pos) const
+	{
+		return array::operator[](static_cast<size_t>(pos));
+	}
+
+	reference operator[](size_t pos)
+	{
+		return array::operator[](pos);
+	}
+
+	const_reference operator[](size_t pos) const
+	{
+		return array::operator[](pos);
+	}
+};
