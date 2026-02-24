@@ -140,4 +140,15 @@ namespace GameBoy {
         return numberOfCycles;
     }
 
+    size_t Cpu::InterruptReturn()
+    {
+        const uint16_t oldPC = memoryBus.PopStack();
+
+        core.PC.SetValue(oldPC);
+        core.IME = true;
+
+        constexpr auto numberOfCycles = 4;
+        return numberOfCycles;
+    }
+
 }

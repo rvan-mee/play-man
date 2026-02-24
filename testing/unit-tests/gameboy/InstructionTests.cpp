@@ -31,6 +31,7 @@ namespace TestFixtures
 			, SP(cpu.core.SP)
 			, PC(cpu.core.PC)
 			, IE(cpu.core.IE)
+			, IME(cpu.core.IME)
 		{
 			ClearRegisters();
 		}
@@ -44,6 +45,7 @@ namespace TestFixtures
         GameBoy::Register&	SP;
         GameBoy::Register&	PC;
         uint8_t&			IE;
+		bool&               IME;
 
 		size_t ExecuteInstruction(GameBoy::OpCode op)
 		{
@@ -7558,6 +7560,31 @@ TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RET_C, 0xD8")
 	REQUIRE(HL.Value() == 0x00'00);
 	REQUIRE(SP.Value() == wRamAddressStart);
 	REQUIRE(PC.Value() == 0x00'00);
+	REQUIRE(IE == 0x00);
+}
+
+TEST_CASE_METHOD(TestFixtures::GameBoyCpuFixture, "RETI, 0xD9")
+{
+	ClearRegisters();
+
+	// Set a value to the stack and load the stack pointer
+	memoryBus.WriteByte(wRamAddressStart, 0x0F);
+	memoryBus.WriteByte(wRamAddressStart + 1, 0xF0);
+	SP.SetValue(wRamAddressStart);
+	IME = false;
+
+	auto numberOfCycles = ExecuteInstruction(GameBoy::OpCode::RETI);
+
+	REQUIRE(IME == true);
+
+	REQUIRE(numberOfCycles == 4);
+	REQUIRE(AF.HighByte() == 0x00);
+	REQUIRE(AF.LowByte() == 0b0000'0000);
+	REQUIRE(BC.Value() == 0x00'00);
+	REQUIRE(DE.Value() == 0x00'00);
+	REQUIRE(HL.Value() == 0x00'00);
+	REQUIRE(SP.Value() == wRamAddressStart + 2);
+	REQUIRE(PC.Value() == 0xF0'0F);
 	REQUIRE(IE == 0x00);
 }
 

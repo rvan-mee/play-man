@@ -29,6 +29,10 @@ namespace GameBoy
         SP = 0x00'00;
         PC = 0x00'00;
         IE = 0x00;
+
+        IF = 0x00;
+        IME = false;
+        stateIME = InterruptState::NONE;
     }
 
     uint8_t	CpuCore::GetInterruptRegister()

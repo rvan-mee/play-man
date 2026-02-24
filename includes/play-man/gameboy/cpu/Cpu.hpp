@@ -47,7 +47,6 @@ namespace GameBoy
         PPU                             ppu;
         MemoryBus                       memoryBus;
 
-        size_t cycles = 0;
         Instruction currentInstruction; /*< The current instruction to execute/is being executed. */
 
         std::array<uint8_t, HighRamSize>    highRam;
@@ -115,9 +114,8 @@ namespace GameBoy
 
         /**
          * @brief Executes the current instruction.
-         * @return The amount of cycles it took for this instruction to be executed.
          */
-        uint32_t ExecuteInstruction();
+        void ExecuteInstruction();
 
         /**
          * @brief Fetches the instruction located on the address stored inside the PC register.
@@ -191,10 +189,33 @@ namespace GameBoy
          */
         void RenderFrame();
 
-//////////////////
-// Instructions //
-//////////////////
-private:
+    private:
+
+        /**
+         * @brief The IME flag can be enabled using the EI instruction, however it's
+         *        effect is delayed by another instruction. This function is called
+         *        after an instruction is performed to update the IME flag at the right time.
+         */
+        void UpdateIME();
+
+        /**
+         * @brief Called before an instruction is fetched/executed.
+         *        Checks if interrupts are enabled and if there is a pending interrupt. 
+         * 
+         * @note Will add cycles to the CpuCyclesLeft counter if a handler is called.
+         */
+        void HandleInterrupts();
+
+        /**
+         * @brief Checks if a specific interrupt is enabled and if so, handles it.
+         * 
+         * @return True if the given interrupt has been called/handled.
+         */
+        bool HandleInterrupt(const InterruptFlags interruptToHandle, const uint16_t interruptHandlerAddress);
+    
+        //////////////////
+        // Instructions //
+        //////////////////
 
         /**
          * @brief Invalid OpCodes result in the CPU hard-locking itself until powered off
@@ -247,6 +268,24 @@ private:
         size_t CCF();
 
         /**
+         * @brief Disables interrupts by setting the IME flag to false.
+         * 
+         * @return number of cycles.
+         */
+        size_t DisableInterrupts();
+
+        /**
+         * @brief Enables interrupts by setting the IME flag to true.
+         * 
+         * @note  The effect of this instruction is delayed by another instruction.
+         * 
+         * @return number of cycles.
+         */
+        size_t EnableInterrupts();
+
+        /**                               Jmp/call instructions                                             **/
+
+        /**
          * @brief Returns to the previous subroutine by popping the previous saved
          * ProgramCounter from the stack.
          * 
@@ -262,7 +301,16 @@ private:
          */
         size_t ConditionalReturn(FlagRegisterFlag conditionalFlag, bool flagEnabled);
 
-        /**                               Jmp/call instructions                                             **/
+        /**
+         * @brief Returns to the previous subroutine by popping the previous saved
+         * ProgramCounter from the stack. Also enables the IME flag.
+         * 
+         * @note This has the same functionality as if EI and RET were to be called,
+         * so the IME flag is enabled right after this instruction is done.
+         * 
+         * @return number of cycles.
+         */
+        size_t InterruptReturn();
 
         /**
          * @brief Loads the address value addrReg into the PC reg.

@@ -18,6 +18,13 @@
 #include <play-man/gameboy/cpu/Cpu.hpp>
 #include <play-man/logger/Logger.hpp>
 #include <play-man/utility/UtilFunc.hpp>
+#include <play-man/gameboy/cpu/CycleDefines.hpp>
+
+constexpr uint16_t InterruptHandlerAddressVBlank = 0x00'40;
+constexpr uint16_t InterruptHandlerAddressLCD    = 0x00'48;
+constexpr uint16_t InterruptHandlerAddressTimer  = 0x00'50;
+constexpr uint16_t InterruptHandlerAddressSerial = 0x00'58;
+constexpr uint16_t InterruptHandlerAddressJoypad = 0x00'60;
 
 namespace GameBoy
 {
@@ -41,31 +48,25 @@ namespace GameBoy
     {
         std::stringstream ss;
 
-        ss << "Executing instruction: ";
+        ss << "Executed instruction: ";
         ss << currentInstruction;
-        ss << " - Opcode: " << Utility::IntAsHexString(GetEnumAsValue(currentInstruction.GetOpCode()));
+        ss << " - Opcode: " << Utility::IntAsHexString(static_cast<uint16_t>(GetEnumAsValue(currentInstruction.GetOpCode())));
         LOG_DEBUG(ss.str());
     }
 
-    uint32_t Cpu::ExecuteInstruction()
+    void Cpu::ExecuteInstruction()
     {
         try
         {
-            std::cout << "\nCore before instruction:\n" << core;
-            cycles += currentInstruction.Execute(this);
+            // Instructions return M-ticks, the CpuCycles are ticked every T-tick.
+            CpuCyclesLeft += (currentInstruction.Execute(this) * M_Tick);
             LogInstruction();
-            std::cout << "Core after instruction:\n" << core;
         }
         catch (const std::exception& e)
         {
             LOG_FATAL("Failed to execute instruction " + currentInstruction.OpCodeAsHexString() + ": " + e.what());
             abort();
         }
-
-        // TODO: handle instruction timing
-        // Take branching into account
-        // cyclesPassed += cycleTable[opcodeIsPrefixed].at(currentOpcode);
-        return 4;
     }
 
 	uint8_t Cpu::Fetch(uint16_t address)
@@ -115,8 +116,17 @@ namespace GameBoy
         // till the current instruction has 'finished'.
         if (CpuCyclesLeft == 0)
         {
+            HandleInterrupts();
+
+            // Check if an interrupt handler was called
+            if (CpuCyclesLeft != 0)
+                return ;
+
             FetchInstruction();
-            CpuCyclesLeft += ExecuteInstruction();
+            ExecuteInstruction();
+
+            // If an EI instruction is called we need to update the IME flag at the right time
+            UpdateIME();
         }
         else
             CpuCyclesLeft--;
@@ -145,6 +155,59 @@ namespace GameBoy
     std::array<uint8_t, HighRamSize>& Cpu::GetHighRam()
     {
         return highRam;
+    }
+
+    void Cpu::UpdateIME()
+    {
+        if (core.stateIME == InterruptState::NONE)
+            return ;
+        else if (core.stateIME == InterruptState::DELAY_ENABLE_IME)
+            core.stateIME = InterruptState::ENABLE_IME;
+        else if (core.stateIME == InterruptState::ENABLE_IME)
+        {
+            core.stateIME = InterruptState::NONE;
+            core.IME = true;
+            LOG_DEBUG("Enabling IME");
+        }
+    }
+
+    bool Cpu::HandleInterrupt(const InterruptFlags interruptToHandle, const uint16_t interruptHandlerAddress)
+    {
+        // This interrupt is not enabled or requested
+        if (!(core.IE & core.IF & GetEnumAsValue(interruptToHandle)))
+            return false;
+
+        // This interrupt is both requested and enabled, CPU should reset the corresponding bit and the IME flag
+        core.IME = false;
+        core.IF = core.IF & ~GetEnumAsValue(interruptToHandle);
+
+        // Jump to the interrupts handler after pushing the current program counter to the stack
+        memoryBus.PushStack(core.PC.Value());
+        core.PC.SetValue(interruptHandlerAddress);
+
+        std::stringstream ss;
+        ss << "Handling interrupt: ";
+        ss << interruptToHandle;
+        LOG_DEBUG(ss.str());
+
+        return true;
+    }
+
+    void Cpu::HandleInterrupts()
+    {
+        // Interrupts are disabled or there are no enabled interrupts pending
+        if (core.IME == false || (core.IE & core.IF) == 0)
+            return ;
+
+        if (HandleInterrupt(InterruptFlags::VBLANK, InterruptHandlerAddressVBlank) ||
+            HandleInterrupt(InterruptFlags::LCD,    InterruptHandlerAddressLCD)    ||
+            HandleInterrupt(InterruptFlags::TIMER,  InterruptHandlerAddressTimer)  ||
+            HandleInterrupt(InterruptFlags::SERIAL, InterruptHandlerAddressSerial) ||
+            HandleInterrupt(InterruptFlags::JOYPAD, InterruptHandlerAddressJoypad))
+        {
+            // An interrupt has been handled, this process has taken 5 M-Ticks
+            CpuCyclesLeft += 5 * M_Tick;
+        }
     }
 
     void Cpu::RenderFrame()

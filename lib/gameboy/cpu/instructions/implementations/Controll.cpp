@@ -109,4 +109,23 @@ namespace GameBoy
 		constexpr auto numberOfCycles = 1;
 		return numberOfCycles;
 	}
+
+	size_t Cpu::EnableInterrupts()
+	{
+		LOG_DEBUG("EI called, delaying IME enable");
+
+		core.stateIME = InterruptState::DELAY_ENABLE_IME;
+
+		constexpr auto numberOfCycles = 1;
+		return numberOfCycles;
+	}
+
+	size_t Cpu::DisableInterrupts()
+	{
+		core.IME = false;
+		core.stateIME = InterruptState::NONE;
+
+		constexpr auto numberOfCycles = 1;
+		return numberOfCycles;
+	}
 }

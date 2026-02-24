@@ -29,7 +29,32 @@ namespace TestFixtures
 
 namespace GameBoy
 {
+	/**
+	 * @brief When the interrupts get enabled through the EI instruction
+     *        it takes an additional instruction fot the effect to take place.
+     *        This enum is there to keep track of the state of the IME flag after
+     *        an EI instruction is called.
+	 */
+	#define INTERRUPT_STATE_SEQ(x, n) \
+		x(n, NONE,             0)   \
+		x(n, DELAY_ENABLE_IME, 1)   \
+		x(n, ENABLE_IME,       2)
 
+	CREATE_ENUM_WITH_UTILS(INTERRUPT_STATE_SEQ, InterruptState)
+	#undef INTERRUPT_STATE_SEQ
+
+	/**
+	 * @brief the flags to set the bits inside the F register
+	 */
+	#define INTERRUPT_FLAGS_SEQ(x, n) \
+		x(n, VBLANK, 0b0000'0001)   \
+		x(n, LCD,    0b0000'0010)   \
+		x(n, TIMER,  0b0000'0100)   \
+		x(n, SERIAL, 0b0000'1000)   \
+		x(n, JOYPAD, 0b0001'0000)
+
+	CREATE_ENUM_WITH_UTILS(INTERRUPT_FLAGS_SEQ, InterruptFlags)
+	#undef INTERRUPT_FLAGS_SEQ
 
 	/**
 	 * @brief the flags to set the bits inside the F register
@@ -59,6 +84,10 @@ namespace GameBoy
         Register	SP = stackPointerAfterStartup; /* Stack pointer */
         Register	PC = programCounterAfterBootRom; /* Program counter */
         uint8_t		IE; /* Interrupt Enable Register*/
+        
+        uint8_t         IF = 0x00;  /* Interrupt Flag */
+        bool            IME = false; /* Interrupt Master Enable */
+        InterruptState  stateIME = InterruptState::NONE; /* Helper variable to update the IME at the correct time */
 
         /**
          * @brief Whether the emulator is set to DMG or CGB mode.
@@ -66,8 +95,6 @@ namespace GameBoy
          * Set to true if CGB mode is enabled.
          */
         bool        cgbMode = false;
-
-        // uint16_t	cyclesPassed = 0; /* */
 
         /**
          * @brief Sets all registers to the value 0x00'00
