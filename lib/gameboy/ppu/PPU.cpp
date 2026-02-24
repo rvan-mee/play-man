@@ -260,8 +260,8 @@ void PPU::TickDrawingPixel()
         // TODO: Shift pixels using SCX, add delay
     }
 
-    backgroundFiFo.TickFetcher(scanlineX);
-    objectFiFo.TickFetcher(scanlineX);
+    backgroundFiFo.TickFetcher();
+    objectFiFo.TickFetcher();
     TickPixelTransferLCD();
 }
 

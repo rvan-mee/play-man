@@ -2,8 +2,10 @@
 #include <catch2/catch_test_macros.hpp>
 #include "play-man/gameboy/cpu/Cpu.hpp"
 #include "play-man/gameboy/memory/MemoryBus.hpp"
+#include "play-man/settings/PlayManSettings.hpp"
 
 #define GB_ROM_PATH "./test-data/custom_gb_test_roms/"
+#define SETTINGS_FILE "./test-data/settings/settings.json"
 
 constexpr uint16_t interruptAddress = 0xFFFF;
 
@@ -15,7 +17,7 @@ namespace TestFixtures
 	struct GameBoyCpuFixture
 	{
 		GameBoyCpuFixture()
-			: cpu(GameBoy::MakeCartridge(GB_ROM_PATH "test_rom.gb"))
+			: cpu(GameBoy::MakeCartridge(GB_ROM_PATH "test_rom.gb"), PlayManSettings::ReadFromFile(SETTINGS_FILE))
 			, memoryBus(cpu.memoryBus)
 			, AF(cpu.core.AF)
 			, BC(cpu.core.BC)

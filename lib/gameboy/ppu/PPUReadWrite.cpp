@@ -201,8 +201,8 @@ void    PPU::WriteByte(uint16_t address, uint8_t value)
         {
             LCDCregister = value;
             // TODO: check if this is correct
-            if (LCDCregister & WindowEnableMask)
-                backgroundFiFo.EnableWindow(scanlineX);
+            // if (LCDCregister & WindowEnableMask)
+            //     backgroundFiFo.EnableWindow(scanlineX);
             break;
         }
         case (AddressSTAT):

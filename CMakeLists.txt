@@ -16,7 +16,7 @@ set(JSON_BuildTests OFF CACHE INTERNAL "")
 add_subdirectory(external-libs/json)
 
 # Add the SDL directory
-add_subdirectory(external-libs/SDL EXCLUDE_FROM_ALL)
+add_subdirectory(external-libs/SDL)
 
 #
 # Compiler Settings

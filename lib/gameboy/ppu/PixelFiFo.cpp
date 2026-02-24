@@ -78,6 +78,13 @@ bool PPU::BackgroundFiFo::RenderingWindow()
 
 void PPU::BackgroundFiFo::TickTileFetch()
 {
+    // TEMP to make things compile again, revisiting the PPU after completing the CPU.
+    (void) windowHorizontalCondition;
+    (void) windowVerticalCondition;
+
+    const uint8_t windowX = ppu->WXregister - WindowStartOffset;
+    (void) windowX;
+
     if (fetcherX >= PixelsPerScanline)
         return ;
 
@@ -93,7 +100,6 @@ void PPU::BackgroundFiFo::TickTileFetch()
         }
 
         // The window's top left X coordinate starts at WX - 7.
-        const uint8_t windowX = ppu->WXregister - WindowStartOffset;
         const bool renderingWindowTile = RenderingWindow();
 
         // The base address of the tile data map.
@@ -227,8 +233,8 @@ void PPU::BackgroundFiFo::TickFiFoPush()
 
 void PPU::BackgroundFiFo::UpdateWindow()
 {
-    const bool windowEnabled = ppu->LCDCregister & WindowEnableMask;
-    const bool windowOnScanline = fetcherX >= ppu->WXregister;
+    // const bool windowEnabled = ppu->LCDCregister & WindowEnableMask;
+    // const bool windowOnScanline = fetcherX >= ppu->WXregister;
 }
 
 void PPU::BackgroundFiFo::UpdateWindowLineCounter()

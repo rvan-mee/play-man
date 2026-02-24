@@ -11,7 +11,7 @@ enum class IndexEnum
 
 TEST_CASE("Enum indexable array at")
 {
-	EnumIndexableArray<IndexEnum, std::string, 2> array {"first", "second"};
+	EnumIndexableArray<IndexEnum, std::string, 2> array {{"first", "second"}};
 
 	REQUIRE(array.at(IndexEnum::firstElem) == "first");
 	REQUIRE(array.at(IndexEnum::secondElem) == "second");
@@ -24,7 +24,7 @@ TEST_CASE("Enum indexable array at")
 
 TEST_CASE("Enum indexable array []")
 {
-	EnumIndexableArray<IndexEnum, std::string, 2> array {"first", "second"};
+	EnumIndexableArray<IndexEnum, std::string, 2> array {{"first", "second"}};
 
 	REQUIRE(array[IndexEnum::firstElem] == "first");
 	REQUIRE(array[IndexEnum::secondElem] == "second");

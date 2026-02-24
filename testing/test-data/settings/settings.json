@@ -1,0 +1,5 @@
+{
+    "logLevel": "None",
+    "logDirectory": "./logs",
+    "screenScaleGameBoy": 4
+}
