@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <play-man/gameboy/cpu/CpuCoreDefines.hpp>
 #include <play-man/gameboy/cpu/Register.hpp>
 #include <play-man/utility/EnumMacro.hpp>
 #include <iostream>
@@ -29,48 +30,6 @@ namespace TestFixtures
 
 namespace GameBoy
 {
-	/**
-	 * @brief When the interrupts get enabled through the EI instruction
-     *        it takes an additional instruction fot the effect to take place.
-     *        This enum is there to keep track of the state of the IME flag after
-     *        an EI instruction is called.
-	 */
-	#define INTERRUPT_STATE_SEQ(x, n) \
-		x(n, NONE,             0)   \
-		x(n, DELAY_ENABLE_IME, 1)   \
-		x(n, ENABLE_IME,       2)
-
-	CREATE_ENUM_WITH_UTILS(INTERRUPT_STATE_SEQ, InterruptState)
-	#undef INTERRUPT_STATE_SEQ
-
-	/**
-	 * @brief the flags to set the bits inside the F register
-	 */
-	#define INTERRUPT_FLAGS_SEQ(x, n) \
-		x(n, VBLANK, 0b0000'0001)   \
-		x(n, LCD,    0b0000'0010)   \
-		x(n, TIMER,  0b0000'0100)   \
-		x(n, SERIAL, 0b0000'1000)   \
-		x(n, JOYPAD, 0b0001'0000)
-
-	CREATE_ENUM_WITH_UTILS(INTERRUPT_FLAGS_SEQ, InterruptFlags)
-	#undef INTERRUPT_FLAGS_SEQ
-
-	/**
-	 * @brief the flags to set the bits inside the F register
-	 */
-	#define F_REGISTER_FLAGS_SEQ(x, n) \
-		x(n, ZERO,       0b10000000)   \
-		x(n, SUB,        0b01000000)   \
-		x(n, HALF_CARRY, 0b00100000)   \
-		x(n, CARRY,      0b00010000)
-
-	CREATE_ENUM_WITH_UTILS(F_REGISTER_FLAGS_SEQ, FlagRegisterFlag)
-	#undef F_REGISTER_FLAGS_SEQ
-
-	constexpr uint16_t programCounterAfterBootRom = 0x0100;
-    constexpr uint16_t stackPointerAfterStartup = 0xFFFE; // HRAM end address
-
     class CpuCore
     {
         friend class Cpu;
@@ -82,13 +41,29 @@ namespace GameBoy
         Register	BC; /* */
         Register	DE; /* */
         Register	HL; /* */
-        Register	SP = stackPointerAfterStartup; /* Stack pointer */
-        Register	PC = programCounterAfterBootRom; /* Program counter */
+        Register	SP = StackPointerAfterStartup; /* Stack pointer */
+        Register	PC = ProgramCounterAfterBootRom; /* Program counter */
         uint8_t		IE; /* Interrupt Enable Register*/
         
         uint8_t         IF = 0x00;  /* Interrupt Request Flag Register */
         bool            IME = false; /* Interrupt Master Enable */
         InterruptState  stateIME = InterruptState::NONE; /* Helper variable to update the IME at the correct time */
+
+        /**
+         * @brief The JoyPad register.
+         * 
+         * Only the lower 6 bits of this register are used, for 8 different buttons:
+         * 
+         * Bits:      5      |      4      |      3      |      2      |      1      |      0      |    
+         *         Select    |    Select   |    Start\   |    Select\  |      B\     |      A\     |
+         *         Buttons   |    D-Pad    |    Down     |    Pp       |     Left    |     Right   |
+         * 
+         * Bits 5 & 4 are set to 0 to select which set of buttons are pressed.
+         * A pressed button is read as 0 rather than 1. 
+         * 
+         * @note The lower nibble is Read Only.
+         */
+        uint8_t     P1 = JoyPadNoButtonsPressed;  
 
         /**
          * @brief Whether the emulator is set to DMG or CGB mode.
@@ -114,6 +89,11 @@ namespace GameBoy
         uint8_t GetInterruptRequestRegisterValue();
 
         /**
+         * @brief Retrieves the value of the JoyPad (P1) register.
+         */
+        uint8_t GetJoyPadRegisterValue();
+
+        /**
          * @brief Sets the interrupt enable (IE) register.
          */
         void    SetInterruptEnableRegister(const uint8_t value);
@@ -122,6 +102,15 @@ namespace GameBoy
          * @brief Sets the interrupt request (IF) register.
          */
         void    SetInterruptRequestRegister(const uint8_t value);
+
+        /**
+         * @brief Sets the JoyPad (P1) register.
+         * 
+         * @note The lower nibble of this register should be Read Only,
+         * this is not enforced by this function so internal writes can be
+         * done using this function as well.
+         */
+        void    SetJoyPadRegister(const uint8_t value);
 
         /**
          * @brief Used to set a bit inside the flag register

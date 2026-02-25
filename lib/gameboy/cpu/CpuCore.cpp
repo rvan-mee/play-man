@@ -34,6 +34,8 @@ namespace GameBoy
         IF = 0x00;
         IME = false;
         stateIME = InterruptState::NONE;
+
+        P1 = JoyPadNoButtonsPressed;
     }
 
     uint8_t	CpuCore::GetInterruptEnableRegisterValue()
@@ -44,6 +46,11 @@ namespace GameBoy
     uint8_t	CpuCore::GetInterruptRequestRegisterValue()
     {
         return (IF);
+    }
+
+    uint8_t CpuCore::GetJoyPadRegisterValue()
+    {
+        return (P1);
     }
 
     void	CpuCore::SetInterruptEnableRegister(const uint8_t value)
@@ -90,6 +97,45 @@ namespace GameBoy
             LOG_DEBUG("Clearing requested interrupts");
 
         IF = value;
+    }
+
+    void    CpuCore::SetJoyPadRegister(const uint8_t value)
+    {
+        std::stringstream ss;
+
+        if ((value & 0b0011'0000) != (P1 & 0b0011'0000))
+        {
+            ss << "\nButton group change for:\n";
+            AddButtonChangeToStringStream(ss, JoyPadButtonGroup::DIRECTION, value, P1);
+            AddButtonChangeToStringStream(ss, JoyPadButtonGroup::ACTION, value, P1);
+            ss << "\n";
+        }
+
+        // The lower nibble contains which buttons are pressed, this area should
+        // be read only for the memory bus, any writes on these bits should be internal writes.
+        if ((value & 0x0F) != (P1 & 0x0F))
+        {
+            ss << "Button change for\n";
+            if ((value & GetEnumAsValue(JoyPadButtonGroup::DIRECTION)) == 0)
+            {
+                ss << "\tDirection buttons:\n";
+                AddButtonChangeToStringStream(ss, JoyPadDirectionButtons::DOWN, value, P1);
+                AddButtonChangeToStringStream(ss, JoyPadDirectionButtons::UP, value, P1);
+                AddButtonChangeToStringStream(ss, JoyPadDirectionButtons::LEFT, value, P1);
+                AddButtonChangeToStringStream(ss, JoyPadDirectionButtons::RIGHT, value, P1);
+            }
+            if ((value & GetEnumAsValue(JoyPadButtonGroup::ACTION)) == 0)
+            {
+                ss << "\tAction buttons:\n";
+                AddButtonChangeToStringStream(ss, JoyPadActionButtons::START, value, P1);
+                AddButtonChangeToStringStream(ss, JoyPadActionButtons::SELECT, value, P1);
+                AddButtonChangeToStringStream(ss, JoyPadActionButtons::B, value, P1);
+                AddButtonChangeToStringStream(ss, JoyPadActionButtons::A, value, P1);
+            }
+        }
+
+        LOG_DEBUG(ss.str());
+        P1 = value;
     }
 
     void CpuCore::SetFlag(FlagRegisterFlag flag, bool enable)

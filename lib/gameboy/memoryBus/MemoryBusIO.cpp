@@ -26,11 +26,15 @@ namespace GameBoy {
     void MemoryBus::WriteIO(const uint16_t address, const uint8_t value)
     {
         assert(address >= 0xFF00 && address <= 0xFF70);
-        (void) value;
 
         if (address == JoyPadInputAddress)
         {
-            assert(false && "Writing to an unsupported address");
+            // Writes to the JoyPad register can only have effect on the top nibble,
+            // the lower nibble is ReadOnly.
+            const uint8_t joyPadLowerNibble = cpu->GetCpuCore().GetJoyPadRegisterValue() & 0x0F;
+            const uint8_t joyPadPossibleWriteBits = value & 0xF0;
+
+            cpu->GetCpuCore().SetJoyPadRegister(joyPadPossibleWriteBits | joyPadLowerNibble);
         }
         else if (address >= SerialTransferAddressStart && address <= SerialTransferAddressEnd)
         {
@@ -112,7 +116,7 @@ namespace GameBoy {
 
         if (address == JoyPadInputAddress)
         {
-            assert(false && "Reading from an unsupported address");
+            return cpu->GetCpuCore().GetJoyPadRegisterValue();
         }
         else if (address >= SerialTransferAddressStart && address <= SerialTransferAddressEnd)
         {
