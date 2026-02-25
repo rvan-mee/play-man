@@ -105,7 +105,7 @@ uint8_t MemoryBus::ReadByte(const uint16_t address)
     }
     else if (address >= ioAddressStart && address <= ioAddressEnd)
     {
-        assert(false && "Fetching from this memory address is not supported yet!");
+        return ReadIO(address);
     }
     else if (address >= hRamAddressStart && address <= hRamAddressEnd)
     {
@@ -180,7 +180,7 @@ void MemoryBus::WriteByte(const uint16_t address, const uint8_t value)
     }
     else if (address >= ioAddressStart && address <= ioAddressEnd)
     {
-        assert(false && "Writing to this memory address is not supported yet!");
+        WriteIO(address, value);
     }
     else if (address >= hRamAddressStart && address <= hRamAddressEnd)
     {

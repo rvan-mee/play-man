@@ -77,6 +77,7 @@ namespace GameBoy
 		friend struct TestFixtures::GameBoyCpuFixture;
 
         // TODO: Set default values on construction
+        // https://gbdev.io/pandocs/Power_Up_Sequence.html#power-up-sequence
         Register	AF; /* Accumulator & flags */
         Register	BC; /* */
         Register	DE; /* */

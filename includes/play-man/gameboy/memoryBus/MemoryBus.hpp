@@ -83,6 +83,22 @@ namespace GameBoy {
              */
             void PushStack(uint16_t value);
 
+
+        private:
+            /**
+             * @brief Handles writes to the IO register range 0xFF00 - 0xFF70.
+             * 
+             * @param address The address to write the value to (within 0xFF00 - 0xFF70).
+             * @param value The value that will be set to the connected register.
+             */
+            void WriteIO(const uint16_t address, const uint8_t value);
+
+            /**
+             * @brief Handles reads from the IO register range 0xFF00 - 0xFF70.
+             * 
+             * @param address The address to read from (within 0xFF00 - 0xFF70).
+             */
+            uint8_t ReadIO(const uint16_t address);
     };
 
 }
