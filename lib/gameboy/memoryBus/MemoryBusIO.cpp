@@ -19,6 +19,7 @@
 #include <play-man/gameboy/memoryBus/IORangeDefines.hpp>
 #include <play-man/logger/Logger.hpp>
 #include <assert.h>
+#include <pthread.h>
 
 namespace GameBoy {
 
@@ -39,9 +40,9 @@ namespace GameBoy {
         {
             assert(false && "Writing to an unsupported address");
         }
-        else if (address == InterruptsAddress)
+        else if (address == InterruptRequestAddress)
         {
-            assert(false && "Writing to an unsupported address");
+            cpu->GetCpuCore().SetInterruptRequestRegister(value);
         }
         else if (address >= AudioAddressStart && address <= AudioAddressEnd)
         {
@@ -121,9 +122,9 @@ namespace GameBoy {
         {
             assert(false && "Reading from an unsupported address");
         }
-        else if (address == InterruptsAddress)
+        else if (address == InterruptRequestAddress)
         {
-            assert(false && "Reading from an unsupported address");
+            return cpu->GetCpuCore().GetInterruptRequestRegisterValue();
         }
         else if (address >= AudioAddressStart && address <= AudioAddressEnd)
         {

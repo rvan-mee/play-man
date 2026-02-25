@@ -86,7 +86,7 @@ namespace GameBoy
         Register	PC = programCounterAfterBootRom; /* Program counter */
         uint8_t		IE; /* Interrupt Enable Register*/
         
-        uint8_t         IF = 0x00;  /* Interrupt Flag */
+        uint8_t         IF = 0x00;  /* Interrupt Request Flag Register */
         bool            IME = false; /* Interrupt Master Enable */
         InterruptState  stateIME = InterruptState::NONE; /* Helper variable to update the IME at the correct time */
 
@@ -104,14 +104,24 @@ namespace GameBoy
 
     public:
         /**
-         * @brief -.
+         * @brief Retrieves the value inside the interrupt enable (IE) register.
          */
-        uint8_t GetInterruptRegister();
+        uint8_t GetInterruptEnableRegisterValue();
+        
+        /**
+         * @brief Retrieves the value inside the interrupt request (IF) register.
+         */
+        uint8_t GetInterruptRequestRegisterValue();
 
         /**
-         * @brief Sets the interrupt register.
+         * @brief Sets the interrupt enable (IE) register.
          */
-        void    SetInterruptRegister(const uint8_t value);
+        void    SetInterruptEnableRegister(const uint8_t value);
+
+        /**
+         * @brief Sets the interrupt request (IF) register.
+         */
+        void    SetInterruptRequestRegister(const uint8_t value);
 
         /**
          * @brief Used to set a bit inside the flag register

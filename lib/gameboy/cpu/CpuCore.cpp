@@ -17,6 +17,7 @@
 
 #include <play-man/gameboy/cpu/CpuCore.hpp>
 #include <play-man/utility/UtilFunc.hpp>
+#include <play-man/logger/Logger.hpp>
 
 namespace GameBoy
 {
@@ -35,14 +36,60 @@ namespace GameBoy
         stateIME = InterruptState::NONE;
     }
 
-    uint8_t	CpuCore::GetInterruptRegister()
+    uint8_t	CpuCore::GetInterruptEnableRegisterValue()
     {
         return (IE);
     }
 
-    void	CpuCore::SetInterruptRegister(const uint8_t value)
+    uint8_t	CpuCore::GetInterruptRequestRegisterValue()
     {
+        return (IF);
+    }
+
+    void	CpuCore::SetInterruptEnableRegister(const uint8_t value)
+    {
+        std::stringstream ss;
+
+        ss << "Enabling interrupts for: ";
+        if (value & GetEnumAsValue(InterruptFlags::JOYPAD))
+            ss << InterruptFlags::JOYPAD << " ";
+        if (value & GetEnumAsValue(InterruptFlags::LCD))
+            ss << InterruptFlags::LCD << " ";
+        if (value & GetEnumAsValue(InterruptFlags::SERIAL))
+                ss << InterruptFlags::SERIAL << " ";
+        if (value & GetEnumAsValue(InterruptFlags::TIMER))
+            ss << InterruptFlags::TIMER << " ";
+        if (value & GetEnumAsValue(InterruptFlags::VBLANK))
+            ss << InterruptFlags::VBLANK << " ";
+        if (value)
+            LOG_DEBUG(ss.str());
+        if (!value)
+            LOG_DEBUG("Clearing enabled interrupts");
+
         IE = value;
+    }
+
+    void	CpuCore::SetInterruptRequestRegister(const uint8_t value)
+    {
+        std::stringstream ss;
+
+        ss << "Requesting interrupts for: ";
+        if (value & GetEnumAsValue(InterruptFlags::JOYPAD))
+            ss << InterruptFlags::JOYPAD << " ";
+        if (value & GetEnumAsValue(InterruptFlags::LCD))
+            ss << InterruptFlags::LCD << " ";
+        if (value & GetEnumAsValue(InterruptFlags::SERIAL))
+                ss << InterruptFlags::SERIAL << " ";
+        if (value & GetEnumAsValue(InterruptFlags::TIMER))
+            ss << InterruptFlags::TIMER << " ";
+        if (value & GetEnumAsValue(InterruptFlags::VBLANK))
+            ss << InterruptFlags::VBLANK << " ";
+        if (value)
+            LOG_DEBUG(ss.str());
+        if (!value)
+            LOG_DEBUG("Clearing requested interrupts");
+
+        IF = value;
     }
 
     void CpuCore::SetFlag(FlagRegisterFlag flag, bool enable)

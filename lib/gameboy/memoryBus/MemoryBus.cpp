@@ -111,9 +111,9 @@ uint8_t MemoryBus::ReadByte(const uint16_t address)
     {
         return cpu->GetHighRam()[address - hRamAddressStart];
     }
-    else if (address == interruptAddress)
+    else if (address == interruptEnableAddress)
     {
-        return cpu->GetCpuCore().GetInterruptRegister();
+        return cpu->GetCpuCore().GetInterruptEnableRegisterValue();
     }
     else
     {
@@ -186,9 +186,9 @@ void MemoryBus::WriteByte(const uint16_t address, const uint8_t value)
     {
         cpu->GetHighRam()[address - hRamAddressStart] = value;
     }
-    else if (address == interruptAddress)
+    else if (address == interruptEnableAddress)
     {
-        cpu->GetCpuCore().SetInterruptRegister(value);
+        cpu->GetCpuCore().SetInterruptEnableRegister(value);
     }
     else if (address >= wRamAddressStart && address <= wRamAddressEnd)
     {

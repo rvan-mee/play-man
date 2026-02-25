@@ -27,7 +27,7 @@ constexpr uint16_t SerialTransferAddressEnd = 0xFF02;
 constexpr uint16_t TimerAndDividerAddressStart = 0xFF04;
 constexpr uint16_t TimerAndDividerAddressEnd = 0xFF07;
 
-constexpr uint16_t InterruptsAddress = 0xFF0F;
+constexpr uint16_t InterruptRequestAddress = 0xFF0F;
 
 constexpr uint16_t AudioAddressStart = 0xFF10;
 constexpr uint16_t AudioAddressEnd = 0xFF26;

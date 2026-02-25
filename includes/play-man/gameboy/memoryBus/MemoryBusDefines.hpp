@@ -64,7 +64,7 @@ constexpr uint16_t hRamAddressStart = 0xFF80;
 constexpr uint16_t hRamAddressEnd = 0xFFFE;
 
 // Address for the interrupt register 
-constexpr uint16_t interruptAddress = 0xFFFF;
+constexpr uint16_t interruptEnableAddress = 0xFFFF;
 
 // The offset required to reach the right section of memory.
 constexpr uint16_t EchoRamOffset = 0x2000;
