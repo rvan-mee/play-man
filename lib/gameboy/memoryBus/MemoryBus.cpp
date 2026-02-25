@@ -15,8 +15,8 @@
 //                            By: K1ngmar and rvan-mee                            //
 // ****************************************************************************** //
 
-#include <play-man/gameboy/memory/MemoryBus.hpp>
-#include <play-man/gameboy/memory/MemoryBusDefines.hpp>
+#include <play-man/gameboy/memoryBus/MemoryBus.hpp>
+#include <play-man/gameboy/memoryBus/MemoryBusDefines.hpp>
 #include <play-man/logger/Logger.hpp>
 #include <assert.h>
 

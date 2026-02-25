@@ -18,9 +18,8 @@
 #pragma once
 
 #include <play-man/gameboy/ppu/PPUDefines.hpp>
-#include <play-man/gameboy/memory/MemoryDefines.hpp>
+#include <play-man/gameboy/memoryBus/MemoryDefines.hpp>
 #include <stdint.h>
-#include <array>
 
 namespace GameBoy {
 

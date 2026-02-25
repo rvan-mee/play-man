@@ -19,7 +19,7 @@
 
 #include <play-man/settings/PlayManSettings.hpp>
 #include <play-man/gameboy/cartridge/Cartridge.hpp>
-#include <play-man/gameboy/memory/MemoryBus.hpp>
+#include <play-man/gameboy/memoryBus/MemoryBus.hpp>
 #include <play-man/gameboy/opcodes/Opcodes.hpp>
 #include <play-man/gameboy/cpu/Instruction.hpp>
 #include <play-man/containers/EnumIndexableArray.hpp>

@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch_test_macros.hpp>
 #include "play-man/gameboy/cpu/Cpu.hpp"
-#include "play-man/gameboy/memory/MemoryBus.hpp"
+#include "play-man/gameboy/memoryBus/MemoryBus.hpp"
 #include "play-man/settings/PlayManSettings.hpp"
 
 #define GB_ROM_PATH "./test-data/custom_gb_test_roms/"

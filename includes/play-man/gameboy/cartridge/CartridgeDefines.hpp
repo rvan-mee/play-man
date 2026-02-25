@@ -17,9 +17,7 @@
 
 #pragma once
 
-#include <play-man/gameboy/memory/MemoryDefines.hpp>
-
-#include <play-man/gameboy/memory/MemoryDefines.hpp>
+#include <play-man/gameboy/memoryBus/MemoryDefines.hpp>
 
 namespace GameBoy {
 
