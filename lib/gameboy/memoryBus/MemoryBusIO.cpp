@@ -58,7 +58,7 @@ namespace GameBoy {
         }
         else if (address >= PPURegistersAddressStart && address <= PPURegistersAddressEnd)
         {
-            assert(false && "Writing to an unsupported address");
+            ppu->WriteByte(address, value);
         }
         else if (address == BootRomMappingControlAddress)
         {
@@ -140,7 +140,7 @@ namespace GameBoy {
         }
         else if (address >= PPURegistersAddressStart && address <= PPURegistersAddressEnd)
         {
-            assert(false && "Reading from an unsupported address");
+            return ppu->ReadByte(address);
         }
         else if (address == BootRomMappingControlAddress)
         {

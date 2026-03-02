@@ -75,7 +75,7 @@ namespace GameBoy
         Cpu(std::shared_ptr<ACartridge> _cartridge, std::shared_ptr<PlayManSettings> _settings) :
             cartridge(_cartridge),
             ppu(cartridge->GetCgbMode(), this),
-            memoryBus(this),
+            memoryBus(this, &ppu),
             SpeedMultiplier(1),
             CpuCyclesLeft(0),
             settings(_settings)

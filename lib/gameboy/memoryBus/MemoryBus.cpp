@@ -22,7 +22,7 @@
 
 namespace GameBoy {
 
-MemoryBus::MemoryBus(Cpu* _cpu) : cpu(_cpu)
+MemoryBus::MemoryBus(Cpu* _cpu, PPU* _ppu) : cpu(_cpu), ppu(_ppu)
 {
 }
 
