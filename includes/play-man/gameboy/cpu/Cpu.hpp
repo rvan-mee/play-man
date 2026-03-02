@@ -25,6 +25,7 @@
 #include <play-man/containers/EnumIndexableArray.hpp>
 #include <play-man/gameboy/cpu/CpuCore.hpp>
 #include <play-man/gameboy/ppu/PPU.hpp>
+#include <play-man/gameboy/timer/Timer.hpp>
 #include <array>
 #include <stdint.h>
 
@@ -45,6 +46,7 @@ namespace GameBoy
         std::shared_ptr<ACartridge>     cartridge;
         CpuCore                         core;
         PPU                             ppu;
+        Timer                           timer;
         MemoryBus                       memoryBus;
 
         Instruction currentInstruction; /*< The current instruction to execute/is being executed. */
@@ -75,7 +77,8 @@ namespace GameBoy
         Cpu(std::shared_ptr<ACartridge> _cartridge, std::shared_ptr<PlayManSettings> _settings) :
             cartridge(_cartridge),
             ppu(cartridge->GetCgbMode(), this),
-            memoryBus(this, &ppu),
+            timer(this),
+            memoryBus(this, &ppu, &timer),
             SpeedMultiplier(1),
             CpuCyclesLeft(0),
             settings(_settings)

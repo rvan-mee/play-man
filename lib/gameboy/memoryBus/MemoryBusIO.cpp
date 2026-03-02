@@ -42,7 +42,7 @@ namespace GameBoy {
         }
         else if (address >= TimerAndDividerAddressStart && address <= TimerAndDividerAddressEnd)
         {
-            assert(false && "Writing to an unsupported address");
+            timer->WriteByte(address, value);
         }
         else if (address == InterruptRequestAddress)
         {
@@ -124,7 +124,7 @@ namespace GameBoy {
         }
         else if (address >= TimerAndDividerAddressStart && address <= TimerAndDividerAddressEnd)
         {
-            assert(false && "Reading from an unsupported address");
+            return timer->ReadByte(address);
         }
         else if (address == InterruptRequestAddress)
         {

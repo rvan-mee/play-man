@@ -27,11 +27,13 @@ namespace GameBoy {
     // Forward declaration of the CPU class used to access all modules.
     class Cpu;
     class PPU;
+    class Timer;
 
     class MemoryBus {
         private:
-            Cpu* cpu;
-            PPU* ppu;
+            Cpu*   cpu;
+            PPU*   ppu;
+            Timer* timer;
 
             SerialTransfer serialTransfer;
 
@@ -39,7 +41,7 @@ namespace GameBoy {
 
         public:
             MemoryBus() = delete;
-            MemoryBus(Cpu* _cpu, PPU* _ppu);
+            MemoryBus(Cpu* _cpu, PPU* _ppu, Timer* _timer);
 
             /**
              * @brief Passthrough function to call the regular Readbyte,
