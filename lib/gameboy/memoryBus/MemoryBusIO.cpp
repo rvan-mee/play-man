@@ -38,7 +38,7 @@ namespace GameBoy {
         }
         else if (address >= SerialTransferAddressStart && address <= SerialTransferAddressEnd)
         {
-            assert(false && "Writing to an unsupported address");
+            serialTransfer.WriteByte(address, value);
         }
         else if (address >= TimerAndDividerAddressStart && address <= TimerAndDividerAddressEnd)
         {
@@ -120,7 +120,7 @@ namespace GameBoy {
         }
         else if (address >= SerialTransferAddressStart && address <= SerialTransferAddressEnd)
         {
-            assert(false && "Reading from an unsupported address");
+            return serialTransfer.ReadByte(address);
         }
         else if (address >= TimerAndDividerAddressStart && address <= TimerAndDividerAddressEnd)
         {

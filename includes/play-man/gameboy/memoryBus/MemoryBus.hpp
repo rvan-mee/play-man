@@ -19,6 +19,7 @@
 
 #include <play-man/gameboy/cpu/Register.hpp>
 #include <play-man/gameboy/memoryBus/MemoryDefines.hpp>
+#include <play-man/gameboy/memoryBus/SerialTransfer.hpp>
 #include <stdint.h>
 
 namespace GameBoy {
@@ -29,6 +30,8 @@ namespace GameBoy {
     class MemoryBus {
         private:
             Cpu* cpu;
+
+            SerialTransfer serialTransfer;
 
             std::array<WorkRamBank, 8> workRam;
 
