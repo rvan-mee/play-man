@@ -33,6 +33,7 @@ namespace GameBoy
     class CpuCore
     {
         friend class Cpu;
+        friend class Debugger;
 		friend struct TestFixtures::GameBoyCpuFixture;
 
         // TODO: Set default values on construction

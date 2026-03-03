@@ -33,6 +33,9 @@ struct PlayManSettings : public ISettings<PlayManSettings>
 		: logLevel(defaultLogLevel)
 		, logDirectory(defaultLogDirectory)
 		, screenScaleGameBoy(defaultScreenScaleGameBoy)
+		, enableDebuggingGameBoy(defaultEnableDebuggingGameBoy)
+		, enableBreakpointGameBoy(defaultEnableBreakpointGameBoy)
+		, breakpointGameBoy(defaultBreakpointGameBoy)
 	{}
 
 	/**
@@ -56,9 +59,12 @@ struct PlayManSettings : public ISettings<PlayManSettings>
 		logLevel = rhs.logLevel;
 		logDirectory = rhs.logDirectory;
 		screenScaleGameBoy = rhs.screenScaleGameBoy;
+		enableDebuggingGameBoy = rhs.enableDebuggingGameBoy;
+		enableBreakpointGameBoy = rhs.enableBreakpointGameBoy;
+		breakpointGameBoy = rhs.breakpointGameBoy;
 		return *this;
 	}
-	
+
 	Logger::LogLevel logLevel;
 	static constexpr Logger::LogLevel defaultLogLevel = Logger::LogLevel::Normal;
 
@@ -67,6 +73,15 @@ struct PlayManSettings : public ISettings<PlayManSettings>
 
 	size_t screenScaleGameBoy;
 	static constexpr size_t defaultScreenScaleGameBoy = 4;
+
+	bool enableDebuggingGameBoy;
+	static constexpr bool defaultEnableDebuggingGameBoy = false;
+
+	bool enableBreakpointGameBoy;
+	static constexpr bool defaultEnableBreakpointGameBoy = false;
+
+	uint16_t breakpointGameBoy;
+	static constexpr uint16_t defaultBreakpointGameBoy = 0x0000;
 };
 
 /**

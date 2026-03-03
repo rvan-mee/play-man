@@ -120,9 +120,15 @@ namespace GameBoy
 
             // Check if an interrupt handler was called
             if (CpuCyclesLeft != 0)
+            {
+                debugger.HandleDebug();
                 return ;
+            }
 
             FetchInstruction();
+
+            debugger.HandleDebug();
+
             ExecuteInstruction();
 
             // If an EI instruction is called we need to update the IME flag at the right time

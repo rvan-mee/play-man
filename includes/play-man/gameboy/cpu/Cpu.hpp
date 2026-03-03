@@ -26,6 +26,7 @@
 #include <play-man/gameboy/cpu/CpuCore.hpp>
 #include <play-man/gameboy/ppu/PPU.hpp>
 #include <play-man/gameboy/timer/Timer.hpp>
+#include <play-man/gameboy/cpu/Debugger.hpp>
 #include <array>
 #include <stdint.h>
 
@@ -48,6 +49,9 @@ namespace GameBoy
         PPU                             ppu;
         Timer                           timer;
         MemoryBus                       memoryBus;
+
+        Debugger                        debugger;
+        friend class Debugger;
 
         Instruction currentInstruction; /*< The current instruction to execute/is being executed. */
 
@@ -79,6 +83,7 @@ namespace GameBoy
             ppu(cartridge->GetCgbMode(), this),
             timer(this),
             memoryBus(this, &ppu, &timer),
+            debugger(this, _settings),
             SpeedMultiplier(1),
             CpuCyclesLeft(0),
             settings(_settings)
@@ -193,6 +198,12 @@ namespace GameBoy
         void RenderFrame();
 
     private:
+
+        /**
+         * @brief If enabled in the settings, it will allow debug events
+         * such as breakpoints to be handled.
+         */
+        void HandleDebug();
 
         /**
          * @brief The IME flag can be enabled using the EI instruction, however it's
