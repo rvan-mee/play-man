@@ -19,11 +19,53 @@
 #include <readline/readline.h>
 
 #include <iostream>
+#include <stdlib.h>
 
 #include <play-man/gameboy/cpu/Debugger.hpp>
 #include <play-man/utility/UtilFunc.hpp>
 
 namespace GameBoy {
+
+    const char* options[] = {"help", "h", "p", "print" "step", "s", "c", "continue", "b", "break", "c", "up", "do", "down", NULL};
+
+    static char* CompleterGenerator(const char* text, int state)
+    {
+        static int  list_index;
+        static int  len;
+        const char* name;
+
+        // First call to the generator for a new prompt will have the state as zero
+        if (state == 0) {
+            list_index = 0;
+            len        = strlen(text);
+        }
+
+        name = options[list_index];
+        while (name != NULL) {
+            list_index++;
+            if (strncmp(name, text, len) == 0) {
+                return strdup(name);
+            }
+            name = options[list_index];
+        }
+
+        return NULL;
+    }
+
+    /**
+     * Supposed to return NULL on no match found, or an array of options following a NULL.
+     * rl_completion_matches creates this array for us.
+     */
+    static char** Completer(const char* text, int start, int end)
+    {
+        (void)start;
+        (void)end;
+
+        // Don't fall back on default completion if no match is found
+        rl_attempted_completion_over = 1;
+
+        return rl_completion_matches(text, CompleterGenerator);
+    }
 
     Debugger::Debugger(Cpu* _cpu, std::shared_ptr<PlayManSettings> _settings) : cpu(_cpu), settings(_settings), enabled(settings.get()->enableDebuggingGameBoy)
     {
@@ -38,6 +80,8 @@ namespace GameBoy {
         }
         else
             state = DebuggerState::STEPPING;
+
+        rl_attempted_completion_function = &Completer;
     }
 
     Debugger::~Debugger()
@@ -69,6 +113,19 @@ namespace GameBoy {
 
     }
 
+    void Debugger::PrintHelp()
+    {
+        std::cout << "Available options: ";
+        std::cout << "    h/help       : You just ran this command!\n";
+        std::cout << "    p/print      : Prints the state of the CPU.\n";
+        std::cout << "    s/step       : Single step, executes the current instruction.\n";
+        std::cout << "    c/continue   : Continue to the next breakpoint, or till the end.\n";
+        std::cout << "    b/breakpoint : Set a breakpoint.\n";
+        std::cout << "    up           : .\n";
+        std::cout << "    do/down      : .\n";
+        std::cout << "    o/over       : .\n";
+    }
+
     bool Debugger::IsReturn(OpCode opCode)
     {
         if (opCode == OpCode::RET    || \
@@ -94,104 +151,25 @@ namespace GameBoy {
 
     bool Debugger::HandleUserInput(std::string userInput, bool currentInstIsCall)
     {
-        userInput.split();
+        (void) userInput;
+        (void) currentInstIsCall;
+        return false;
     }
 
     static void PrintCurrentPC(Instruction currentInst, uint16_t pc)
     {
-        std::cout << Utility::IntAsHexString(pc) << ": " << currentInst.OpCodeAsHexString() << ": ";
+        std::cout << Utility::IntAsHexString(pc) << ": " << currentInst.OpCodeAsHexString() << "> ";
         if (currentInst.IsPrefixed())
             std::cout << currentInst.GetPrefixedOpCode() << "\n";
         else
             std::cout << currentInst.GetOpCode() << "\n";
     }
 
-    const char* optionsNoCall[] = {"help", "h", "step", "s", "r", "run", "b", "break", "c", NULL};
-    const char* optionsCall[] = {"help", "h", "step", "s", "b", "break", "c", "terminate", NULL};
-
-    static char* CompleterGeneratorNoCall(const char* text, int state)
-    {
-        static int  list_index;
-        static int  len;
-        const char* name;
-
-        // First call to the generator for a new prompt will have the state as zero
-        if (state == 0) {
-            list_index = 0;
-            len        = strlen(text);
-        }
-
-        name = optionsNoCall[list_index];
-        while (name != NULL) {
-            list_index++;
-            if (strncmp(name, text, len) == 0) {
-                return strdup(name);
-            }
-            name = optionsNoCall[list_index];
-        }
-
-        return NULL;
-    }
-
-    /**
-     * Supposed to return NULL on no match found, or an array of options following a NULL.
-     * rl_completion_matches creates this array for us.
-     */
-    static char** CompleterNoCall(const char* text, int start, int end)
-    {
-        (void)start;
-        (void)end;
-
-        // Don't fall back on default completion if no match is found
-        rl_attempted_completion_over = 1;
-
-        return rl_completion_matches(text, CompleterGeneratorNoCall);
-    }
-
-    static char* CompleterGeneratorCall(const char* text, int state)
-    {
-        static int  list_index;
-        static int  len;
-        const char* name;
-
-        // First call to the generator for a new prompt will have the state as zero
-        if (state == 0) {
-            list_index = 0;
-            len        = strlen(text);
-        }
-
-        name = optionsCall[list_index];
-        while (name != NULL) {
-            list_index++;
-            if (strncmp(name, text, len) == 0) {
-                return strdup(name);
-            }
-            name = optionsCall[list_index];
-        }
-
-        return NULL;
-    }
-
-    /**
-     * Supposed to return NULL on no match found, or an array of options following a NULL.
-     * rl_completion_matches creates this array for us.
-     */
-    static char** CompleterCall(const char* text, int start, int end)
-    {
-        (void)start;
-        (void)end;
-
-        // Don't fall back on default completion if no match is found
-        rl_attempted_completion_over = 1;
-
-        return rl_completion_matches(text, CompleterGeneratorCall);
-    }
-
     void Debugger::HandleDebug()
     {   
         if (!enabled)
             return ;
-        
+
         uint16_t  currentPC = cpu->GetCpuCore().PC.Value();
         bool      currentInstIsCall = false;
         bool      shouldPrompt;
@@ -207,6 +185,8 @@ namespace GameBoy {
             {
                 uint16_t currentReturnAddress = calledFunctions.top();
                 calledFunctions.pop();
+
+                (void) currentReturnAddress;
 
                 if (state == DebuggerState::RETURNING)
                 {
@@ -226,22 +206,13 @@ namespace GameBoy {
 
         PrintCurrentPC(cpu->currentInstruction, currentPC);
 
-        if (shouldPrompt)
+        while (shouldPrompt)
         {
-            if (currentInstIsCall)
-                rl_attempted_completion_function = &CompleterCall;
-            else
-                rl_attempted_completion_function = &CompleterNoCall;
+            char*   userInput = readline("Debugger >");
 
-            while (true)
-            {
-                const char* userInput = readline("Debugger >");
-                const shouldBreak = handleUserInput(userInput, currentInstIsCall);
+            shouldPrompt = HandleUserInput(userInput, currentInstIsCall);
 
-                free(userInput);
-                if (shouldBreak)
-                    break ;
-            }
+            free(userInput);
         }
     }
 

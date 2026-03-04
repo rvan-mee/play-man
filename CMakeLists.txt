@@ -44,6 +44,7 @@ include_directories(${INCLUDE_DIR})
 
 set(LIBRARY_NAME play-man.lib)
 set(EXECUTABLE_NAME play-man)
+set(READLINE_INCLUDE_DIR "/usr/include/readline")
 
 # Collect all source files
 file(GLOB_RECURSE LIB_SOURCES "${LIB_DIR}/*.cpp")
@@ -61,6 +62,7 @@ target_include_directories(
 	PUBLIC ${CMAKE_SOURCE_DIR}/includes
 	PUBLIC external-libs/json/include
 	PUBLIC external-libs/SDL/include
+	PRIVATE ${READLINE_INCLUDE_DIR}
 )
 
 # Create the executable target
@@ -72,6 +74,7 @@ target_link_libraries(
 	PRIVATE ${LIBRARY_NAME}
 	PRIVATE nlohmann_json::nlohmann_json
 	PRIVATE SDL3::SDL3
+	PRIVATE readline
 )
 
 

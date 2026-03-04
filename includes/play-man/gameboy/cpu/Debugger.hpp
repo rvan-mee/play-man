@@ -23,6 +23,7 @@
 
 #include <play-man/settings/PlayManSettings.hpp>
 #include <play-man/utility/EnumMacro.hpp>
+#include <play-man/gameboy/opcodes/Opcodes.hpp>
 
 namespace GameBoy {
 
@@ -66,6 +67,16 @@ namespace GameBoy {
          * @brief Sets a breakpoint for when the program counter hits a specific value.
          */
         void SetBreakpoint();
+
+        /**
+         * @brief Prints helpful information of the debugger to the stdout.
+         */
+        void PrintHelp();
+
+        /**
+         * @brief Prints the state of the CPU to the stdout.
+         */
+        void PrintState();
 
         /**
          * @brief If the given opcode is a return instruction.

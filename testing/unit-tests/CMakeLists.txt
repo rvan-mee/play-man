@@ -27,6 +27,7 @@ add_executable(${GAMEBOY_UNIT_TEST_EXECUTABLE}
 target_link_libraries(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE ${LIBRARY_NAME})
 target_link_libraries(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE SDL3::SDL3)
+target_link_libraries(${GAMEBOY_UNIT_TEST_EXECUTABLE} PRIVATE readline)
 
 set(UTILITY_UNIT_TEST_EXECUTABLE utility-unit-tests)
 add_executable(${UTILITY_UNIT_TEST_EXECUTABLE}
