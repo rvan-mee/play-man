@@ -24,6 +24,8 @@
 #include <play-man/gameboy/cpu/Debugger.hpp>
 #include <play-man/utility/UtilFunc.hpp>
 
+#define PROMPT "Debugger >"
+
 namespace GameBoy {
 
     const char* options[] = {"help", "h", "p", "print" "step", "s", "c", "continue", "b", "break", "c", "up", "do", "down", NULL};
@@ -88,42 +90,42 @@ namespace GameBoy {
     {
     }
 
-    void Debugger::StepInstruction()
+    bool Debugger::StepInstruction()
     {
 
     }
 
-    void Debugger::StepOver()
+    bool Debugger::StepOver()
     {
 
     }
 
-    void Debugger::StepIn()
+    bool Debugger::StepIn()
     {
 
     }
 
-    void Debugger::StepOut()
+    bool Debugger::StepOut(std::string& userInput)
     {
 
     }
 
-    void Debugger::SetBreakpoint()
+    bool Debugger::SetBreakpoint(std::string& userInput)
     {
 
     }
 
-    void Debugger::PrintHelp()
+    bool Debugger::PrintHelp()
     {
         std::cout << "Available options: ";
-        std::cout << "    h/help       : You just ran this command!\n";
-        std::cout << "    p/print      : Prints the state of the CPU.\n";
-        std::cout << "    s/step       : Single step, executes the current instruction.\n";
-        std::cout << "    c/continue   : Continue to the next breakpoint, or till the end.\n";
-        std::cout << "    b/breakpoint : Set a breakpoint.\n";
-        std::cout << "    up           : .\n";
-        std::cout << "    do/down      : .\n";
-        std::cout << "    o/over       : .\n";
+        std::cout << "    h/help           : You just ran this command!\n";
+        std::cout << "    p/print          : Prints the state of the CPU.\n";
+        std::cout << "    s/step           : Single step, executes the current instruction.\n";
+        std::cout << "    c/continue       : Continue to the next breakpoint, or till the end.\n";
+        std::cout << "    b/breakpoint [n] : Set a breakpoint.\n";
+        std::cout << "    up [n]           : Go up one or [n] stack levels, to the calling function.\n";
+        std::cout << "    do/down          : Go down one stack level, to the next called function.\n";
+        std::cout << "    o/over           : Jump over the current function call.\n";
     }
 
     bool Debugger::IsReturn(OpCode opCode)
@@ -149,11 +151,76 @@ namespace GameBoy {
         return false;
     }
 
-    bool Debugger::HandleUserInput(std::string userInput, bool currentInstIsCall)
+    static std::vector<std::string> splitString(const std::string& input, char delimiter) {
+        std::vector<std::string> tokens;
+        std::stringstream ss(input);
+        std::string token;
+
+        while (std::getline(ss, token, delimiter)) {
+            tokens.push_back(token);
+        }
+
+        return tokens;
+    }
+
+    DebuggerCommands Debugger::GetUserCommandType(std::string& userInput)
     {
-        (void) userInput;
-        (void) currentInstIsCall;
-        return false;
+        if (!userInput.size())
+            return DebuggerCommands::INVALID;
+
+        std::vector<std::string> splitInput = splitString(userInput, ' ');
+
+        if (!splitInput[0].size())
+            return DebuggerCommands::INVALID;
+        if (splitInput[0] == "h" || splitInput[0] == "help")
+            return DebuggerCommands::HELP;
+        if (splitInput[0] == "p" || splitInput[0] == "print")
+            return DebuggerCommands::PRINT;
+        if (splitInput[0] == "s" || splitInput[0] == "step")
+            return DebuggerCommands::STEP;
+        if (splitInput[0] == "c" || splitInput[0] == "continue")
+            return DebuggerCommands::CONTINUE;
+        if (splitInput[0] == "b" || splitInput[0] == "breakpoint")
+            return DebuggerCommands::BREAKPOINT;
+        if (splitInput[0] == "up")
+            return DebuggerCommands::UP;
+        if (splitInput[0] == "do" || splitInput[0] == "down")
+            return DebuggerCommands::DOWN;
+        if (splitInput[0] == "0" || splitInput[0] == "over")
+            return DebuggerCommands::STEP_OVER;
+
+        return DebuggerCommands::INVALID;
+    }
+
+    bool Debugger::HandleUserInput(std::string userInput)
+    {
+        DebuggerCommands commandType = GetUserCommandType(userInput);
+
+        switch(commandType)
+        {
+            case DebuggerCommands::HELP:
+                return PrintHelp();
+            case DebuggerCommands::PRINT:
+                return PrintState();
+            case DebuggerCommands::STEP:
+                return StepInstruction();
+            case DebuggerCommands::CONTINUE:
+               return Continue();
+            case DebuggerCommands::BREAKPOINT:
+                return SetBreakpoint(userInput);
+            case DebuggerCommands::UP:
+                return StepOut(userInput);
+            case DebuggerCommands::DOWN:
+                return StepIn();
+            case DebuggerCommands::STEP_OVER:
+                return StepOver();
+            case DebuggerCommands::INVALID:
+            default:
+            {
+                std::cout << PROMPT << " Unknown command: " << userInput << std::endl;
+                return true;
+            }
+        }
     }
 
     static void PrintCurrentPC(Instruction currentInst, uint16_t pc)
@@ -171,10 +238,7 @@ namespace GameBoy {
             return ;
 
         uint16_t  currentPC = cpu->GetCpuCore().PC.Value();
-        bool      currentInstIsCall = false;
-        bool      shouldPrompt;
-
-        shouldPrompt = state == DebuggerState::STEPPING;
+        bool      shouldPrompt = (state == DebuggerState::STEPPING);
 
         // Check if the current instruction is a call or a return:
         if (!cpu->currentInstruction.IsPrefixed())
@@ -196,9 +260,9 @@ namespace GameBoy {
             }
             else if (IsCall(cpu->currentInstruction.GetOpCode()))
             {
-                if (state != DebuggerState::RETURNING && state != DebuggerState::STEP_OVER)
-                    calledFunctions.push(currentPC);
-                currentInstIsCall = true;
+                calledFunctions.push(currentPC);
+                if (state == )
+                returnableAddresses
             }
         }
         else
@@ -208,9 +272,9 @@ namespace GameBoy {
 
         while (shouldPrompt)
         {
-            char*   userInput = readline("Debugger >");
+            char*   userInput = readline(PROMPT);
 
-            shouldPrompt = HandleUserInput(userInput, currentInstIsCall);
+            shouldPrompt = HandleUserInput(userInput);
 
             free(userInput);
         }
