@@ -34,8 +34,7 @@ struct PlayManSettings : public ISettings<PlayManSettings>
 		, logDirectory(defaultLogDirectory)
 		, screenScaleGameBoy(defaultScreenScaleGameBoy)
 		, enableDebuggingGameBoy(defaultEnableDebuggingGameBoy)
-		, enableBreakpointGameBoy(defaultEnableBreakpointGameBoy)
-		, breakpointGameBoy(defaultBreakpointGameBoy)
+		, breakpointsGameBoy(defaultBreakpointsGameBoy)
 	{}
 
 	/**
@@ -60,8 +59,7 @@ struct PlayManSettings : public ISettings<PlayManSettings>
 		logDirectory = rhs.logDirectory;
 		screenScaleGameBoy = rhs.screenScaleGameBoy;
 		enableDebuggingGameBoy = rhs.enableDebuggingGameBoy;
-		enableBreakpointGameBoy = rhs.enableBreakpointGameBoy;
-		breakpointGameBoy = rhs.breakpointGameBoy;
+		breakpointsGameBoy = rhs.breakpointsGameBoy;
 		return *this;
 	}
 
@@ -77,11 +75,8 @@ struct PlayManSettings : public ISettings<PlayManSettings>
 	bool enableDebuggingGameBoy;
 	static constexpr bool defaultEnableDebuggingGameBoy = false;
 
-	bool enableBreakpointGameBoy;
-	static constexpr bool defaultEnableBreakpointGameBoy = false;
-
-	uint16_t breakpointGameBoy;
-	static constexpr uint16_t defaultBreakpointGameBoy = 0x0000;
+	std::vector<uint16_t> breakpointsGameBoy;
+	static constexpr std::vector<uint16_t> defaultBreakpointsGameBoy = {};
 };
 
 /**

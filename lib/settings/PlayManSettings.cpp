@@ -23,6 +23,8 @@ void to_json(nlohmann::json& j, const PlayManSettings& p)
 		{"logLevel", p.logLevel},
 		{"logDirectory", p.logDirectory},
 		{"screenScaleGameBoy", p.screenScaleGameBoy},
+		{"enableDebuggingGameBoy", p.enableDebuggingGameBoy},
+		{"breakpointsGameBoy", p.breakpointsGameBoy},
 	};
 }
 
@@ -31,4 +33,6 @@ void from_json(const nlohmann::json& j, PlayManSettings& p)
 	p.logLevel = j.value<Logger::LogLevel>("logLevel", PlayManSettings::defaultLogLevel);
 	p.logDirectory = j.value<std::filesystem::path>("logDirectory", PlayManSettings::defaultLogDirectory);
 	p.screenScaleGameBoy = j.value<size_t>("screenScaleGameBoy", PlayManSettings::defaultScreenScaleGameBoy);
+	p.enableDebuggingGameBoy = j.value<bool>("enableDebuggingGameBoy", PlayManSettings::defaultEnableDebuggingGameBoy);
+	p.breakpointsGameBoy = j.value<std::vector<uint16_t>>("breakpointsGameBoy", PlayManSettings::defaultBreakpointsGameBoy);
 }

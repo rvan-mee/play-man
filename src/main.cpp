@@ -41,6 +41,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
 	(void)argc;
 	(void)argv;
 
+    SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");
+
     std::shared_ptr<PlayManSettings> settings = PlayManSettings::ReadFromFile("settings.json");
     Logger::LogInterface::Initialize("Logging", Logger::LogLevel::Debug);
     Graphics::UserInterface::Initialize();

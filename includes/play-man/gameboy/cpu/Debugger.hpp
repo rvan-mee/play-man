@@ -34,25 +34,31 @@ namespace GameBoy {
         x(n, BREAKPOINT,  0)  \
         x(n, STEPPING,    1)  \
         x(n, RETURNING,   2)  \
-        x(n, STEP_OVER,   3)
+        x(n, STEP_OVER,   3)  \
+        x(n, STEP_DOWN,   4)
 
     CREATE_ENUM_WITH_UTILS(DEBUGGER_STATE_SEQ, DebuggerState)
     #undef DEBUGGER_STATE_SEQ
 
     #define DEBUGGER_COMMANDS_SEQ(x, n) \
-        x(n, HELP,       0)  \
-        x(n, PRINT,      1)  \
-        x(n, STEP,       2)  \
-        x(n, CONTINUE,   3)  \
-        x(n, BREAKPOINT, 4)  \
-        x(n, UP,         5)  \
-        x(n, DOWN,       6)  \
-        x(n, STEP_OVER,  7)  \
-        x(n, INVALID,    8)
+        x(n, HELP,             0)  \
+        x(n, PRINT,            1)  \
+        x(n, STEP,             2)  \
+        x(n, CONTINUE,         3)  \
+        x(n, BREAKPOINT,       4)  \
+        x(n, LIST_BREAKPOINTS, 5)  \
+        x(n, UP,               6)  \
+        x(n, DOWN,             7)  \
+        x(n, STEP_OVER,        8)  \
+        x(n, INVALID,          9)
 
     CREATE_ENUM_WITH_UTILS(DEBUGGER_COMMANDS_SEQ, DebuggerCommands)
     #undef DEBUGGER_COMMANDS_SEQ
 
+    /**
+     * @brief A messy debugger class used to debug instructions and the CPU core
+     *        after an instruction has been fetched inside the CPU.
+     */
     class Debugger
     {
     private:
@@ -60,23 +66,23 @@ namespace GameBoy {
         /**
          * @brief Execute and step over the current instructions.
          * 
-         * @return True if the user should be prompted again.
+         * @return False.
          */
         bool StepInstruction();
 
         /**
          * @brief Steps over a 'call' instruction.
          * 
-         * @return True if the user should be prompted again.
+         * @return False.
          */
         bool StepOver();
 
         /**
-         * @brief Goes into the next 'call' instruction.
+         * @brief Continues till the next 'call' instruction.
          * 
-         * @return True if the user should be prompted again.
+         * @return False.
          */
-        bool StepIn();
+        bool StepDown();
 
         /**
          * @brief Completes the current call, returns to the calling function.
@@ -89,9 +95,16 @@ namespace GameBoy {
         /**
          * @brief Sets a breakpoint for when the program counter hits a specific value.
          * 
-         * @return True if the user should be prompted again.
+         * @return True.
          */
         bool SetBreakpoint(std::string& userInput);
+
+        /**
+         * @brief Lists the current breakpoints.
+         * 
+         * @return True.
+         */
+        bool ListBreakpoints();
 
         /**
          * @brief Prints helpful information of the debugger to the stdout.
@@ -111,7 +124,7 @@ namespace GameBoy {
          * @brief Sets the debugger in a state that it will continue to the next breakpoint,
          * or the end of the program.
          * 
-         * @return True if the user should be prompted again.
+         * @return False.
          */
         bool Continue();
 
@@ -138,22 +151,24 @@ namespace GameBoy {
         bool HandleUserInput(std::string userInput);
 
         /**
-         * @brief Stores the return addresses of called functions to support stepping out.
+         * @brief Stores the return addresses of called functions.
          */
         std::stack<uint16_t> calledFunctions;
 
         /**
          * @brief Stores the possible return addresses a user can 'StepOut/d/down' to.
+         * This is different from the 'calledFunctions', since a new function can be called
+         * whilst the state is in 'RETURNING'.
          */
         std::stack<uint16_t> returnableAddresses;
 
         /**
-         * @brief If we need to look for a breakpoint.
+         * @brief The amount of times the debugger will 'return' from a call.
          */
-        bool   breakpointEnabled;
+        size_t  currentReturnCount;
 
         /**
-         * @brief The current set breakpoint.
+         * @brief The current set breakpoints.
          */
         std::vector<uint16_t> breakpoints;
 

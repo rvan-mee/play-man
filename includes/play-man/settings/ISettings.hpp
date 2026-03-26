@@ -72,7 +72,12 @@ public:
 		try {
 			settingsAsJson = Utility::Json::ReadJsonFromFile(fileToReadSettingsFrom);
 		}
-		catch (const std::exception&)
+		catch (const nlohmann::json::parse_error& er)
+		{
+			std::cerr << "Error parsing json file: `" << er.what() << "`\n";
+			std::cerr << "Using default settings instead\n";
+		}
+		catch (const std::exception& e)
 		{
 			std::cerr << "Could not find setings file, using default settings instead." << std::endl;
 		}
