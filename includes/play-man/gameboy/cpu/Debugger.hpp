@@ -50,7 +50,8 @@ namespace GameBoy {
         x(n, UP,               6)  \
         x(n, DOWN,             7)  \
         x(n, STEP_OVER,        8)  \
-        x(n, INVALID,          9)
+        x(n, BINARY_DUMP,      9)  \
+        x(n, INVALID,          10)
 
     CREATE_ENUM_WITH_UTILS(DEBUGGER_COMMANDS_SEQ, DebuggerCommands)
     #undef DEBUGGER_COMMANDS_SEQ
@@ -127,6 +128,15 @@ namespace GameBoy {
          * @return False.
          */
         bool Continue();
+
+        /**
+         * @brief Dumps the binary after the current PC.
+         * 
+         * @note Fails if the current PC is outside of the ROM address range.
+         * 
+         * @return True. 
+         */
+        bool DumpBinary(const std::string& userInput);
 
         /**
          * @brief If the given opcode is a return instruction.

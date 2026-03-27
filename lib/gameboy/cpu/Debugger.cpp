@@ -32,7 +32,7 @@
 namespace GameBoy {
 
     const char* options[] = {"help", "h", "p", "print" "step", "s", "c", "continue", \
-                             "b", "breakpoint", "lb", "list", "up", "do", "down", NULL};
+                             "b", "breakpoint", "lb", "list", "up", "do", "down", "db", "dump", NULL};
 
     static char* CompleterGenerator(const char* text, int state)
     {
@@ -208,8 +208,56 @@ namespace GameBoy {
         std::cout << "    up [n]           : Go up one or [n] stack levels, to the calling function.\n";
         std::cout << "    do/down          : Go down one stack level, to the next called function.\n";
         std::cout << "    o/over           : Jump over the current function call.\n";
+        std::cout << "    db/dump [n]      : Dumps [n] lines of binary from the current PC\n";
 
         return PROMPT_AGAIN;
+    }
+
+    bool Debugger::DumpBinary(const std::string& userInput)
+    {
+        size_t startIndex = 2;
+
+        // If breakpoint is given as opposed to just 'db'
+        if (userInput.starts_with("dump"))
+            startIndex = 5;
+
+        // Skip any spaces after the command
+        startIndex = userInput.find_first_not_of(" ", startIndex);
+
+        try
+        {
+            int32_t linesToDump = std::stoi(userInput.substr(startIndex, userInput.size()));
+
+            // Check for the ROM address range:
+            if (linesToDump < 0)
+                throw std::exception();
+
+            uint16_t address = cpu->GetCpuCore().PC.Value();
+
+            // Don't check for things outside of the ROM range.
+            if (address >= 0x7FFF)
+            {
+                std::cout << "Currently outside of the ROM range\n";
+                return PROMPT_AGAIN;
+            }
+
+            int32_t linesDumped = 0;
+            while (linesDumped != linesToDump && address <= 0x7FFF)
+            {
+                const uint8_t byteAtPC = cpu->GetMemoryBus().ReadByte(address);
+
+                std::cout << "[" << Utility::IntAsHexString(address) << "] " << Utility::IntAsHexString(byteAtPC) << "\n";
+
+                address++;
+                linesToDump--;
+            }
+            return PROMPT_AGAIN;
+        }
+        catch(const std::exception& e)
+        {
+            std::cout << "Invalid input: `" << userInput << "`\n";
+            return PROMPT_AGAIN;
+        }
     }
 
     bool Debugger::IsReturn(OpCode opCode)
@@ -274,6 +322,8 @@ namespace GameBoy {
             return DebuggerCommands::DOWN;
         if (splitInput[0] == "0" || splitInput[0] == "over")
             return DebuggerCommands::STEP_OVER;
+        if (splitInput[0] == "db" || splitInput[0] == "dump")
+            return DebuggerCommands::BINARY_DUMP;
 
         return DebuggerCommands::INVALID;
     }
@@ -302,6 +352,8 @@ namespace GameBoy {
                 return StepDown();
             case DebuggerCommands::STEP_OVER:
                 return StepOver();
+            case DebuggerCommands::BINARY_DUMP:
+                return DumpBinary(userInput);
             case DebuggerCommands::INVALID:
             default:
             {
