@@ -79,10 +79,10 @@ target_link_libraries(
 
 
 # Enable fsan (Do so in the unit test cmake as well)
-# target_compile_options(${LIBRARY_NAME} PRIVATE -fsanitize=address)
+# target_compile_options(${LIBRARY_NAME} PRIVATE -fsanitize=address -g)
 # target_link_options(${LIBRARY_NAME} PRIVATE -fsanitize=address)
 
-# target_compile_options(${EXECUTABLE_NAME} PRIVATE -fsanitize=address)
+# target_compile_options(${EXECUTABLE_NAME} PRIVATE -fsanitize=address -g)
 # target_link_options(${EXECUTABLE_NAME} PRIVATE -fsanitize=address)
 
 #
