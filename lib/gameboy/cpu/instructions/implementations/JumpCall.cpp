@@ -45,12 +45,9 @@ namespace GameBoy {
 
     size_t Cpu::Jump_Relative_8bit_SignedImmediateData()
     {
-        const uint8_t dist = FetchPcAddress();
+        const int8_t dist = static_cast<int8_t>(FetchPcAddress());   
 
-        if (dist > 127)
-            core.PC -= dist;
-        else
-            core.PC += dist;
+        core.PC += dist;
 
         constexpr auto numberOfCycles = 3;
         return numberOfCycles;
@@ -59,16 +56,13 @@ namespace GameBoy {
     size_t Cpu::Jump_Relative_Conditional_8bit_SignedImmediateData(FlagRegisterFlag flag, bool flagCondition)
     {
         const bool flagSet = core.GetFlag(flag);
-        const auto dist = FetchPcAddress();
+        const int8_t dist = static_cast<int8_t>(FetchPcAddress());
         auto numberOfCycles = 2;
 
         if (flagSet == flagCondition)
         {
             numberOfCycles += 1;
-            if (dist > 127)
-                core.PC -= dist;
-            else
-                core.PC += dist;
+            core.PC += dist;
         }
         return numberOfCycles;
     }
