@@ -4,6 +4,8 @@
 #include "play-man/gameboy/memoryBus/MemoryBus.hpp"
 #include "play-man/settings/PlayManSettings.hpp"
 
+#include "play-man/logger/Logger.hpp"
+
 #define GB_ROM_PATH "./test-data/custom_gb_test_roms/"
 #define SETTINGS_FILE "./test-data/settings/settings.json"
 
@@ -28,6 +30,12 @@ namespace TestFixtures
 			, IE(cpu.core.IE)
 		{
 			ClearRegisters();
+			Logger::LogInterface::Initialize("Logging", Logger::LogLevel::None);
+		}
+
+		~GameBoyCpuFixture()
+		{
+			Logger::LogInterface::GetInstance().reset();
 		}
 
 		GameBoy::Cpu 		cpu;
