@@ -173,7 +173,7 @@ uint32_t PPU::GetBackgroundPixelColor(FiFoEntry pixelData)
         const uint8_t shade = (BGPregister >> (colorIndex * BackgroundPaletteIndexShiftSize)) & BackgroundShadeMaskDMG;
 
         assert(colorModeDMG == BlackAndWhitePixelsDMG || colorModeDMG == GreenPixelsDMG);
-        assert(shade >= 0 && shade <= 4);
+        assert(shade >= 0 && shade <= 3);
 
         return ColorsDMG[colorModeDMG][shade];
     }
