@@ -200,15 +200,42 @@ void    PPU::WriteByte(uint16_t address, uint8_t value)
         case (AddressLCDC):
         {
             LCDCregister = value;
-            // TODO: check if this is correct
-            // if (LCDCregister & WindowEnableMask)
-            //     backgroundFiFo.EnableWindow(scanlineX);
+
+            std::stringstream ss;
+            ss << "Write to the LCDC register:\n";
+            ss << "LCD enabled: " << (value & LCDandPPUenableMask ? "enabled" : "disabled") << "\n";
+            ss << "Window tile map: " << (value & WindowTileMapAreaMask ? "0x9C00" : "0x9800") << "\n";
+            ss << "Window enable: " << (value & WindowEnableMask ? "enabled" : "disabled") << "\n";
+            ss << "Background and window tile data: " << (value & BackgroundWindowTileDataAreaMask ? "0x8000" : "0x8800") << "\n";
+            ss << "Background tile map: " << (value & BackgroundTilemapAreaMask ? "0x9C00" : "0x9800") << "\n";
+            ss << "Object size: " << (value & ObjectSizeMask ? "8x16" : "8x8") << "\n";
+            ss << "Object enable: " << (value & ObjectEnableMask ? "enabled" : "disabled") << "\n";
+
+            if (CgbMode == true)
+                ss << "Background and window master priority: " << (value & BackgroundWindowEnablePriorityMask ? "set" : "unset") << "\n";
+            else
+                ss << "Background and window display: " << (value & BackgroundWindowEnablePriorityMask ? "displaying tiles" : "blanked out") << "\n";
+
+            LOG_DEBUG(ss.str());
+
             break;
         }
         case (AddressSTAT):
         {
             const uint8_t ppuModeBits = (STATregister & PPUModeMask);
-            STATregister = (value & WriteMaskSTATvalue) | ppuModeBits; 
+            STATregister = (value & WriteMaskSTATvalue) | ppuModeBits;
+
+            std::stringstream ss;
+            ss << "Write to the LCD STAT register:\n";
+            ss << "LYC Interrupt Select: " << (STATregister & InterruptSelectLYCMask ? "active" : "inactive") << "\n";
+            ss << "Mode 2 Interrupt Select: " << (STATregister & InterruptSelectMode2Mask ? "active" : "inactive") << "\n";
+            ss << "Mode 1 Interrupt Select: " << (STATregister & InterruptSelectMode1Mask ? "active" : "inactive") << "\n";
+            ss << "Mode 0 Interrupt Select: " << (STATregister & InterruptSelectMode0Mask ? "active" : "inactive") << "\n";
+            ss << "LYC == LY: " << (STATregister & LYCEqualsLYMask ? "true" : "false") << "\n";
+            ss << "PPU mode: " << (STATregister & PPUModeMask) << "\n";
+
+            LOG_DEBUG(ss.str());
+
             break;
         }
         case (AddressSCY):
@@ -225,6 +252,14 @@ void    PPU::WriteByte(uint16_t address, uint8_t value)
         {
             LYCregister = value;
             CompareLYC();
+
+            std::stringstream ss;
+            ss << "LYC register write:\n";
+            ss << "Comparing LY to the value: " << value << "\n";
+            ss << "Current compare result is: " << ((LYregister == LYCregister) ? "true" : "false");
+
+            LOG_DEBUG(ss.str());
+
             break;
         }
         case (AddressDMA):
@@ -233,6 +268,9 @@ void    PPU::WriteByte(uint16_t address, uint8_t value)
             // Writing to this register will start the DMA transfer.
             DMAregister = value;
             StartDmaTransfer();
+
+            LOG_DEBUG(std::string("Starting a DMA transfer from address: ") + Utility::IntAsHexString(value * OffsetDMATransfer));
+
             break;
         }
         case (AddressBGP):
