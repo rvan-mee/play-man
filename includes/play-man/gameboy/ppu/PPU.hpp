@@ -699,6 +699,20 @@ class PPU
          */
         void TickVerticalBlank();
 
+        /**
+         * @brief An internal Read is different from the regular ReadByte.
+         * During some modes (2 and 3) access to the VRAM is blocked for the CPU
+         * whilst the PPU has priority. This internal read bypasses the mode check.
+         */
+        uint8_t InternalReadByte(uint16_t address);
+
+        /**
+         * @brief An internal write is different from the regular WriteByte.
+         * During some modes (2 and 3) access to the VRAM is blocked for the CPU
+         * whilst the PPU has priority. This internal write bypasses the mode check.
+         */
+        void InternalWriteByte(uint16_t address, uint8_t value);
+
         public:
         PPU() = delete;
         PPU(bool cgbEnabled, Cpu* _cpu);

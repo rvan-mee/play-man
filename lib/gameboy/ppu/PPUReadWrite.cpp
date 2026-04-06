@@ -20,7 +20,7 @@
 
 namespace GameBoy {
 
-uint8_t PPU::ReadByte(uint16_t address)
+uint8_t PPU::InternalReadByte(uint16_t address)
 {
     if (address >= AddressVramStart && address <= AddressVramEnd)
     {
@@ -33,6 +33,41 @@ uint8_t PPU::ReadByte(uint16_t address)
     }
     if (address >= AddressOamStart && address <= AddressOamEnd)
     {
+        if (DMATransferActive)
+        {
+            LOG_DEBUG(PPU_READ_DURING_DMA);
+            return OpenBusValue;
+        }
+        return oam[address - AddressOamStart];
+    }
+    return ReadByte(address);
+}
+
+uint8_t PPU::ReadByte(uint16_t address)
+{
+    if (address >= AddressVramStart && address <= AddressVramEnd)
+    {
+        if (state == PixelProcessingState::ScanOAM || state == PixelProcessingState::Drawing)
+        {
+            LOG_WARNING(PPU_VRAM_ACCESS_DURING_BLOCK);
+            return OpenBusValue;
+        }
+
+        // The GameBoy color has a switchable vRam bank, DMG does not.
+        if (CgbMode)
+        {
+            return vRam[vRamBankRegister][address - AddressVramStart];
+        }
+        return vRam[0][address - AddressVramStart];
+    }
+    if (address >= AddressOamStart && address <= AddressOamEnd)
+    {
+        if (state == PixelProcessingState::ScanOAM || state == PixelProcessingState::Drawing)
+        {
+            LOG_WARNING(PPU_OAM_ACCESS_DURING_BLOCK);
+            return OpenBusValue;
+        }
+
         if (DMATransferActive)
         {
             LOG_DEBUG(PPU_READ_DURING_DMA);
@@ -172,7 +207,7 @@ uint8_t PPU::ReadByte(uint16_t address)
     }
 }
 
-void    PPU::WriteByte(uint16_t address, uint8_t value)
+void    PPU::InternalWriteByte(uint16_t address, uint8_t value)
 {
     if (address >= AddressVramStart && address <= AddressVramEnd)
     {
@@ -187,6 +222,39 @@ void    PPU::WriteByte(uint16_t address, uint8_t value)
     }
     if (address >= AddressOamStart && address <= AddressOamEnd)
     {
+        oam[address - AddressOamStart] = value;
+        return;
+    }
+    return WriteByte(address, value);
+}
+
+void    PPU::WriteByte(uint16_t address, uint8_t value)
+{
+    if (address >= AddressVramStart && address <= AddressVramEnd)
+    {
+        if (state == PixelProcessingState::ScanOAM || state == PixelProcessingState::Drawing)
+        {
+            LOG_WARNING(PPU_VRAM_ACCESS_DURING_BLOCK);
+            return;
+        }
+
+        // The GameBoy color has a switchable vRam bank, DMG does not.
+        if (CgbMode)
+        {
+            vRam[vRamBankRegister][address - AddressVramStart] = value;
+            return ;
+        }
+        vRam[0][address - AddressVramStart] = value;
+        return ;
+    }
+    if (address >= AddressOamStart && address <= AddressOamEnd)
+    {
+        if (state == PixelProcessingState::ScanOAM || state == PixelProcessingState::Drawing)
+        {
+            LOG_WARNING(PPU_OAM_ACCESS_DURING_BLOCK);
+            return;
+        }
+
         if (DMATransferActive)
         {
             LOG_DEBUG(PPU_WRITE_DURING_DMA);

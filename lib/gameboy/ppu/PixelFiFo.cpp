@@ -138,7 +138,7 @@ void PPU::BackgroundFiFo::TickTileFetch()
     else if (innerFetchState == InnerPixelFetchState::IO)
     {
         assert(tileFetchAddress >= AddressTileMapStart && tileFetchAddress <= AddressTileMapEnd);
-        fetchData.tileNumber = ppu->ReadByte(tileFetchAddress);
+        fetchData.tileNumber = ppu->InternalReadByte(tileFetchAddress);
 
         assert(!ppu->CgbMode && "Not fetching tile attributes for CGB mode yet.");
 
@@ -173,7 +173,7 @@ void PPU::BackgroundFiFo::TickDataLowFetch()
     else if (innerFetchState == InnerPixelFetchState::IO)
     {
         assert(dataLowFetchAddress >= AddressTileDataStart && dataLowFetchAddress <= AddressTileDataEnd);
-        fetchData.dataLow = ppu->ReadByte(dataLowFetchAddress);
+        fetchData.dataLow = ppu->InternalReadByte(dataLowFetchAddress);
 
         innerFetchState = InnerPixelFetchState::Computing;
         fetchState = PixelFetchState::DataHighFetch;
@@ -192,7 +192,7 @@ void PPU::BackgroundFiFo::TickDataHighFetch()
     else if (innerFetchState == InnerPixelFetchState::IO)
     {
         assert(dataHighFetchAddress >= AddressTileDataStart && dataHighFetchAddress <= AddressTileDataEnd);
-        fetchData.dataHigh = ppu->ReadByte(dataHighFetchAddress);
+        fetchData.dataHigh = ppu->InternalReadByte(dataHighFetchAddress);
 
         innerFetchState = InnerPixelFetchState::Computing;
         fetchState = PixelFetchState::FiFoPush;

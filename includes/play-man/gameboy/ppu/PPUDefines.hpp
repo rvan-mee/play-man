@@ -581,4 +581,8 @@ constexpr uint8_t BackgroundPaletteIndexShiftSize = 2;
 #define PPU_READ_DURING_DMA "PPU: Trying to read from the OAM whilst a DMA transfer is active"
 #define PPU_WRITE_DURING_DMA "PPU: Trying to write to the OAM whilst a DMA transfer is active"
 
+#define PPU_VRAM_ACCESS_DURING_BLOCK "Trying to access vram whilst the PPU is blocking access"
+#define PPU_OAM_ACCESS_DURING_BLOCK "Trying to access vram whilst the PPU is blocking access"
+
+
 }
