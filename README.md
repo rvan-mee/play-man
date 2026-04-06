@@ -31,7 +31,7 @@ $ ./play-man
 ## 🛠️ Tools used
 
 ### 👾 Graphics, input and audio library
-For our graphics, input and audio we use [Simple DirectMedia Layer](https://www.libsdl.org/). We chose this library because it grants us low level access to the graphicshardware, audio and input devices. It also supports OpenGl and Direct3D.
+For our graphics, input and audio we use [SDL (Simple DirectMedia Layer)](https://www.libsdl.org/). We chose this library because it grants us low level access to the graphicshardware, audio and input devices. It also supports OpenGl and Direct3D.
 
 ### ⛏️ Building
 We chose [CMake](https://cmake.org/) for our C++ project due to its flexibility, portability, and ability to manage complex build systems effectively.
@@ -40,7 +40,7 @@ We chose [CMake](https://cmake.org/) for our C++ project due to its flexibility,
 For our unit tets we chose [Catch2](https://github.com/catchorg/Catch2) as it is quick and easy to get started with no external dependencies, has cmake integration and is well established.
 
 ### 📋 Settings and serialization
-For our settings and serialization we used [nlohmann's json library](https://github.com/nlohmann/json). This is very usefull as it supplies an easy interface for serializing classes into json [see](https://json.nlohmann.me/features/arbitrary_types/). On top of that it integrates nicely with our enum macro for storing enum values in the json [see](https://json.nlohmann.me/features/enum_conversion/).
+For our settings and serialization we used [nlohmann's json library](https://github.com/nlohmann/json). This is very useful as it supplies an easy interface for serializing classes into json [see](https://json.nlohmann.me/features/arbitrary_types/). On top of that it integrates nicely with our enum macro for storing enum values in the json [see](https://json.nlohmann.me/features/enum_conversion/).
 
 ## 🗺️ Emulation Roadmap
 
@@ -72,3 +72,4 @@ For our settings and serialization we used [nlohmann's json library](https://git
 - [gameboy development community](https://gbdev.io/)
 - [gameboy technical refference](https://gekkio.fi/files/gb-docs/gbctr.pdf)
 - [gameboy opcodes](https://meganesu.github.io/generate-gb-opcodes/)
+- [gameboy emulator developer guide](https://github.com/Ashiepaws/GBEDG/tree/master)
