@@ -158,7 +158,7 @@ void PPU::BackgroundFiFo::TickDataLowFetch()
 
         // Since every pixel line in a sprite consists of 2 bytes (low and high data)
         // we can extract the Y offset by getting the Y of the tile and then multiplying that by 2.
-        const uint8_t offsetY = (fetcherTileY % TileHeight) * BytesPerTileLine;
+        const uint8_t offsetY = (fetcherTileY % SingleTileHeight) * BytesPerTileLine;
         // TODO: Is this offset correct? https://hacktix.github.io/GBEDG/ppu/#oam-scan-mode-2 mentions a different calculation.
 
         assert(!ppu->CgbMode && "Cannot perform Y flips since the CGB attributes are not fetched yet.");

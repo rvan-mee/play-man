@@ -132,7 +132,7 @@ void PPU::TickOamScan()
         // height value is the first scanline's height.
         const uint8_t currentY = LYregister + 16;
         // If the Object Size bit is set inside the LCDC register objects are seen as 16 pixels high
-        const uint8_t spriteHeight = (LCDCregister & ObjectSizeMask) ? 16 : 8;
+        const uint8_t spriteHeight = (LCDCregister & ObjectSizeMask) ? DoubleTileHeight : SingleTileHeight;
 
         // Check if the current sprite is visible on this scanline
         if (currentY >= currentScanSpriteY && currentY < currentScanSpriteY + spriteHeight)
@@ -318,7 +318,7 @@ void PPU::TickPPU()
         break;
     case PixelProcessingState::vBlank:
         TickVerticalBlank();
-        break;    
+        break;
     case PixelProcessingState::ScanOAM:
         TickOamScan();
         break;

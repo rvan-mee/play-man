@@ -491,9 +491,14 @@ constexpr uint8_t BytesPerTileLine = 2;
 constexpr uint8_t TileWidth = 8;
 
 /**
- * @brief The pixel length of a tile.
+ * @brief The pixel length of a single 8x8 tile.
  */
-constexpr uint8_t TileHeight = 8;
+constexpr uint8_t SingleTileHeight = 8;
+
+/**
+ * @brief The pixel length of a double 8x8 tile.
+ */
+constexpr uint8_t DoubleTileHeight = 16;
 
 /**
  * @brief The window's topleft X coordinate starts off at WX - 7, so the offset
