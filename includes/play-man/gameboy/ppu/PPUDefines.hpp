@@ -507,6 +507,11 @@ constexpr uint8_t DoubleTileHeight = 16;
 constexpr uint8_t WindowStartOffset = 7;
 
 /**
+ * @brief The OAM Scan starts searching for objects with a Y >= 16.
+ */
+constexpr uint8_t OamHeightStartOffset = 16;
+
+/**
  * @brief The amount of scanlines that have to be passed when rendering a frame for the PPU to reach
  * the VBlank state (mode 1).
  */

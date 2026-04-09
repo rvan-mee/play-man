@@ -128,9 +128,16 @@ void PPU::TickOamScan()
         if (amountOfSelectedObjects == SelectedObjectsStoreSize)
             break ;
 
+        // TODO: Is this correct?
+        // https://github.com/Ashiepaws/GBEDG/blob/master/ppu/index.md#oam-scan-mode-2
+        // Mentions the x-position needing to be greater than 0 for it to be added to the buffer whilst
+        // https://gbdev.io/pandocs/OAM.html
+        // Specifically mentions that off screen x-values will still add it to the buffer.
+        // We're following the pandocs for now. 
+
         // The first 16 Y values are considered off-screen, the OAM scan starts at Y 16 since this
         // height value is the first scanline's height.
-        const uint8_t currentY = LYregister + 16;
+        const uint8_t currentY = LYregister + OamHeightStartOffset;
         // If the Object Size bit is set inside the LCDC register objects are seen as 16 pixels high
         const uint8_t spriteHeight = (LCDCregister & ObjectSizeMask) ? DoubleTileHeight : SingleTileHeight;
 
