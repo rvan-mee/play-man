@@ -357,6 +357,16 @@ class PPU
         uint8_t WYregister;
 
         /**
+         * @brief Whether LY == WY on this scanline.
+         * 
+         * This condition is checked only at the start of Mode 2 (OAM scan).
+         * 
+         * @note for more information:
+         * @note https://gbdev.io/pandocs/Scrolling.html?highlight=WY%20condition#window
+         */
+        bool WYcondition;
+
+        /**
          * @brief Window X Coordinate Plus 7.
          * 
          * If the window is enabled it will be visible when the X coordinate is in the range
