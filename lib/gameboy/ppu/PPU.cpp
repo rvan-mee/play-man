@@ -22,8 +22,8 @@
 
 namespace GameBoy {
 
-PPU::PPU(bool cgbEnabled, Cpu* _cpu) :
-        backgroundFiFo(this), objectFiFo(this), CgbMode(cgbEnabled), cpu(_cpu)
+PPU::PPU(bool cgbEnabled, Cpu* _cpu) : 
+        pixelFetcher(this), CgbMode(cgbEnabled), cpu(_cpu)
 {
     // TODO:
     // Find the correct default values.
@@ -211,53 +211,53 @@ uint32_t PPU::GetObjectPixelColor(FiFoEntry pixelData)
     return 0xFFFFFFFF;
 }
 
-uint32_t PPU::PixelMixer()
-{
-    FiFoEntry backgroundEntry = backgroundFiFo.GetFiFo().front();
-    backgroundFiFo.GetFiFo().pop();
+// uint32_t PPU::PixelMixer()
+// {
+//     FiFoEntry backgroundEntry = backgroundFiFo.GetFiFo().front();
+//     backgroundFiFo.GetFiFo().pop();
 
-    if (objectFiFo.GetFiFo().empty())
-        return GetBackgroundPixelColor(backgroundEntry);
+//     if (objectFiFo.GetFiFo().empty())
+//         return GetBackgroundPixelColor(backgroundEntry);
 
-    FiFoEntry objectEntry = objectFiFo.GetFiFo().front();
-    objectFiFo.GetFiFo().pop();
+//     FiFoEntry objectEntry = objectFiFo.GetFiFo().front();
+//     objectFiFo.GetFiFo().pop();
 
-    // Decide the priority:
-    // TODO: Set the priority rules
-    bool backgroundPriority = true;
+//     // Decide the priority:
+//     // TODO: Set the priority rules
+//     bool backgroundPriority = true;
 
-    if (backgroundPriority)
-        return GetBackgroundPixelColor(backgroundEntry);
-    return GetObjectPixelColor(objectEntry);
-}
+//     if (backgroundPriority)
+//         return GetBackgroundPixelColor(backgroundEntry);
+//     return GetObjectPixelColor(objectEntry);
+// }
 
 
-void PPU::TickPixelTransferLCD()
-{
-    // If the background FiFo is empty no pixel is pushed
-    // and we have to wait till there are pixels in it.
-    if (backgroundFiFo.GetFiFo().empty())
-        return ;
+// void PPU::TickPixelTransferLCD()
+// {
+//     // If the background FiFo is empty no pixel is pushed
+//     // and we have to wait till there are pixels in it.
+//     if (pixelFetcher.backgroundFiFo.GetFiFo().empty())
+//         return ;
 
-    const size_t scale = cpu->settings->screenScaleGameBoy;
-    uint32_t pixelColor = PixelMixer();
-    SDL_Rect pixel;
+//     const size_t scale = cpu->settings->screenScaleGameBoy;
+//     uint32_t pixelColor = PixelMixer();
+//     SDL_Rect pixel;
 
-    pixel.h = scale;
-    pixel.w = scale;
-    pixel.x = scanlineX * scale;
-    pixel.y = LYregister * scale;
+//     pixel.h = scale;
+//     pixel.w = scale;
+//     pixel.x = scanlineX * scale;
+//     pixel.y = LYregister * scale;
 
-    Graphics::UserInterface::PushRectangle(pixel, pixelColor);
+//     Graphics::UserInterface::PushRectangle(pixel, pixelColor);
 
-    // Move to the next pixel.
-    scanlineX++;
-    if (scanlineX == PixelsPerScanline)
-    {
-        state = PixelProcessingState::hBlank;
-        scanlineX = 0;
-    }
-}
+//     // Move to the next pixel.
+//     scanlineX++;
+//     if (scanlineX == PixelsPerScanline)
+//     {
+//         state = PixelProcessingState::hBlank;
+//         scanlineX = 0;
+//     }
+// }
 
 void PPU::TickDrawingPixel()
 {
@@ -267,15 +267,13 @@ void PPU::TickDrawingPixel()
         return;
     }
 
-    // Start of the scanline
-    if (scanlineX == 0)
-    {
-        // TODO: Shift pixels using SCX, add delay
-    }
+    pixelFetcher.Tick();
 
-    backgroundFiFo.TickFetcher();
-    objectFiFo.TickFetcher();
-    TickPixelTransferLCD();
+    if (pixelFetcher.DoneWithScanline())
+    {
+        pixelFetcher.Reset();
+        state = PixelProcessingState::hBlank;
+    }
 }
 
 void PPU::TickHorizontalBlank()

@@ -21,13 +21,13 @@ namespace GameBoy {
 
 // *************** Shared Functions ***************
 
-PPU::FiFoBase::FiFoBase(PPU* _ppu) : ppu(_ppu)
+PixelFetcher::FiFoBase::FiFoBase(PPU* _ppu) : ppu(_ppu)
 {
     assert(_ppu);
     this->Clear();
 }
 
-void    PPU::FiFoBase::Clear()
+void    PixelFetcher::FiFoBase::Clear()
 {
     fetcherX = 0;
     fetcherTileX = 0;
@@ -41,7 +41,7 @@ void    PPU::FiFoBase::Clear()
     fifo = {}; // clear the queue (no .clear member function)
 }
 
-void PPU::FiFoBase::TickFetcher()
+void PixelFetcher::FiFoBase::TickFetcher()
 {
     switch (fetchState)
     {
@@ -53,7 +53,7 @@ void PPU::FiFoBase::TickFetcher()
     }
 }
 
-PixelFiFo& PPU::FiFoBase::GetFiFo()
+PixelFiFo& PixelFetcher::FiFoBase::GetFiFo()
 {
     return fifo;
 }
@@ -61,7 +61,7 @@ PixelFiFo& PPU::FiFoBase::GetFiFo()
 
 // *************** Background FiFo Functions ***************
 
-bool PPU::BackgroundFiFo::RenderingWindow()
+bool PixelFetcher::BackgroundFiFo::RenderingWindow()
 {
     // The window's top left X coordinate starts at WX - 7.
     const uint8_t windowX = ppu->WXregister - WindowStartOffset;
@@ -76,7 +76,7 @@ bool PPU::BackgroundFiFo::RenderingWindow()
     return renderingWindowTile;
 }
 
-void PPU::BackgroundFiFo::TickTileFetch()
+void PixelFetcher::BackgroundFiFo::TickTileFetch()
 {
     // TEMP to make things compile again, revisiting the PPU after completing the CPU.
     (void) windowHorizontalCondition;
@@ -147,7 +147,7 @@ void PPU::BackgroundFiFo::TickTileFetch()
     }
 }
 
-void PPU::BackgroundFiFo::TickDataLowFetch()
+void PixelFetcher::BackgroundFiFo::TickDataLowFetch()
 {
     if (innerFetchState == InnerPixelFetchState::Computing)
     {
@@ -180,7 +180,7 @@ void PPU::BackgroundFiFo::TickDataLowFetch()
     }
 }
 
-void PPU::BackgroundFiFo::TickDataHighFetch()
+void PixelFetcher::BackgroundFiFo::TickDataHighFetch()
 {
     if (innerFetchState == InnerPixelFetchState::Computing)
     {
@@ -199,7 +199,7 @@ void PPU::BackgroundFiFo::TickDataHighFetch()
     }
 }
 
-void PPU::BackgroundFiFo::PushBackgroundPixels(uint8_t lowPixelData, uint8_t highPixelData)
+void PixelFetcher::BackgroundFiFo::PushBackgroundPixels(uint8_t lowPixelData, uint8_t highPixelData)
 {
     for (uint8_t i = 0; i < FiFoEntriesPerPush; i++)
     {
@@ -213,7 +213,7 @@ void PPU::BackgroundFiFo::PushBackgroundPixels(uint8_t lowPixelData, uint8_t hig
     }
 }
 
-void PPU::BackgroundFiFo::TickFiFoPush()
+void PixelFetcher::BackgroundFiFo::TickFiFoPush()
 {
     // Pixels are only pushed to the background FiFo if there is space.
     // The FiFo has a size of 16 and attempts to push 8 at a time, meaning the current
@@ -231,19 +231,19 @@ void PPU::BackgroundFiFo::TickFiFoPush()
     fetcherX += TileWidth;
 }
 
-void PPU::BackgroundFiFo::UpdateWindow()
+void PixelFetcher::BackgroundFiFo::UpdateWindow()
 {
     // const bool windowEnabled = ppu->LCDCregister & WindowEnableMask;
     // const bool windowOnScanline = fetcherX >= ppu->WXregister;
 }
 
-void PPU::BackgroundFiFo::UpdateWindowLineCounter()
+void PixelFetcher::BackgroundFiFo::UpdateWindowLineCounter()
 {
     if (windowPixelRendered)
         windowLineCounter++;
 }
 
-void PPU::BackgroundFiFo::ResetWindowLineCounter()
+void PixelFetcher::BackgroundFiFo::ResetWindowLineCounter()
 {
     windowLineCounter = 0;
     windowPixelRendered = false;
