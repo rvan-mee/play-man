@@ -196,6 +196,15 @@ constexpr uint8_t DefaultOBPIregisterValue = 0x00;
 constexpr uint8_t DefaultOBPDregisterValue = 0x00;
 
 // OAM related values
+typedef struct s_OamEntry {
+
+    uint8_t yPosition;
+    uint8_t xPosition;
+    uint8_t tileIndex;
+    uint8_t attributes;
+
+} OamEntry;
+
 constexpr uint8_t DefaultAmountOfSelectedObjects = 0;
 constexpr uint8_t DefaultCurrentOamScanAddress = 0;
 constexpr uint8_t DefaultDotsPassedInScanline = 0;
@@ -274,7 +283,7 @@ constexpr uint8_t OamSize = OamEntryCount * OamEntrySize;
 constexpr uint8_t SelectedObjectsStoreSize = 10;
 
 using ObjectAttributeMemory = std::array<uint8_t, OamSize>;
-using SelectedObjectsStoreMemory = std::array<uint8_t, SelectedObjectsStoreSize>;
+using SelectedObjectsStoreMemory = std::array<OamEntry, SelectedObjectsStoreSize>;
 
 /**
  * @brief After a DMA transfer is requested there is a small delay (2 M-ticks) before the transfer actually starts.

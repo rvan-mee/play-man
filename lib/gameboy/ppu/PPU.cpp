@@ -150,7 +150,14 @@ void PPU::TickOamScan()
         // Check if the current sprite is visible on this scanline
         if (currentY >= currentScanSpriteY && currentY < currentScanSpriteY + spriteHeight)
         {
-            selectedObjects[amountOfSelectedObjects] = currentObjectAddress;
+            OamEntry selectedEntry;
+
+            selectedEntry.yPosition = oam[currentObjectAddress];
+            selectedEntry.xPosition = oam[currentObjectAddress + 1];
+            selectedEntry.tileIndex = oam[currentObjectAddress + 2];
+            selectedEntry.attributes = oam[currentObjectAddress + 3];
+
+            selectedObjects[amountOfSelectedObjects] = selectedEntry;
             amountOfSelectedObjects++;
         }
         break;
