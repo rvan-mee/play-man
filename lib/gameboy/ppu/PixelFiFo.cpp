@@ -78,9 +78,9 @@ bool PixelFetcher::BackgroundFiFo::RenderingWindow()
 
 void PixelFetcher::BackgroundFiFo::TickTileFetch()
 {
-    // TEMP to make things compile again, revisiting the PPU after completing the CPU.
-    (void) windowHorizontalCondition;
-    (void) windowVerticalCondition;
+    // If an object FiFo fetch is started the background FiFo is paused till that fetch is completed.
+    if (paused)
+        return ;
 
     const uint8_t windowX = ppu->WXregister - WindowStartOffset;
     (void) windowX;
@@ -90,15 +90,6 @@ void PixelFetcher::BackgroundFiFo::TickTileFetch()
 
     if (innerFetchState == InnerPixelFetchState::Computing)
     {
-        // In DMG mode, if the LCDC has the window and backgrounds turned off
-        // a white pixel must be rendered.
-        if (!ppu->CgbMode && !(ppu->LCDCregister & BackgroundWindowEnablePriorityMask))
-        {
-            // TODO:
-            // Push white pixel into FiFo.
-            return ;
-        }
-
         // The window's top left X coordinate starts at WX - 7.
         const bool renderingWindowTile = RenderingWindow();
 
@@ -248,6 +239,13 @@ void PixelFetcher::BackgroundFiFo::ResetWindowLineCounter()
     windowLineCounter = 0;
     windowPixelRendered = false;
     windowRenderingActivated = false;
+}
+
+void PixelFetcher::BackgroundFiFo::ResetAndPause()
+{
+    fetchState = PixelFetchState::TileFetch;
+    innerFetchState = InnerPixelFetchState::Computing;
+    paused = true;
 }
 
 // *************** Object FiFo Functions ***************

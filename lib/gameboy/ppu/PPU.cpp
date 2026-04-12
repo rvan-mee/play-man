@@ -173,12 +173,7 @@ void PPU::TickOamScan()
     if (dotsPassedInScanline == DotsInMode2)
     {
         state = PixelProcessingState::Drawing;
-
-        // The start of Mode 3 has a draw delay depending on the value inside SCX
-        // Both the Pixel FiFos are cleared as well.
-        drawDelay = SCXregister % 8;
-        backgroundFiFo.Clear();
-        objectFiFo.Clear();
+        pixelFetcher.Reset();
     }
 }
 
@@ -268,17 +263,11 @@ uint32_t PPU::GetObjectPixelColor(FiFoEntry pixelData)
 
 void PPU::TickDrawingPixel()
 {
-    if (drawDelay)
-    {
-        drawDelay--;
-        return;
-    }
-
     pixelFetcher.Tick();
 
     if (pixelFetcher.DoneWithScanline())
     {
-        pixelFetcher.Reset();
+        pixelFetcher.ResetForScanline();
         state = PixelProcessingState::hBlank;
     }
 }

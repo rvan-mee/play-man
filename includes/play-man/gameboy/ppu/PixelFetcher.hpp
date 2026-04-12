@@ -27,7 +27,7 @@ class PPU;
 
 class PixelFetcher
 {
-	private:
+    private:
 
         /**
          * @brief The base class for the Pixel FiFos.
@@ -38,11 +38,6 @@ class PixelFetcher
         class FiFoBase
         {
         protected:
-
-            /**
-             * @brief The internal X position within a scanline. Gets updated by +8 after every tile fetch.
-             */
-            uint8_t fetcherX;
 
             /**
              * @brief The Y position inside the current tile being fetched.
@@ -169,24 +164,38 @@ class PixelFetcher
             void TickDataHighFetch() override;
             void TickFiFoPush() override;
 
-			enum class FetchingTileType {
-				Window,
-				Background,
-			};
+            enum class FetchingTileType {
+                Window,
+                Background,
+            };
 
-			FetchingTileType fetchingType;
+            /**
+             * @brief Whether we are currently fetching background or window tiles.
+             */
+            FetchingTileType fetchingType;
 
-			/**
-			 * @brief The line being fetched inside of the window tile map.
-			 * 
-			 * This can be seen as the window's Y coordinate, which is not directly linked
-			 * to the value inside the WY register. It will only be incremented if a window
-			 * pixel is rendered on a scanline.
-			 * 
-			 * @note For more information:
-			 * @note https://gbdev.io/pandocs/Scrolling.html?highlight=window%20selects#window
-			 */
-			uint8_t windowLineCounter;
+            /**
+             * @brief Whether the Background FiFo is paused and waiting for
+             * an Object fetch to be finished.
+             */
+            bool paused;
+
+            /**
+             * @brief The line being fetched inside of the window tile map.
+             * 
+             * This can be seen as the window's Y coordinate, which is not directly linked
+             * to the value inside the WY register. It will only be incremented if a window
+             * pixel is rendered on a scanline.
+             * 
+             * @note For more information:
+             * @note https://gbdev.io/pandocs/Scrolling.html?highlight=window%20selects#window
+             */
+            uint8_t windowLineCounter;
+
+            /**
+             * @brief The current pixel within a scanline the background fetcher is fetching.
+             */
+            uint8_t fetcherX;
 
             /**
              * @brief Pushes an entire row of 8 pixels into the background FiFo.
@@ -205,25 +214,25 @@ class PixelFetcher
             void UpdateWindow();
 
             /**
-             * @brief Updates the internal 'windowLineCounter' after a scanline
-             * with a window pixel has been pushed.
-             */
-            void UpdateWindowLineCounter();
-
-            /**
              * @brief Resets the window line counter and flags.
              */
             void ResetWindowLineCounter();
 
-			/**
-			 * @brief When an object fetch is initiated the Background Fetcher is reset to step 1 and paused.
-			 */
-			void ResetAndPause();
+            /**
+             * @brief When an object fetch is initiated the Background Fetcher is reset to step 1 and paused.
+             * Once the object fetch is completed the background fifo fetching is resumed.
+             */
+            void ResetAndPause();
 
-			/**
-			 * @brief After an object fetch is done, the Background fetcher continued.
-			 */
-			void Continue();
+            /**
+             * @brief Resumes the background FiFo after an object fetch has been completed.
+             */
+            void Continue();
+
+            /**
+             * @brief The pixel mixer checks if the window has been reached after every pixel pushed to the LCD.
+             */
+            void StartWindowFetching();
         };
 
         // The FiFos are apart of the PPU, hence the friend.
@@ -241,9 +250,15 @@ class PixelFetcher
             void TickDataHighFetch() override;
             void TickFiFoPush() override;
 
+            /**
+             * @brief Pointer to the Background FiFo this object fifo competes with.
+             * We need access to the Background FiFo to pause and continue it.
+             */
+            BackgroundFiFo* backgroundFiFo;
+
         public:
             ObjectFiFo() = delete;
-            ObjectFiFo(PPU* _ppu): PixelFetcher::FiFoBase(_ppu) {};
+            ObjectFiFo(PPU* _ppu, BackgroundFiFo* _backgroundFiFo): PixelFetcher::FiFoBase(_ppu), backgroundFiFo(_backgroundFiFo) {};
             ~ObjectFiFo() = default;
         };
 
@@ -251,46 +266,68 @@ class PixelFetcher
         friend class ObjectFiFo;
         ObjectFiFo  objectFiFo;
 
-		/**
-		 * @brief
-		 */
-		PPU* ppu;
+        /**
+         * @brief Pointer to the PPU this pixel fetcher is a part of.
+         */
+        PPU* ppu;
 
-		/**
-		 * @brief
-		 */
-		uint8_t fetcherX;
-		
-		/**
-		 * @brief
-		 */
-		uint8_t mixerX; 
-		
-		/**
-		 * @brief
-		 */
-		void PixelMixerTick();
+        /**
+         * @brief The x position within a scanline of the current pixel being shifted out.
+         */
+        uint8_t mixerX;
 
-	public:
-		PixelFetcher() = delete;
-		PixelFetcher(PPU* _ppu);
-		~PixelFetcher();
+        /**
+         * @brief If a sprite fetch is initiated 
+         */
+        bool mixerPaused;
 
-		/**
-		 * @brief 
-		 */
-		void Reset();
+        /**
+         * @brief The amount of pixels the background gets shifted by at the start of a scanline.
+         */
+        uint8_t backgroundShift;
 
-		/**
-		 * @brief Performs a T-tick, internally handling the background/window and object FiFo's
-		 * 		  and the pushing of pixels to the LCD through the pixel mixer.
-		 */
-		void Tick();
+        /**
+         * @brief The pixel mixer is what pushes an actual pixel to the screen, it decides which
+         * FiFos to take the pixel from. 
+         */
+        void PixelMixerTick();
 
-		/**
-		 * @brief Wether the PixelFetcher is done outputting pixels for the current scanline.
-		 */
-		bool DoneWithScanline();
+        /**
+         * @brief Readies the FiFos and pixel mixer for an object fetch.
+         */
+        void StartObjectFetch();
+
+        /**
+         * @brief Continues the shifting of pixels to the LCD
+         * after an object fetch has been completed.
+         */
+        void ContinueMixing();
+
+    public:
+        PixelFetcher() = delete;
+        PixelFetcher(PPU* _ppu);
+        ~PixelFetcher();
+
+        /**
+         * @brief Resets the Pixel fetcher to be ready to fetch pixels for a new scanline.
+         */
+        void ResetForScanline();
+
+        /**
+         * @brief Resets the pixel fetcher 
+         */
+        void ResetVBlank();
+
+        /**
+         * @brief Performs a T-tick, internally handling the background/window and object FiFo's
+         * 		  and the pushing of pixels to the LCD through the pixel mixer.
+         */
+        void Tick();
+
+        /**
+         * @brief Wether the PixelFetcher is done outputting pixels for the current scanline.
+         */
+        bool DoneWithScanline();
 };
 
 }
