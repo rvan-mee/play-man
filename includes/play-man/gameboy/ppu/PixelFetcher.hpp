@@ -151,6 +151,16 @@ class PixelFetcher
              * @brief Returns a reference to the Pixel FiFo.
              */
             PixelFiFo& GetFiFo();
+
+            /**
+             * @brief Returns the oldest element and pops it off the FiFo.
+             */
+            FiFoEntry GetFrontAndPop();
+
+            /**
+             * @brief Returns the size of the FiFo.
+             */
+            size_t Size();
         };
 
         /**
@@ -302,6 +312,40 @@ class PixelFetcher
          * after an object fetch has been completed.
          */
         void ContinueMixing();
+
+        /**
+         * @brief Returns the RGBA value that has to be rendered to the screen for the given
+         * object FiFo entry.
+         */
+        uint32_t ResolveObjectColor(const FiFoEntry& objectEntry);
+
+        /**
+         * @brief Returns the RGBA value that has to be rendered to the screen for the given
+         * background FiFo entry.
+         */
+        uint32_t ResolveBackgroundColor(const FiFoEntry& backgroundEntry);
+
+        enum class EntryPriority {
+            Object,
+            Background,
+        };
+
+        /**
+         * @brief Returns the type of entry that has to be rendered after having resolved the
+         * priority of the entries.
+         */
+        EntryPriority GetEntryPriority(const FiFoEntry& backgroundEntry, const FiFoEntry& objectEntry);
+
+        /**
+         * @brief Mixes the background/window entry with the object entry,
+         * pushing the right pixel to the screen.
+         */
+        void MixPixel(const FiFoEntry& backgroundEntry, const FiFoEntry& objectEntry);
+
+        /**
+         * @brief Pushes a pixel to the screen with the values of the given background FiFo entry.
+         */
+        void PushBackgroundPixel(const FiFoEntry& backgroundEntry);
 
     public:
         PixelFetcher() = delete;

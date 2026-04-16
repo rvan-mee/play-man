@@ -58,6 +58,19 @@ PixelFiFo& PixelFetcher::FiFoBase::GetFiFo()
     return fifo;
 }
 
+FiFoEntry PixelFetcher::FiFoBase::GetFrontAndPop()
+{
+    FiFoEntry front = fifo.front();
+
+    fifo.pop();
+    return front;
+}
+
+size_t PixelFetcher::FiFoBase::Size()
+{
+    return fifo.size();
+}
+
 
 // *************** Background FiFo Functions ***************
 

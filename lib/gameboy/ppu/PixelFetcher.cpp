@@ -17,6 +17,7 @@
 
 #include <play-man/gameboy/ppu/PixelFetcher.hpp>
 #include <play-man/gameboy/ppu/PPU.hpp>
+#include <play-man/graphics/UserInterface.hpp>
 
 namespace GameBoy {
 
@@ -38,6 +39,62 @@ void PixelFetcher::ResetForScanline()
     backgroundShift = ppu->SCXregister % TileWidth;
 }
 
+
+uint32_t ResolveObjectColor(const FiFoEntry& objectEntry)
+{
+
+}
+
+uint32_t ResolveBackgroundColor(const FiFoEntry& backgroundEntry)
+{
+    // TODO:
+    // In DMG mode, if the LCDC has the window and backgrounds turned off
+    // a white pixel must be rendered.
+    // if (!ppu->CgbMode && !(ppu->LCDCregister & BackgroundWindowEnablePriorityMask))
+    // {
+        // Discard pixel in FiFo, use blank pixel instead.
+        // Objects can still be rendered on top.
+    // }
+}
+
+void PixelFetcher::PushBackgroundPixel(const FiFoEntry& backgroundEntry)
+{
+    const size_t         scale = ppu->cpu->settings->screenScaleGameBoy;
+    Graphics::Rectangle  pixel;
+
+    pixel.height = scale;
+    pixel.height = scale;
+    pixel.x = mixerX * scale;
+    pixel.y = ppu->LYregister * scale;
+
+    pixel.color = ResolveBackgroundColor(backgroundEntry);
+
+    Graphics::UserInterface::PushRectangle(pixel);
+}
+
+PixelFetcher::EntryPriority PixelFetcher::GetEntryPriority(const FiFoEntry& backgroundEntry, const FiFoEntry& objectEntry)
+{
+    
+}
+
+void PixelFetcher::MixPixel(const FiFoEntry& backgroundEntry, const FiFoEntry& objectEntry)
+{
+    const size_t         scale = ppu->cpu->settings->screenScaleGameBoy;
+    Graphics::Rectangle  pixel;
+
+    pixel.height = scale;
+    pixel.height = scale;
+    pixel.x = mixerX * scale;
+    pixel.y = ppu->LYregister * scale;
+
+    if (GetEntryPriority(backgroundEntry, objectEntry) == EntryPriority::Object)
+        pixel.color = ResolveObjectColor(objectEntry);
+    else
+        pixel.color = ResolveBackgroundColor(backgroundEntry);
+
+    Graphics::UserInterface::PushRectangle(pixel);
+}
+
 void PixelFetcher::PixelMixerTick()
 {
     assert(mixerX <= PixelsPerScanline);
@@ -47,7 +104,7 @@ void PixelFetcher::PixelMixerTick()
         return ;
 
     // We cannot shift a pixel out to the screen if the background FiFo is empty
-    if (backgroundFiFo.GetFiFo().size() == 0)
+    if (backgroundFiFo.Size() == 0)
         return ;
 
     // Shift a pixel out from the background FiFo, creating a draw delay
@@ -59,19 +116,12 @@ void PixelFetcher::PixelMixerTick()
         return;
     }
 
-    // TODO:
-    // In DMG mode, if the LCDC has the window and backgrounds turned off
-    // a white pixel must be rendered.
-    // if (!ppu->CgbMode && !(ppu->LCDCregister & BackgroundWindowEnablePriorityMask))
-    // {
-        // Discard pixel in FiFo, use blank pixel instead.
-        // Objects can still be rendered on top.
-    // }
-
-    // TODO:
-    // Check priority of background / object
-    // Get pixel color
-    // Push color to screen
+    // If there is not a pixel in the object fifo, just render the background right away
+    // else mix the pixels with their priority/color.
+    if (!objectFiFo.Size() == 0)
+        PushBackgroundPixel(backgroundFiFo.GetFrontAndPop());
+    else
+        MixPixel(backgroundFiFo.GetFrontAndPop(), objectFiFo.GetFrontAndPop());
     mixerX++;
 
     // TODO:
