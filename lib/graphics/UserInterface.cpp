@@ -66,9 +66,16 @@ void UserInterface::Resize(uint32_t width, uint32_t height)
     SDL_SetWindowSize(AppWindow, width, height);
 }
 
-void UserInterface::PushRectangle(SDL_Rect rect, uint32_t color)
+void UserInterface::PushRectangle(const Rectangle& rect)
 {
-    SDL_FillSurfaceRect(AppSurface, &rect, color);
+    SDL_Rect sdlRect;
+
+    sdlRect.x = rect.x;
+    sdlRect.y = rect.y;
+    sdlRect.w = rect.width;
+    sdlRect.h = rect.height;
+
+    SDL_FillSurfaceRect(AppSurface, &sdlRect, rect.color);
 }
 
 void UserInterface::Initialize()

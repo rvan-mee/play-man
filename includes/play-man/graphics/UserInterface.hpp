@@ -22,6 +22,18 @@
 
 namespace Graphics {
 
+typedef struct s_Rectangle {
+
+	uint32_t x;
+	uint32_t y;
+
+	uint32_t width;
+	uint32_t height;
+
+	uint32_t color;
+
+} Rectangle;
+
 class UserInterface
 {
 private:
@@ -71,7 +83,7 @@ public:
     /**
      * @brief Pushes a rectangle of a certain color to the window.
      */
-    static void PushRectangle(SDL_Rect rect, uint32_t color);
+    static void PushRectangle(const Rectangle& rect);
 
     /**
      * @brief Sets the entire main application window to white.
