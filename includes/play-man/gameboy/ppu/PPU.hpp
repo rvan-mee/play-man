@@ -433,10 +433,8 @@ class PPU
 
         /**
          * @brief The color mode used for displaying DMG pixels.
-         * 
-         * @note Values should be 'BlackAndWhitePixelsDMG' or 'GreenPixelsDMG'.
          */
-        uint8_t colorModeDMG;
+        ColorPalletteTypesDMG colorModeDMG;
 
         /**
          * @brief Returns the color to be displayed on the screen based on the pixel data.

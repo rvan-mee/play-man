@@ -21,7 +21,6 @@
 
 namespace GameBoy {
 
-    
 PixelFetcher::PixelFetcher(PPU* _ppu) : backgroundFiFo(_ppu), objectFiFo(_ppu, &backgroundFiFo), ppu(_ppu)
 {
     mixerX = 0;
@@ -39,22 +38,58 @@ void PixelFetcher::ResetForScanline()
     backgroundShift = ppu->SCXregister % TileWidth;
 }
 
-
-uint32_t ResolveObjectColor(const FiFoEntry& objectEntry)
+uint32_t PixelFetcher::ResolveObjectColor(const FiFoEntry& objectEntry)
 {
+    if (!ppu->CgbMode)
+    {
+        // These should be filtered out through the mixer
+        assert(objectEntry.colorIndex != TransparentColorIndexDMG);
+        assert(ppu->LCDCregister & ObjectEnableMask);
 
+        uint8_t pallette;
+        if (objectEntry.palette == PalletteValueOBP1)
+            pallette = ppu->OBP1register;
+        else
+            pallette = ppu->OBP0register;
+
+        const uint8_t colorIndex = objectEntry.colorIndex;
+        const uint8_t shade = (pallette >> (colorIndex * PaletteIndexShiftSizeDMG)) & PalletteShadeMaskDMG;
+
+        assert(ppu->colorModeDMG == BlackAndWhitePixels || ppu->colorModeDMG == GreenPixels);
+
+        return ColorsDMG[ppu->colorModeDMG][shade];
+    }
+    else
+    {
+        assert(false && "CGB colors are not supported yet!");
+        return ColorsDMG[ppu->colorModeDMG][WhitePixelIndexDMG];
+    }
 }
 
-uint32_t ResolveBackgroundColor(const FiFoEntry& backgroundEntry)
+uint32_t PixelFetcher::ResolveBackgroundColor(const FiFoEntry& backgroundEntry)
 {
-    // TODO:
-    // In DMG mode, if the LCDC has the window and backgrounds turned off
-    // a white pixel must be rendered.
-    // if (!ppu->CgbMode && !(ppu->LCDCregister & BackgroundWindowEnablePriorityMask))
-    // {
-        // Discard pixel in FiFo, use blank pixel instead.
-        // Objects can still be rendered on top.
-    // }
+    if (!ppu->CgbMode)
+    {
+        // In DMG mode, if the LCDC has the window and backgrounds turned off
+        // a white pixel must be rendered.
+        if (!(ppu->LCDCregister & BackgroundWindowEnablePriorityMask))
+            return ColorsDMG[ppu->colorModeDMG][WhitePixelIndexDMG];
+
+        // To get the correct shade from the palette we use the retrieved color ID from
+        // the FiFo entry and 'index' into the background palette to get the right shade.
+        // Check the BGPregister's comment for more info.
+        const uint8_t colorIndex = backgroundEntry.colorIndex;
+        const uint8_t shade = (ppu->BGPregister >> (colorIndex * PaletteIndexShiftSizeDMG)) & PalletteShadeMaskDMG;
+
+        assert(ppu->colorModeDMG == BlackAndWhitePixels || ppu->colorModeDMG == GreenPixels);
+
+        return ColorsDMG[ppu->colorModeDMG][shade];
+    }
+    else
+    {
+        assert(false && "CGB colors not supported yet!");
+        return ColorsDMG[ppu->colorModeDMG][WhitePixelIndexDMG];
+    }
 }
 
 void PixelFetcher::PushBackgroundPixel(const FiFoEntry& backgroundEntry)
@@ -74,7 +109,22 @@ void PixelFetcher::PushBackgroundPixel(const FiFoEntry& backgroundEntry)
 
 PixelFetcher::EntryPriority PixelFetcher::GetEntryPriority(const FiFoEntry& backgroundEntry, const FiFoEntry& objectEntry)
 {
-    
+    if (!ppu->CgbMode)
+    {
+        if (objectEntry.colorIndex == TransparentColorIndexDMG)
+            return EntryPriority::Background;
+
+        if (!(ppu->LCDCregister & ObjectEnableMask))
+            return EntryPriority::Background;
+
+        return EntryPriority::Object;
+    }
+    else
+    {
+        // https://gbdev.io/pandocs/Tile_Maps.html#bg-to-obj-priority-in-cgb-mode
+        assert(false && "CGB mode not yet supported!");
+        return EntryPriority::Background;
+    }
 }
 
 void PixelFetcher::MixPixel(const FiFoEntry& backgroundEntry, const FiFoEntry& objectEntry)
@@ -126,8 +176,8 @@ void PixelFetcher::PixelMixerTick()
 
     // TODO:
     // Check window fetching
-    // if (WX >= backgroundFiFo.xPosition)
-    // backgroundFiFo.startWindowFetching();
+    // if (WX >= backgroundFiFo.xPosition && LCDC & windowEnableBit)
+    // backgroundFiFo.startWindowFetching(); // this can happen more than once per scanline: https://gbdev.io/pandocs/Window.html
 }
 
 void PixelFetcher::StartObjectFetch()

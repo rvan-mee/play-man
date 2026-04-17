@@ -53,7 +53,7 @@ PPU::PPU(bool cgbEnabled, Cpu* _cpu) :
 
     // Drawing related values
     drawDelay = DefaultDrawDelay;
-    colorModeDMG = GreenPixelsDMG;
+    colorModeDMG = ColorPalletteTypesDMG::GreenPixels;
 
     state = DefaultStateValue;
 
@@ -173,103 +173,16 @@ void PPU::TickOamScan()
     if (dotsPassedInScanline == DotsInMode2)
     {
         state = PixelProcessingState::Drawing;
-        pixelFetcher.Reset();
+        pixelFetcher.ResetForScanline();
     }
 }
-
-uint32_t PPU::GetBackgroundPixelColor(FiFoEntry pixelData)
-{
-    if (!CgbMode)
-    {
-        // To get the correct shade from the palette we use the retrieved color ID from
-        // the FiFo entry and 'index' into the background palette to get the right shade.
-        // Check the BGPregister's comment for more info.
-        const uint8_t colorIndex = pixelData.color;
-        const uint8_t shade = (BGPregister >> (colorIndex * BackgroundPaletteIndexShiftSize)) & BackgroundShadeMaskDMG;
-
-        assert(colorModeDMG == BlackAndWhitePixelsDMG || colorModeDMG == GreenPixelsDMG);
-        assert(shade >= 0 && shade <= 3);
-
-        return ColorsDMG[colorModeDMG][shade];
-    }
-    else
-    {
-        assert(false && "Cannot get CGB colors.");
-    }
-    return 0xFFFFFFFF;
-}
-
-uint32_t PPU::GetObjectPixelColor(FiFoEntry pixelData)
-{
-    (void) pixelData;
-    if (!CgbMode)
-    {
-        assert(false && "Sprites are not implemented yet");
-    }
-    else
-    {
-        assert(false && "Cannot get CGB colors.");
-    }
-    return 0xFFFFFFFF;
-}
-
-// uint32_t PPU::PixelMixer()
-// {
-//     FiFoEntry backgroundEntry = backgroundFiFo.GetFiFo().front();
-//     backgroundFiFo.GetFiFo().pop();
-
-//     if (objectFiFo.GetFiFo().empty())
-//         return GetBackgroundPixelColor(backgroundEntry);
-
-//     FiFoEntry objectEntry = objectFiFo.GetFiFo().front();
-//     objectFiFo.GetFiFo().pop();
-
-//     // Decide the priority:
-//     // TODO: Set the priority rules
-//     bool backgroundPriority = true;
-
-//     if (backgroundPriority)
-//         return GetBackgroundPixelColor(backgroundEntry);
-//     return GetObjectPixelColor(objectEntry);
-// }
-
-
-// void PPU::TickPixelTransferLCD()
-// {
-//     // If the background FiFo is empty no pixel is pushed
-//     // and we have to wait till there are pixels in it.
-//     if (pixelFetcher.backgroundFiFo.GetFiFo().empty())
-//         return ;
-
-//     const size_t scale = cpu->settings->screenScaleGameBoy;
-//     uint32_t pixelColor = PixelMixer();
-//     SDL_Rect pixel;
-
-//     pixel.h = scale;
-//     pixel.w = scale;
-//     pixel.x = scanlineX * scale;
-//     pixel.y = LYregister * scale;
-
-//     Graphics::UserInterface::PushRectangle(pixel, pixelColor);
-
-//     // Move to the next pixel.
-//     scanlineX++;
-//     if (scanlineX == PixelsPerScanline)
-//     {
-//         state = PixelProcessingState::hBlank;
-//         scanlineX = 0;
-//     }
-// }
 
 void PPU::TickDrawingPixel()
 {
     pixelFetcher.Tick();
 
     if (pixelFetcher.DoneWithScanline())
-    {
-        pixelFetcher.ResetForScanline();
         state = PixelProcessingState::hBlank;
-    }
 }
 
 void PPU::TickHorizontalBlank()
@@ -281,7 +194,10 @@ void PPU::TickHorizontalBlank()
         ResetForNextScanline();
         // If we have passed all the scanlines meant for drawing, move to the next PPU mode.
         if (LYregister == ScanlinesPassedTillVBlank)
+        {
+            pixelFetcher.ResetVBlank();
             state = PixelProcessingState::vBlank;
+        }
     }
 }
 

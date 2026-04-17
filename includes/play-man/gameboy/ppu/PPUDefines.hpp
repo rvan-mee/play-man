@@ -68,9 +68,10 @@ CREATE_ENUM_WITH_UTILS(PixelFetchStateSeq, PixelFetchState);
 
 typedef struct s_FiFoEntry {
     /**
-     * @brief The color number between 0 and 3, taken from the tile data. 
+     * @brief The color index number between 0 and 3, taken from the tile data.
+     * Used to index into the pallette registers to receive the right color.  
      */
-    uint8_t color;
+    uint8_t colorIndex;
 
     /**
      * @brief on CGB: A value between 0 and 7 representing the palette.
@@ -95,10 +96,10 @@ typedef struct s_FiFoEntry {
      */
     uint8_t backgroundPriority;
 
-    s_FiFoEntry() : color(0), palette(0), spritePriority(0), backgroundPriority(0) {}
+    s_FiFoEntry() : colorIndex(0), palette(0), spritePriority(0), backgroundPriority(0) {}
 
-    s_FiFoEntry(uint8_t _color, uint8_t _palette, uint8_t _sPriority, uint8_t _bPriority) :
-    color(_color), palette(_palette), spritePriority(_sPriority), backgroundPriority(_bPriority) {}
+    s_FiFoEntry(uint8_t _colorIndex, uint8_t _palette, uint8_t _sPriority, uint8_t _bPriority) :
+    colorIndex(_colorIndex), palette(_palette), spritePriority(_sPriority), backgroundPriority(_bPriority) {}
 
     s_FiFoEntry(s_FiFoEntry& other) { *this = other; }
 
@@ -106,7 +107,7 @@ typedef struct s_FiFoEntry {
 
     struct s_FiFoEntry& operator = (const struct s_FiFoEntry& rhs)
     {
-        this->color = rhs.color;
+        this->colorIndex = rhs.colorIndex;
         this->palette = rhs.palette;
         this->spritePriority = rhs.spritePriority;
         this->backgroundPriority = rhs.backgroundPriority;
@@ -115,7 +116,7 @@ typedef struct s_FiFoEntry {
 
     void clear()
     {
-        color = 0;
+        colorIndex = 0;
         palette = 0;
         spritePriority = 0;
         backgroundPriority = 0;
@@ -539,13 +540,29 @@ constexpr uint8_t ScanlinesPerFrame = 153;
 constexpr uint8_t PixelsPerScanline = 160;
 
 /**
+ * @brief Used to index into the ColorsDMG array to get the desired colors.
+ */
+enum ColorPalletteTypesDMG {
+    BlackAndWhitePixels,
+    GreenPixels,
+    AmountOfPallettes
+};
+
+/**
+ * @brief The amount of colors that are found within a single color pallette on DMG.
+ */
+constexpr uint8_t ColorsPerPalletteDMG = 4;
+
+/**
  * @brief The color values used when displaying DMG pixels. 
  * 
  * 2 separate color types can be used, black and white or green.
  * 
  * @note Can be indexed using 'BlackAndWhitePixelsDMG' and 'GreenPixelsDMG'.
+ * @note TODO: Might want to expose this to the user through the UI at a later date,
+ * allowing them to set their own color values.
  */
-constexpr uint32_t ColorsDMG[2][4] = {
+constexpr uint32_t ColorsDMG[ColorPalletteTypesDMG::AmountOfPallettes][ColorsPerPalletteDMG] = {
     { // Black and White pixel values
         0xFFFFFFFF, // White
         0xFFD3D3D3, // Light Gray
@@ -561,26 +578,34 @@ constexpr uint32_t ColorsDMG[2][4] = {
 };
 
 /**
- * @brief Used to index into the 'ColorsDMG' array to get the desired colors.
+ * @brief The index into the 'ColorsDMG' used to get the white color for a
+ * specific pallette.
  */
-constexpr uint8_t BlackAndWhitePixelsDMG = 0;
+constexpr uint8_t WhitePixelIndexDMG = 0;
 
 /**
- * @brief Used to index into the 'ColorsDMG' array to get the desired colors.
+ * @brief The index used on DMG for transparent pixels.
  */
-constexpr uint8_t GreenPixelsDMG = 1;
+constexpr uint8_t TransparentColorIndexDMG = 0;
 
 /**
- * @brief The mask used to get the shade of the retrieved color ID from the
- * background palette register.
+ * @brief On DMG the object sprites can have two different pallettes to select
+ * colors from, OBP0 or OBP1. The selection value is saved inside of the objects
+ * FiFo entry. This value represents the selection of the OBP1 pallette.
  */
-constexpr uint8_t BackgroundShadeMaskDMG = 0b11; 
+constexpr uint8_t PalletteValueOBP1 = 1;
 
 /**
- * @brief A single shift is not enough to move to the next index within the
- * background palette, to move from one index to the next 2 shifts need to be performed.
+ * @brief The mask used to get the shade of the retrieved color ID from a
+ * palette register in DMG mode.
  */
-constexpr uint8_t BackgroundPaletteIndexShiftSize = 2;
+constexpr uint8_t PalletteShadeMaskDMG = 0b11; 
+
+/**
+ * @brief A single shift is not enough to move to the next index within a color palette of the DMG, 
+ * to move from one index to the next 2 shifts need to be performed.
+ */
+constexpr uint8_t PaletteIndexShiftSizeDMG = 2;
 
 #define PPU_READ_OUT_OF_RANGE "PPU: Trying to read from an address that is not within range"
 #define PPU_READ_IN_MODE_3 "PPU: Trying to read from a register inaccessible during PPU mode 3 (drawing)"
