@@ -110,10 +110,11 @@ void PPU::ResetForNextScanline()
 void PPU::TickOamScan()
 {
     // If we are at the start of a new scanline, the WY condition must be checked.
+    // If activated, it remains active for all subsequent scanlines.
     // https://gbdev.io/pandocs/Scrolling.html?highlight=WY%20condition#window
     // Mentions this being checked at the start of Mode 2 only.
     if (dotsPassedInScanline == 1)
-        WYcondition = (LYregister == WYregister);
+        WYcondition = WYcondition || (LYregister == WYregister);
 
     switch (oamScanState)
     {

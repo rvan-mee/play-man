@@ -90,6 +90,9 @@ class PixelFetcher
              * @note It is not very well documented what specifically happens on each tick of the fetch, though it
              * does seem that reads from memory take 1 T-tick. The way we implement the individual cycles is by computing
              * the read address the first tick and then reading the actual value on that address the next tick.
+             * 
+             * @note https://github.com/LIJI32/SameBoy/blob/master/Core/display.c mentions the read completing
+             * on the second tick as well.
              */
             InnerPixelFetchState innerFetchState;
 
@@ -132,7 +135,7 @@ class PixelFetcher
             /**
              * @brief Resets the FiFo and fetch data.
              */
-            void Clear();
+            virtual void Clear();
 
             /**
              * @brief Performs a T-tick for the FiFo pixel fetcher, used in Mode 3.
@@ -214,19 +217,8 @@ class PixelFetcher
 
         public:
             BackgroundFiFo() = delete;
-            BackgroundFiFo(PPU* _ppu) : PixelFetcher::FiFoBase(_ppu) {};
+            BackgroundFiFo(PPU* _ppu) : PixelFetcher::FiFoBase(_ppu), windowLineCounter(-1) {};
             ~BackgroundFiFo() = default;
-
-            /**
-             * @brief The background FiFo has to be flushed and restarted if the window gets enabled
-             * and the current fetcherX is within the window.
-             */
-            void UpdateWindow();
-
-            /**
-             * @brief Resets the window line counter and flags.
-             */
-            void ResetWindowLineCounter();
 
             /**
              * @brief When an object fetch is initiated the Background Fetcher is reset to step 1 and paused.
@@ -241,8 +233,21 @@ class PixelFetcher
 
             /**
              * @brief The pixel mixer checks if the window has been reached after every pixel pushed to the LCD.
+             * If the window is enabled and is on the current X position, the FiFo is cleared and reset to the first step.
+             * 
+             * @note This can occur multiple times per scanline: https://gbdev.io/pandocs/Window.html
              */
-            void StartWindowFetching();
+            void StartWindowFetch();
+
+            /**
+             * @brief Returns the x position within a scanline of the current tile being fetched.
+             */
+            uint8_t GetFetcherX();
+
+            /**
+             * @brief Resets the FiFo and its internal states.
+             */
+            void Clear() override;
         };
 
         // The FiFos are apart of the PPU, hence the friend.
@@ -284,7 +289,7 @@ class PixelFetcher
         /**
          * @brief The x position within a scanline of the current pixel being shifted out.
          */
-        uint8_t mixerX;
+        uint8_t pixelX;
 
         /**
          * @brief If a sprite fetch is initiated 

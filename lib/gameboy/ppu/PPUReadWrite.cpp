@@ -267,7 +267,13 @@ void    PPU::WriteByte(uint16_t address, uint8_t value)
     {
         case (AddressLCDC):
         {
+            const uint8_t oldWindowEnableValue = LCDCregister & WindowEnableMask;
             LCDCregister = value;
+
+            // WYcondition gets reset on clear of window enabled bit in CGB mode:
+            // https://gbdev.io/pandocs/Window.html
+            if (CgbMode && oldWindowEnableValue && (LCDCregister & WindowEnableMask) != oldWindowEnableValue)
+                WYcondition = false;
 
             std::stringstream ss;
             ss << "Write to the LCDC register:\n";

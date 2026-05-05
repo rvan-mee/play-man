@@ -29,7 +29,6 @@ PixelFetcher::FiFoBase::FiFoBase(PPU* _ppu) : ppu(_ppu)
 
 void    PixelFetcher::FiFoBase::Clear()
 {
-    fetcherX = 0;
     fetcherTileX = 0;
     fetcherTileY = 0;
     fetchData.clear();
@@ -74,19 +73,23 @@ size_t PixelFetcher::FiFoBase::Size()
 
 // *************** Background FiFo Functions ***************
 
-bool PixelFetcher::BackgroundFiFo::RenderingWindow()
+void PixelFetcher::BackgroundFiFo::Clear()
 {
-    // The window's top left X coordinate starts at WX - 7.
-    const uint8_t windowX = ppu->WXregister - WindowStartOffset;
-    // To know if we are rendering a window a combination of things need to be checked.
-    // If the LCDC's 5th bit is enabled and the LY is >= WY and
-    // the fetcherX is >= WX we are rendering a window tile.
-    const bool windowEnabled = ppu->LCDCregister & WindowEnableMask;
-    const bool windowWithinY = ppu->LYregister >= ppu->WYregister;
-    const bool windowWithinX = fetcherX >= windowX;
-    // TODO: Some docs mention only the check of an X position, not Y, verify which is the case.
-    const bool renderingWindowTile = windowEnabled && windowWithinY && windowWithinX;
-    return renderingWindowTile;
+    FiFoBase::Clear();
+    fetchingType = FetchingTileType::Background;
+    paused = false;
+    fetcherX = 0;
+}
+
+void PixelFetcher::BackgroundFiFo::StartWindowFetch()
+{
+    // Update the internal fetching type, reset the fetcher and start fetching window tiles.
+    innerFetchState = InnerPixelFetchState::Computing;
+    fetchState = PixelFetchState::TileFetch;
+    fetchingType = FetchingTileType::Window;
+    fetcherTileX = 0;
+    windowLineCounter++;
+    fifo = {}; // clear the FiFo
 }
 
 void PixelFetcher::BackgroundFiFo::TickTileFetch()
@@ -95,16 +98,13 @@ void PixelFetcher::BackgroundFiFo::TickTileFetch()
     if (paused)
         return ;
 
-    const uint8_t windowX = ppu->WXregister - WindowStartOffset;
-    (void) windowX;
-
-    if (fetcherX >= PixelsPerScanline)
-        return ;
-
     if (innerFetchState == InnerPixelFetchState::Computing)
     {
-        // The window's top left X coordinate starts at WX - 7.
-        const bool renderingWindowTile = RenderingWindow();
+        // If the window gets disabled, the tile fetch gets completed with the next one being 
+        // back to a background tile fetch. To re-enable the window, the WX trigger needs to happen
+        // again within the PixelFetcher.
+        if (fetchingType == FetchingTileType::Window && !(ppu->LCDCregister & WindowEnableMask))
+            fetchingType = FetchingTileType::Background;
 
         // The base address of the tile data map.
         uint16_t tileMapAddress = TileMapBaseAddress;
@@ -112,17 +112,17 @@ void PixelFetcher::BackgroundFiFo::TickTileFetch()
         // The base address of the map can be changed depending on the state of the LCDC register.
         // The LCDC register contains 2 bits that specify which tile map area to use for
         // rendering both the background and window tiles respectively.
-        if (ppu->LCDCregister & BackgroundTilemapAreaMask && !renderingWindowTile)
+        if (fetchingType == FetchingTileType::Background && ppu->LCDCregister & BackgroundTilemapAreaMask)
             tileMapAddress += TileMapBaseAddressOffset;
-        else if (ppu->LCDCregister & WindowTileMapAreaMask && renderingWindowTile)
+        else if (fetchingType == FetchingTileType::Window && ppu->LCDCregister & WindowTileMapAreaMask)
             tileMapAddress += TileMapBaseAddressOffset;
 
-        if (renderingWindowTile)
+        if (fetchingType == FetchingTileType::Window)
         {
-            // TODO: Which window X&Y value to take here???
+            // fetcherX gets reset to 0 when the window gets enabled.
+            // LineCounter is incremented every time the window gets enabled.
             fetcherTileX = fetcherX;
-            fetcherTileY = ppu->WYregister;
-            windowPixelRendered = true;
+            fetcherTileY = windowLineCounter;
         }
         else
         {
@@ -220,9 +220,7 @@ void PixelFetcher::BackgroundFiFo::PushBackgroundPixels(uint8_t lowPixelData, ui
 void PixelFetcher::BackgroundFiFo::TickFiFoPush()
 {
     // Pixels are only pushed to the background FiFo if there is space.
-    // The FiFo has a size of 16 and attempts to push 8 at a time, meaning the current
-    // FiFo size has to be smaller than 8 for this many pixels to fit.
-    if (fifo.size() > 8)
+    if (fifo.size() != 0)
         return ;
 
     if (!ppu->CgbMode)
@@ -233,25 +231,6 @@ void PixelFetcher::BackgroundFiFo::TickFiFoPush()
     innerFetchState = InnerPixelFetchState::Computing;
     fetchState = PixelFetchState::TileFetch;
     fetcherX += TileWidth;
-}
-
-void PixelFetcher::BackgroundFiFo::UpdateWindow()
-{
-    // const bool windowEnabled = ppu->LCDCregister & WindowEnableMask;
-    // const bool windowOnScanline = fetcherX >= ppu->WXregister;
-}
-
-void PixelFetcher::BackgroundFiFo::UpdateWindowLineCounter()
-{
-    if (windowPixelRendered)
-        windowLineCounter++;
-}
-
-void PixelFetcher::BackgroundFiFo::ResetWindowLineCounter()
-{
-    windowLineCounter = 0;
-    windowPixelRendered = false;
-    windowRenderingActivated = false;
 }
 
 void PixelFetcher::BackgroundFiFo::ResetAndPause()
