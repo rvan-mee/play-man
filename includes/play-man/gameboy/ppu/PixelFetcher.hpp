@@ -40,12 +40,17 @@ class PixelFetcher
         protected:
 
             /**
-             * @brief The Y position inside the current tile being fetched.
+             * @brief The Y position of the current tile being fetched, and its index
+             * inside of that tile, within the 32x32 tile map.
+             * 
+             * @note A value between 0-255.
              */
             uint8_t fetcherTileY;
 
             /**
-             * @brief The X position inside the current tile being fetched.
+             * @brief The X position of the current tile being fetched, within the 32x32 tile map.
+             *
+             *  @note A value between 0-31.
              */
             uint8_t fetcherTileX;
 
@@ -95,6 +100,11 @@ class PixelFetcher
              * on the second tick as well.
              */
             InnerPixelFetchState innerFetchState;
+
+            /**
+             * @brief Advances the fetcher state, both the internal and pixel fetch state.
+             */
+            void AdvanceFetcherState();
 
             /**
              * @brief Fetches and stores the tile number from which the pixels should be retrieved.
@@ -206,14 +216,14 @@ class PixelFetcher
             uint8_t windowLineCounter;
 
             /**
-             * @brief The current pixel within a scanline the background fetcher is fetching.
+             * @brief The current tile column within a scanline the background fetcher is fetching.
              */
-            uint8_t fetcherX;
+            uint8_t fetcherTileColumn;
 
             /**
              * @brief Pushes an entire row of 8 pixels into the background FiFo.
              */
-            void PushBackgroundPixels(uint8_t lowPixelData, uint8_t highPixelData);
+            void PushBackgroundPixelsDMG(uint8_t lowPixelData, uint8_t highPixelData);
 
         public:
             BackgroundFiFo() = delete;
@@ -271,9 +281,14 @@ class PixelFetcher
              */
             BackgroundFiFo* backgroundFiFo;
 
+            /**
+             * @brief Pointer to the pixel fetcher this FiFo is apart of.
+             */
+            PixelFetcher* pixelFetcher;
+
         public:
             ObjectFiFo() = delete;
-            ObjectFiFo(PPU* _ppu, BackgroundFiFo* _backgroundFiFo): PixelFetcher::FiFoBase(_ppu), backgroundFiFo(_backgroundFiFo) {};
+            ObjectFiFo(PPU* _ppu, BackgroundFiFo* _backgroundFiFo, PixelFetcher* _pixelFetcher): PixelFetcher::FiFoBase(_ppu), backgroundFiFo(_backgroundFiFo), pixelFetcher(_pixelFetcher) {};
             ~ObjectFiFo() = default;
         };
 
@@ -355,7 +370,7 @@ class PixelFetcher
     public:
         PixelFetcher() = delete;
         PixelFetcher(PPU* _ppu);
-        ~PixelFetcher();
+        ~PixelFetcher() = default;
 
         /**
          * @brief Resets the Pixel fetcher to be ready to fetch pixels for a new scanline.

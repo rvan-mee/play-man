@@ -21,7 +21,7 @@
 
 namespace GameBoy {
 
-PixelFetcher::PixelFetcher(PPU* _ppu) : backgroundFiFo(_ppu), objectFiFo(_ppu, &backgroundFiFo), ppu(_ppu)
+PixelFetcher::PixelFetcher(PPU* _ppu) : backgroundFiFo(_ppu), objectFiFo(_ppu, &backgroundFiFo, this), ppu(_ppu)
 {
     pixelX = 0;
     backgroundShift = 0;
@@ -109,6 +109,8 @@ void PixelFetcher::PushBackgroundPixel(const FiFoEntry& backgroundEntry)
 
 PixelFetcher::EntryPriority PixelFetcher::GetEntryPriority(const FiFoEntry& backgroundEntry, const FiFoEntry& objectEntry)
 {
+    (void) backgroundEntry;
+
     if (!ppu->CgbMode)
     {
         if (objectEntry.colorIndex == TransparentColorIndexDMG)
@@ -184,7 +186,7 @@ void PixelFetcher::PixelMixerTick()
 
     // If there are no a pixels in the object fifo, just render the background right away
     // else mix the pixels depending on their priority/color.
-    if (!objectFiFo.Size() == 0)
+    if (!(objectFiFo.Size() == 0))
         PushBackgroundPixel(backgroundFiFo.GetFrontAndPop());
     else
         MixPixel(backgroundFiFo.GetFrontAndPop(), objectFiFo.GetFrontAndPop());
@@ -201,6 +203,11 @@ void PixelFetcher::ContinueMixing()
 {
     mixerPaused = false;
     backgroundFiFo.Continue();
+}
+
+void PixelFetcher::ResetVBlank()
+{
+    assert(false);
 }
 
 void PixelFetcher::Tick()

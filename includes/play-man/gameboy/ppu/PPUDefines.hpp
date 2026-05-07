@@ -511,6 +511,11 @@ constexpr uint8_t SingleTileHeight = 8;
 constexpr uint8_t DoubleTileHeight = 16;
 
 /**
+ * @brief The amount of tiles on a row inside of the Background/Window tile map.
+ */
+constexpr uint8_t TilesPerMapLine = 32; 
+
+/**
  * @brief The window's topleft X coordinate starts off at WX - 7, so the offset
  * to get the X coordinate to be 0 is this number.
  */

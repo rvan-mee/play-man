@@ -228,7 +228,7 @@ namespace GameBoy
                 // conversion from M-ticks to T-ticks.
 
                 this->InstructionTick();
-                // ppu.TickPPU();
+                ppu.TickPPU();
                 ppu.TickDMA();
 
             }

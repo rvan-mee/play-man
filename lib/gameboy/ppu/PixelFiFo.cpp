@@ -27,6 +27,46 @@ PixelFetcher::FiFoBase::FiFoBase(PPU* _ppu) : ppu(_ppu)
     this->Clear();
 }
 
+void PixelFetcher::FiFoBase::AdvanceFetcherState()
+{
+    switch (innerFetchState)
+    {
+        case (InnerPixelFetchState::IO):
+        {
+            innerFetchState = InnerPixelFetchState::Computing;
+            switch (fetchState)
+            {
+            case (PixelFetchState::TileFetch):
+                fetchState = PixelFetchState::DataLowFetch;
+                break;
+            case (PixelFetchState::DataLowFetch):
+                fetchState = PixelFetchState::DataHighFetch;
+                break;
+            case (PixelFetchState::DataHighFetch):
+                fetchState = PixelFetchState::FiFoPush;
+                break;
+            case (PixelFetchState::FiFoPush):
+                fetchState = PixelFetchState::TileFetch;
+                break;
+            default:
+                assert(false && "Invalid fetch state!");
+                break;
+            }
+            break ;
+        }
+        case (InnerPixelFetchState::Computing):
+        {
+            innerFetchState = InnerPixelFetchState::Computing;
+            break;
+        }
+        default:
+        {
+            assert(false && "Invalid inner fetch state!");
+            break;
+        }
+    }
+}
+
 void    PixelFetcher::FiFoBase::Clear()
 {
     fetcherTileX = 0;
@@ -78,7 +118,7 @@ void PixelFetcher::BackgroundFiFo::Clear()
     FiFoBase::Clear();
     fetchingType = FetchingTileType::Background;
     paused = false;
-    fetcherX = 0;
+    fetcherTileColumn = 0;
 }
 
 void PixelFetcher::BackgroundFiFo::StartWindowFetch()
@@ -119,25 +159,25 @@ void PixelFetcher::BackgroundFiFo::TickTileFetch()
 
         if (fetchingType == FetchingTileType::Window)
         {
-            // fetcherX gets reset to 0 when the window gets enabled.
+            // fetcherTileColumn gets reset to 0 when the window gets enabled.
             // LineCounter is incremented every time the window gets enabled.
-            fetcherTileX = fetcherX;
-            fetcherTileY = windowLineCounter;
+            fetcherTileX = fetcherTileColumn & TilePositionLimiterX;
+            fetcherTileY = windowLineCounter & TilePositionLimiterY;
         }
         else
         {
             // Rendering a background tile requires some calculations of the X and Y positions,
             // since the scroll registers can change them.
-            fetcherTileX = (fetcherX + (ppu->SCXregister / TileWidth)) & TilePositionLimiterX;
+            fetcherTileX = (fetcherTileColumn + (ppu->SCXregister / TileWidth)) & TilePositionLimiterX;
             fetcherTileY = (ppu->LYregister + ppu->SCYregister) & TilePositionLimiterY;
         }
 
         // To get the correct address we take the current base pointer, offset it by the tile's x position
         // now we have to offset using the y position, we divide it by the width of a tile and multiply
         // that value by 32 (since there are 32x32 tiles inside the tile map).
-        tileFetchAddress = tileMapAddress + fetcherTileX + ((fetcherTileY / TileWidth) * 32);
+        tileFetchAddress = tileMapAddress + fetcherTileX + ((fetcherTileY / SingleTileHeight) * TilesPerMapLine);
 
-        innerFetchState = InnerPixelFetchState::IO;
+        AdvanceFetcherState();
     }
     else if (innerFetchState == InnerPixelFetchState::IO)
     {
@@ -146,8 +186,7 @@ void PixelFetcher::BackgroundFiFo::TickTileFetch()
 
         assert(!ppu->CgbMode && "Not fetching tile attributes for CGB mode yet.");
 
-        innerFetchState = InnerPixelFetchState::Computing;
-        fetchState = PixelFetchState::DataLowFetch;
+        AdvanceFetcherState();
     }
 }
 
@@ -163,7 +202,6 @@ void PixelFetcher::BackgroundFiFo::TickDataLowFetch()
         // Since every pixel line in a sprite consists of 2 bytes (low and high data)
         // we can extract the Y offset by getting the Y of the tile and then multiplying that by 2.
         const uint8_t offsetY = (fetcherTileY % SingleTileHeight) * BytesPerTileLine;
-        // TODO: Is this offset correct? https://hacktix.github.io/GBEDG/ppu/#oam-scan-mode-2 mentions a different calculation.
 
         assert(!ppu->CgbMode && "Cannot perform Y flips since the CGB attributes are not fetched yet.");
 
@@ -172,15 +210,14 @@ void PixelFetcher::BackgroundFiFo::TickDataLowFetch()
         // fetched in the previous step and then offsetting that once more by adding the calculated Y offset.
         dataLowFetchAddress = tileMapBaseAddress + ((fetchData.tileNumber * TileSize) + offsetY);
 
-        innerFetchState = InnerPixelFetchState::IO;
+        AdvanceFetcherState();
     }
     else if (innerFetchState == InnerPixelFetchState::IO)
     {
         assert(dataLowFetchAddress >= AddressTileDataStart && dataLowFetchAddress <= AddressTileDataEnd);
         fetchData.dataLow = ppu->InternalReadByte(dataLowFetchAddress);
 
-        innerFetchState = InnerPixelFetchState::Computing;
-        fetchState = PixelFetchState::DataHighFetch;
+        AdvanceFetcherState();
     }
 }
 
@@ -191,19 +228,18 @@ void PixelFetcher::BackgroundFiFo::TickDataHighFetch()
         // The second pixel data values are found right after the first ones.
         dataHighFetchAddress = dataLowFetchAddress + 1;
 
-        innerFetchState = InnerPixelFetchState::IO;
+        AdvanceFetcherState();
     }
     else if (innerFetchState == InnerPixelFetchState::IO)
     {
         assert(dataHighFetchAddress >= AddressTileDataStart && dataHighFetchAddress <= AddressTileDataEnd);
         fetchData.dataHigh = ppu->InternalReadByte(dataHighFetchAddress);
 
-        innerFetchState = InnerPixelFetchState::Computing;
-        fetchState = PixelFetchState::FiFoPush;
+        AdvanceFetcherState();
     }
 }
 
-void PixelFetcher::BackgroundFiFo::PushBackgroundPixels(uint8_t lowPixelData, uint8_t highPixelData)
+void PixelFetcher::BackgroundFiFo::PushBackgroundPixelsDMG(uint8_t lowPixelData, uint8_t highPixelData)
 {
     for (uint8_t i = 0; i < FiFoEntriesPerPush; i++)
     {
@@ -224,13 +260,12 @@ void PixelFetcher::BackgroundFiFo::TickFiFoPush()
         return ;
 
     if (!ppu->CgbMode)
-        PushBackgroundPixels(fetchData.dataLow, fetchData.dataHigh);
+        PushBackgroundPixelsDMG(fetchData.dataLow, fetchData.dataHigh);
     else
         assert(false && "Unable to push CGB pixels to the FiFo at the moment.");
 
-    innerFetchState = InnerPixelFetchState::Computing;
-    fetchState = PixelFetchState::TileFetch;
-    fetcherX += TileWidth;
+    AdvanceFetcherState();
+    fetcherTileColumn++;
 }
 
 void PixelFetcher::BackgroundFiFo::ResetAndPause()
@@ -240,65 +275,73 @@ void PixelFetcher::BackgroundFiFo::ResetAndPause()
     paused = true;
 }
 
+void PixelFetcher::BackgroundFiFo::Continue()
+{
+    paused = false;
+}
+
 // *************** Object FiFo Functions ***************
 
-void PPU::ObjectFiFo::TickTileFetch()
+void PixelFetcher::ObjectFiFo::TickTileFetch()
 {
     if (innerFetchState == InnerPixelFetchState::Computing)
     {
 
-        innerFetchState = InnerPixelFetchState::IO;
+        AdvanceFetcherState();
     }
     else if (innerFetchState == InnerPixelFetchState::IO)
     {
-
-        innerFetchState = InnerPixelFetchState::Computing;
-        fetchState = PixelFetchState::DataLowFetch;
+        AdvanceFetcherState();
     }
 }
 
-void PPU::ObjectFiFo::TickDataLowFetch()
+void PixelFetcher::ObjectFiFo::TickDataLowFetch()
 {
     if (innerFetchState == InnerPixelFetchState::Computing)
     {
 
-        innerFetchState = InnerPixelFetchState::IO;
+        AdvanceFetcherState();
     }
     else if (innerFetchState == InnerPixelFetchState::IO)
     {
+        assert(dataLowFetchAddress >= AddressTileDataStart && dataLowFetchAddress <= AddressTileDataEnd);
+        fetchData.dataLow = ppu->InternalReadByte(dataLowFetchAddress);
 
-        innerFetchState = InnerPixelFetchState::Computing;
-        fetchState = PixelFetchState::DataHighFetch;
+        AdvanceFetcherState();
     }
 }
 
-void PPU::ObjectFiFo::TickDataHighFetch()
+void PixelFetcher::ObjectFiFo::TickDataHighFetch()
 {
     if (innerFetchState == InnerPixelFetchState::Computing)
     {
+        // The second pixel data values are found right after the first ones.
+        dataHighFetchAddress = dataLowFetchAddress + 1;
 
-        innerFetchState = InnerPixelFetchState::IO;
+        AdvanceFetcherState();
     }
     else if (innerFetchState == InnerPixelFetchState::IO)
     {
+        assert(dataHighFetchAddress >= AddressTileDataStart && dataHighFetchAddress <= AddressTileDataEnd);
+        fetchData.dataHigh = ppu->InternalReadByte(dataHighFetchAddress);
 
-        innerFetchState = InnerPixelFetchState::Computing;
-        fetchState = PixelFetchState::FiFoPush;
+        AdvanceFetcherState();
     }
 }
 
-void PPU::ObjectFiFo::TickFiFoPush()
+void PixelFetcher::ObjectFiFo::TickFiFoPush()
 {
     if (innerFetchState == InnerPixelFetchState::Computing)
     {
 
-        innerFetchState = InnerPixelFetchState::IO;
+        AdvanceFetcherState();
     }
     else if (innerFetchState == InnerPixelFetchState::IO)
     {
 
-        innerFetchState = InnerPixelFetchState::Computing;
-        fetchState = PixelFetchState::TileFetch;
+        AdvanceFetcherState();
+        backgroundFiFo->Continue();
+        pixelFetcher->ContinueMixing();
     }
 }
 
