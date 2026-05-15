@@ -51,6 +51,7 @@ namespace GameBoy
         ss << "Executed instruction: ";
         ss << currentInstruction;
         ss << " - Opcode: " << Utility::IntAsHexString(static_cast<uint16_t>(GetEnumAsValue(currentInstruction.GetOpCode())));
+        ss << " - PC: " << Utility::IntAsHexString(static_cast<uint16_t>(currentInstruction.IsPrefixed() ? (core.PC.Value() - 2) : (core.PC.Value() - 1)));
         LOG_DEBUG(ss.str());
     }
 
@@ -59,8 +60,8 @@ namespace GameBoy
         try
         {
             // Instructions return M-ticks, the CpuCycles are ticked every T-tick.
-            CpuCyclesLeft += (currentInstruction.Execute(this) * M_Tick);
             LogInstruction();
+            CpuCyclesLeft += (currentInstruction.Execute(this) * M_Tick);
         }
         catch (const std::exception& e)
         {
