@@ -56,7 +56,7 @@ void PixelFetcher::FiFoBase::AdvanceFetcherState()
         }
         case (InnerPixelFetchState::Computing):
         {
-            innerFetchState = InnerPixelFetchState::Computing;
+            innerFetchState = InnerPixelFetchState::IO;
             break;
         }
         default:
@@ -65,6 +65,13 @@ void PixelFetcher::FiFoBase::AdvanceFetcherState()
             break;
         }
     }
+
+    std::stringstream ss;
+
+    ss << "Advanced a Pixel FiFo Fetcher to state: ";
+    ss << fetchState << "::" << innerFetchState;
+
+    LOG_DEBUG(ss.str())
 }
 
 void    PixelFetcher::FiFoBase::Clear()
