@@ -209,6 +209,11 @@ typedef struct s_OamEntry {
 constexpr uint8_t DefaultAmountOfSelectedObjects = 0;
 constexpr uint8_t DefaultCurrentOamScanAddress = 0;
 constexpr uint8_t DefaultDotsPassedInScanline = 0;
+constexpr uint8_t DefaultDotsPassedSinceLastVblank = 0;
+
+constexpr bool DefaultEnabledState = false;
+constexpr bool DefaultSkipFrameState = false;
+constexpr bool DefaultFrameReadyState = false;
 
 constexpr PixelProcessingState DefaultStateValue = PixelProcessingState::ScanOAM;
 constexpr OamScanState DefaultOamScanState = OamScanState::Reading;
@@ -592,6 +597,14 @@ constexpr uint8_t WhitePixelIndexDMG = 0;
  * @brief The index used on DMG for transparent pixels.
  */
 constexpr uint8_t TransparentColorIndexDMG = 0;
+
+/**
+ * @brief The color of the LCD when turned off.
+ * 
+ * @todo Pick the right color, this is temporary a Light Green that is even lighter than
+ * the 'Lightest Green' from 'ColorsDMG' in 'GreenPixels' mode.
+ */
+constexpr uint32_t LcdOffColor =  0xFFD5FF2E;
 
 /**
  * @brief On DMG the object sprites can have two different pallettes to select

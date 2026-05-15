@@ -31,7 +31,7 @@
 #include <stdint.h>
 
 // http://gameboy.mongenel.com/dmg/gbc_cpu_timing.txt
-constexpr uint32_t CyclesPerFrame = 702240;
+constexpr uint32_t CyclesPerFrame = 70224;
 
 constexpr uint8_t HighRamSize = 127;
 

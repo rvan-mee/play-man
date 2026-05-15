@@ -45,7 +45,7 @@ void UserInterface::InitializeMainApplicationWindow()
     if (!SDL_GetWindowSize(AppWindow, &AppWindowWidth, &AppWindowHeight))
         throw std::runtime_error("Failed to get the window size");
 
-    ClearScreen();
+    ClearScreen(GetEnumAsValue(Colors::White));
 }
 
 std::unique_ptr<UserInterface>& UserInterface::GetInstance()
@@ -54,9 +54,9 @@ std::unique_ptr<UserInterface>& UserInterface::GetInstance()
     return ui;
 }
 
-void UserInterface::ClearScreen()
+void UserInterface::ClearScreen(const uint32_t color)
 {
-    SDL_FillSurfaceRect(AppSurface, NULL, GetEnumAsValue(Colors::White));
+    SDL_FillSurfaceRect(AppSurface, NULL, color);
     SDL_UpdateWindowSurface(AppWindow);
 }
 

@@ -49,6 +49,7 @@ PPU::PPU(bool cgbEnabled, Cpu* _cpu) :
     amountOfSelectedObjects = DefaultAmountOfSelectedObjects;
     currentOamScanAddress = DefaultCurrentOamScanAddress;
     dotsPassedInScanline = DefaultDotsPassedInScanline;
+    dotsPassedSinceLastVblank = DefaultDotsPassedSinceLastVblank;
     oamScanState = DefaultOamScanState;
 
     // Drawing related values
@@ -56,6 +57,10 @@ PPU::PPU(bool cgbEnabled, Cpu* _cpu) :
     colorModeDMG = ColorPalletteTypesDMG::GreenPixels;
 
     state = DefaultStateValue;
+
+    enabled = DefaultEnabledState;
+    skipFrame = DefaultSkipFrameState;
+    frameReady = DefaultFrameReadyState;
 
     InitVram();
 }
@@ -198,6 +203,13 @@ void PPU::TickHorizontalBlank()
         {
             pixelFetcher.ResetVBlank();
             state = PixelProcessingState::vBlank;
+
+            // Check if the current frame should actually be displayed
+            if (skipFrame)
+            {
+                skipFrame = false;
+                Graphics::UserInterface::ClearScreen(LcdOffColor);
+            }
         }
     }
 }
@@ -223,17 +235,54 @@ void PPU::TickVerticalBlank()
     }
 }
 
+void PPU::Enable()
+{
+    assert(enabled == false);
+
+    enabled = true;
+    skipFrame = true;
+
+    // Start rendering from the start, state and registers are already reset in 'Disable'
+    dotsPassedInScanline = 0;
+    dotsPassedSinceLastVblank = 0;
+}
+
+void PPU::Disable()
+{
+    // Nintendo prohibits changing the PPU to an off state outside of vBlank
+    assert(state == PixelProcessingState::vBlank);
+    assert(enabled == true);
+
+    enabled = false;
+
+    LYregister = 0;
+    WYcondition = false;
+
+    state = PixelProcessingState::hBlank;
+    UpdateStatMode();
+
+    dotsPassedInScanline = 0;
+}
+
 void PPU::TickPPU()
 {
-    // TODO: Handle PPU disabling through the LCDC register.
-    // After enabling the register it should wait for a frame.
-    if (!(LCDCregister & LCDandPPUenableMask))
-    {
-        assert(false && "PPU: Trying to tick the PPU whilst it should be disabled");
-    }
-
-    // Increase the cycles done for this scanline.
+    // Increase the cycles done
+    dotsPassedSinceLastVblank += Dot;
     dotsPassedInScanline += Dot;
+
+    if (!enabled)
+    {
+        // If the PPU is disabled the state is stable.
+        if (dotsPassedInScanline == DotsPerScanline)
+            dotsPassedInScanline = 0;
+        if (dotsPassedSinceLastVblank == CyclesPerFrame)
+        {
+            Graphics::UserInterface::ClearScreen(LcdOffColor);
+            dotsPassedSinceLastVblank = 0;
+            frameReady = true;
+        }
+        return ;
+    }
 
     switch (state)
     {
@@ -256,6 +305,11 @@ void PPU::TickPPU()
 
     // Update the STAT register's PPU mode bits with the current mode
     UpdateStatMode();
+}
+
+bool PPU::FrameReady()
+{
+    return frameReady;
 }
 
 }

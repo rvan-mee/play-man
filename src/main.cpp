@@ -88,7 +88,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
 SDL_AppResult SDL_AppIterate(void *appstate)
 {
     GameBoy::Cpu *cpu = static_cast<GameBoy::Cpu *>(appstate);
-    Graphics::UserInterface::ClearScreen();
+    Graphics::UserInterface::ClearScreen(GetEnumAsValue(Colors::White));
 
     cpu->RenderFrame();
     return SDL_APP_CONTINUE;

@@ -102,6 +102,8 @@ class PPU
 
         /**
          * @brief Updates the STAT register to report the current PPU mode in bits 0 and 1.
+         * 
+         * @note Reports 0 when the PPU is disabled.
          */
         void UpdateStatMode();
 
@@ -393,6 +395,16 @@ class PPU
         uint8_t currentScanSpriteY;
 
         /**
+         * @brief The amount of dots that have passed since the last vBlank occurred.
+         */
+        uint32_t dotsPassedSinceLastVblank;
+
+        /**
+         * @brief The total amount of dots passed in for the current frame.
+         */
+        uint16_t dotsPassedInFrame;
+
+        /**
          * @brief The amount of Dots that have passed for the current scanline. 
          */
         uint16_t dotsPassedInScanline;
@@ -494,10 +506,42 @@ class PPU
          */
         void InternalWriteByte(uint16_t address, uint8_t value);
 
+        /**
+         * @brief After the PPU gets re-enabled through the LCDC register
+         * it should wait a single frame before outputting to the LCD.
+         */
+        bool skipFrame;
+
+        /**
+         * @brief Holds the state of the LCDC bit that signifies 
+         * whether or not the PPU is enabled or disabled.
+         * 
+         * When disabled the PPU will display a blank image.
+         * 
+         * @note Enabling/disabling the PPU should only be done in mode 3 (vBlank)
+         * Nintendo has prohibited otherwise as it could cause hardware defects.
+         */
+        bool enabled;
+
+        /**
+         * @brief Whether or not the PPU has a frame fully drawn.
+         */
+        bool frameReady;
+
         public:
         PPU() = delete;
         PPU(bool cgbEnabled, Cpu* _cpu);
         ~PPU() = default;
+
+        /**
+         * @brief Enables the PPU, should be controlled through the LCDC register.
+         */
+        void Enable();
+
+        /**
+         * @brief Disables the PPU, should be controlled through the LCDC register.
+         */
+        void Disable();
 
         void SetCgbMode(bool enabled);
         
@@ -513,6 +557,15 @@ class PPU
          * @brief Simulates a T-tick for the PPU. 
          */
         void TickPPU();
+
+        /**
+         * @brief Whether or not the PPU has a frame fully drawn to the Graphics's buffer.
+         * 
+         * @note When the PPU is disabled a blank image will be displayed every 70224 dots.
+         * @note Enabling the screen can cause the PPU take more than 70224 dots to output
+         * a new frame, since the rendering will be restarted from the moment it gets enabled.
+         */
+        bool FrameReady();
     };
 
 }

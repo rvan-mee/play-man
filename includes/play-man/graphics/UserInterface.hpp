@@ -86,9 +86,9 @@ public:
     static void PushRectangle(const Rectangle& rect);
 
     /**
-     * @brief Sets the entire main application window to white.
+     * @brief Sets the entire main application window to the given color.
      */
-    static void ClearScreen();
+    static void ClearScreen(uint32_t color);
 };
 
 }

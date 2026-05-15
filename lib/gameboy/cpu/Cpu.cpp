@@ -218,22 +218,32 @@ namespace GameBoy
 
     void Cpu::RenderFrame()
     {
+        uint32_t tTicks;
         // Speed multiplication is done is by doing the logic for multiple
         // frames in a single RenderFrame.
         for (uint32_t Speed = 0; Speed < SpeedMultiplier; Speed++)
         {
-            for (uint32_t Cycles = 0; Cycles < CyclesPerFrame; Cycles++)
+            tTicks = 0;
+            while (true)
             {
                 // This loop produces T-ticks, it is up to the Tick() functions to handle
                 // conversion from M-ticks to T-ticks.
+                tTicks++;
 
                 this->InstructionTick();
                 ppu.TickPPU();
                 ppu.TickDMA();
 
+                if (ppu.FrameReady())
+                    break ;
             }
         }
-        // TODO: Sleep for duration of the time left that a single frame should take on a GameBoy.
-        // "roughly 16.7ms"
+
+        // TODO:
+        // should it sleep the amount of time it should have taken to run the cycles
+        // or do we leave it up to the graphics lib to handle framerate?
+        //
+        // Convert cycles to nanoseconds (4.194 MHz = ~238ns per cycle)
+        // Sleep for the duration of nanoseconds / SpeedMultiplier
     }
 }
